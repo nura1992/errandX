@@ -433,7 +433,7 @@
       sectionTitle: 'Recent ledger entries', sectionCopy: 'Every business event should create immutable, balanced ledger postings.',
       heroTitle: 'A ledger, not a mutable wallet number', heroCopy: 'Track collection, platform fees, rider earnings, vendor shares, refunds and withdrawals as linked transactions with references and reconciliation status.',
       rows: [
-        { name: 'LG-006824', initials: 'LG', detail: 'Rider earning · EX-20472', area: 'Halima Ibrahim', amount: '+₦3,900', status: 'Posted', badge: 'green' },
+        { name: 'LG-006824', initials: 'LG', detail: 'Rider earning · EX-20472', area: 'Amina Garba', amount: '+₦3,900', status: 'Posted', badge: 'green' },
         { name: 'LG-006823', initials: 'LG', detail: 'Platform fee · EX-20472', area: 'Marketplace ledger', amount: '+₦1,100', status: 'Posted', badge: 'green' },
         { name: 'LG-006821', initials: 'LG', detail: 'Vendor earning · EX-20469', area: 'Arewa Kitchen', amount: '+₦7,480', status: 'Pending settlement', badge: 'amber' }
       ],
@@ -553,6 +553,7 @@
     const initial = {
       rules: structuredCloneSafe(DEFAULT_RULES),
       orders: structuredCloneSafe(DEFAULT_ORDERS),
+      ledgerEntries: [],
       forms: structuredCloneSafe(DEFAULT_FORMS),
       applications: structuredCloneSafe(DEFAULT_APPLICATIONS),
       providers: structuredCloneSafe(MATCHING_PROVIDERS),
@@ -612,6 +613,7 @@
       initial.selectedLga = selectedLga ? selectedLga.name : '';
       initial.providers = normalizeSavedProviders(Array.isArray(saved.providers) ? saved.providers : initial.providers, initial.coverage);
       initial.providers = providersWithApplicationApprovals(initial.providers, initial.applications);
+      if (Array.isArray(saved.ledgerEntries)) initial.ledgerEntries = normalizeSavedLedgerEntries(saved.ledgerEntries, initial.orders);
       if (saved.features && typeof saved.features === 'object') initial.features = { ...initial.features, ...saved.features };
       if (saved.permissions && typeof saved.permissions === 'object') initial.permissions = { ...initial.permissions, ...saved.permissions };
       if (typeof saved.location === 'string') {
@@ -749,6 +751,44 @@
     }));
   }
 
+  function normalizeSavedLedgerEntries(entries, orders) {
+    const orderIds = new Set(orders.map((order) => order.id));
+    const providersById = new Map(MATCHING_PROVIDERS.map((provider) => [provider.id, provider]));
+    const seenBeneficiaries = new Set();
+    return entries.filter((entry) => entry && typeof entry === 'object').map((entry) => {
+      const provider = providersById.get(String(entry.providerId || ''));
+      const orderId = String(entry.orderId || '').slice(0, 60);
+      const model = ['percentage', 'fixed', 'per_request'].includes(entry.model) ? entry.model : '';
+      const basis = Object.prototype.hasOwnProperty.call(BASIS_LABELS, entry.basis) ? entry.basis : '';
+      const basisAmount = Number(entry.basisAmount);
+      const amount = Number(entry.amount);
+      const key = `${orderId}:${provider?.id || ''}`;
+      if (!provider || !orderIds.has(orderId) || !model || !basis || !entry.id || seenBeneficiaries.has(key) || !Number.isInteger(basisAmount) || basisAmount <= 0 || !Number.isInteger(amount) || amount < 0 || amount > basisAmount) return null;
+      seenBeneficiaries.add(key);
+      const rate = Number(entry.rate);
+      const fixedAmount = Number(entry.fixedAmount);
+      return {
+        id: String(entry.id).slice(0, 80),
+        orderId,
+        providerId: provider.id,
+        beneficiaryName: String(entry.beneficiaryName || provider.name).slice(0, 100),
+        beneficiaryType: provider.type,
+        role: provider.type === 'restaurant' || provider.type === 'small_chops' ? 'vendor' : 'rider',
+        ruleId: String(entry.ruleId || '').slice(0, 80),
+        ruleName: String(entry.ruleName || 'Earning rule').slice(0, 100),
+        ruleScope: String(entry.ruleScope || '').slice(0, 120),
+        model,
+        rate: Number.isFinite(rate) && rate >= 0 && rate <= 100 ? rate : 0,
+        fixedAmount: Number.isFinite(fixedAmount) && fixedAmount >= 0 ? Math.round(fixedAmount) : 0,
+        basis,
+        basisAmount: Math.round(basisAmount),
+        amount: Math.round(amount),
+        status: 'PENDING_SETTLEMENT',
+        createdAt: String(entry.createdAt || '').slice(0, 50)
+      };
+    }).filter(Boolean);
+  }
+
   function normalizeProviderCoverage(scopes, coverageCatalog = state.coverage) {
     if (!Array.isArray(scopes)) return [];
     return scopes.filter((scope) => scope && typeof scope === 'object').slice(0, 100).map((scope) => {
@@ -830,7 +870,7 @@
   function modeSummary(rule) {
     if (rule.model === 'percentage') return `${Number(rule.rate) || 0}% of eligible base`;
     if (rule.model === 'fixed') return `${formatNaira(rule.amount)} per completed order`;
-    return 'Amount entered at assignment';
+    return 'Amount entered per order';
   }
 
   function addActivity(title, detail, amount = '') {
@@ -882,6 +922,7 @@
     else if (activePage === 'features') main.innerHTML = renderFeaturesPage();
     else if (activePage === 'applications') main.innerHTML = renderApplicationsPage();
     else if (activePage === 'roles') main.innerHTML = renderRolesPage();
+    else if (activePage === 'ledger') main.innerHTML = renderLedgerPage();
     else if (activePage === 'locations') main.innerHTML = renderLocationsPage();
     else if (activePage === 'overview') main.innerHTML = renderOverviewPage();
     else if (activePage === 'riders' || activePage === 'vendors') main.innerHTML = renderProviderDirectoryPage(activePage);
@@ -906,11 +947,17 @@
 
   function renderEarningsPage() {
     const activeRules = state.rules.filter((rule) => rule.active).length;
-    const buttons = `<button class="button button-secondary" type="button" data-action="export-rules">${icon('download')}<span>Export rules</span></button><button class="button button-primary" type="button" data-action="new-rule">${icon('plus')}<span>New earning rule</span></button>`;
+    const orderLinkedTotal = state.ledgerEntries.reduce((sum, entry) => sum + entry.amount, 0);
+    const pendingOrderLinkedTotal = state.ledgerEntries.filter((entry) => entry.status === 'PENDING_SETTLEMENT').reduce((sum, entry) => sum + entry.amount, 0);
+    const hasOrderLinkedEarnings = state.ledgerEntries.length > 0;
+    const averageOrderLinkedShare = state.ledgerEntries.reduce((sum, entry) => sum + entry.basisAmount, 0) > 0
+      ? `${(orderLinkedTotal / state.ledgerEntries.reduce((sum, entry) => sum + entry.basisAmount, 0) * 100).toFixed(1)}%`
+      : '82.4%';
+    const buttons = `<button class="button button-secondary" type="button" data-page="ledger">${icon('receipt')}<span>View ledger</span></button><button class="button button-secondary" type="button" data-action="export-rules">${icon('download')}<span>Export rules</span></button><button class="button button-primary" type="button" data-action="new-rule">${icon('plus')}<span>New earning rule</span></button>`;
     const stats = [
-      ['Partner earnings · MTD', '₦14.82m', '12.6% vs. last month', 'banknote', 'orange'],
-      ['Pending settlement', '₦684,200', '42 completed orders', 'clock', 'amber'],
-      ['Average partner share', '82.4%', 'Across completed orders', 'chart', 'blue'],
+      [hasOrderLinkedEarnings ? 'Order-linked earnings' : 'Partner earnings · MTD', hasOrderLinkedEarnings ? formatNaira(orderLinkedTotal) : '₦14.82m', hasOrderLinkedEarnings ? `${state.ledgerEntries.length} local calculated line${state.ledgerEntries.length === 1 ? '' : 's'}` : '12.6% vs. last month', 'banknote', 'orange'],
+      ['Pending settlement', hasOrderLinkedEarnings ? formatNaira(pendingOrderLinkedTotal) : '₦684,200', hasOrderLinkedEarnings ? 'New demo lines · not paid' : '42 completed orders', 'clock', 'amber'],
+      ['Average partner share', averageOrderLinkedShare, hasOrderLinkedEarnings ? 'Across calculated demo bases' : 'Across completed orders', 'chart', 'blue'],
       ['Active earning rules', String(activeRules), `${state.rules.length} configured in demo`, 'shield', 'green']
     ];
     return `<div class="page earnings-page">
@@ -970,7 +1017,7 @@
       return `<tr>
         <td><div class="beneficiary-cell"><span class="beneficiary-avatar ${type}">${icon(iconName)}</span><span><span class="beneficiary-name">${escapeHTML(ruleTitle(rule))}</span><span class="beneficiary-meta">${escapeHTML(rule.scope || 'Custom scope')}</span></span></div></td>
         <td class="method-cell"><span class="method-pill ${modelClass}">${icon(methodIcon)}${escapeHTML(methodShort)}</span></td>
-        <td><div class="rate-primary">${escapeHTML(modeRateText(rule))}</div><div class="rate-secondary">${escapeHTML(rule.model === 'percentage' ? 'of eligible base' : rule.model === 'fixed' ? 'per completed order' : 'set before assignment')}</div></td>
+        <td><div class="rate-primary">${escapeHTML(modeRateText(rule))}</div><div class="rate-secondary">${escapeHTML(rule.model === 'percentage' ? 'of eligible base' : rule.model === 'fixed' ? 'per completed order' : 'set per order')}</div></td>
         <td><span class="basis-label">${escapeHTML(base)}</span></td>
         <td><span class="scope-label">${escapeHTML((rule.services || []).join(', ') || 'All services')}</span></td>
         <td><span class="row-controls"><button class="status-switch" type="button" role="switch" aria-checked="${Boolean(rule.active)}" aria-label="${rule.active ? 'Deactivate' : 'Activate'} ${escapeAttr(ruleTitle(rule))}" data-action="toggle-rule" data-id="${escapeAttr(rule.id)}"></button><span class="status-label">${rule.active ? 'Active' : 'Paused'}</span></span></td>
@@ -992,7 +1039,7 @@
       { title: 'Payout rule reviewed', detail: 'Company fleet rider · Kano Express', amount: '72% share', time: 'Yesterday' }
     ];
     const activities = state.activities.length ? state.activities.concat(fallback).slice(0, 3) : fallback;
-    return `<section class="card activity-card"><div class="activity-head"><div><h2 class="card-title">Recent rule activity</h2><p class="card-subtitle">Illustrative entries · new edits in this browser appear here.</p></div><button type="button" class="text-button" data-action="audit-info">View audit trail ${icon('arrow-right')}</button></div><div class="activity-list">${activities.map((item) => `<div class="activity-row"><span class="activity-icon">${icon('shield')}</span><div class="activity-main"><strong>${escapeHTML(item.title)}</strong><small>${escapeHTML(item.detail)}</small></div><strong class="activity-amount">${escapeHTML(item.amount || '')}</strong><span class="activity-time">${escapeHTML(item.time || '')}</span></div>`).join('')}</div></section>`;
+    return `<section class="card activity-card"><div class="activity-head"><div><h2 class="card-title">Recent earning activity</h2><p class="card-subtitle">Illustrative entries plus rule changes and order-linked calculations in this browser.</p></div><button type="button" class="text-button" data-action="audit-info">View audit trail ${icon('arrow-right')}</button></div><div class="activity-list">${activities.map((item) => `<div class="activity-row"><span class="activity-icon">${icon('shield')}</span><div class="activity-main"><strong>${escapeHTML(item.title)}</strong><small>${escapeHTML(item.detail)}</small></div><strong class="activity-amount">${escapeHTML(item.amount || '')}</strong><span class="activity-time">${escapeHTML(item.time || '')}</span></div>`).join('')}</div></section>`;
   }
 
   function updatePreview() {
@@ -1418,6 +1465,217 @@
     toast('Vendor test order added to the local matching queue.');
   }
 
+  function orderLedgerEntries(orderId) {
+    return state.ledgerEntries.filter((entry) => entry.orderId === orderId);
+  }
+
+  function orderEarningTargets(order) {
+    if (!order) return [];
+    const targets = [];
+    if (order.workflow === 'vendor') {
+      const vendor = state.providers.find((provider) => provider.name === order.provider && ['restaurant', 'small_chops'].includes(provider.type));
+      if (vendor) targets.push({ provider: vendor, role: 'vendor', service: vendor.type === 'small_chops' ? 'Small-chops orders' : 'Restaurant orders' });
+    }
+    const rider = state.providers.find((provider) => provider.name === order.rider && ['individual_rider', 'company_rider'].includes(provider.type));
+    if (rider) {
+      const service = rider.type === 'company_rider' ? 'Company dispatch' : /food/i.test(order.service) || order.workflow === 'vendor' ? 'Food delivery' : 'Errands';
+      targets.push({ provider: rider, role: 'rider', service });
+    }
+    return targets;
+  }
+
+  function missingOrderEarningTargets(order) {
+    return orderEarningTargets(order).filter((target) => !state.ledgerEntries.some((entry) => entry.orderId === order.id && entry.providerId === target.provider.id));
+  }
+
+  function activeEarningRulesForTarget(target) {
+    const ruleType = target.provider.type === 'individual_rider' ? 'individual' : target.provider.type;
+    return state.rules.filter((rule) => rule && rule.active === true && rule.type === ruleType && Array.isArray(rule.services) && rule.services.includes(target.service) && ['percentage', 'fixed', 'per_request'].includes(rule.model) && Object.prototype.hasOwnProperty.call(BASIS_LABELS, rule.basis));
+  }
+
+  function renderOrderEarningLine(target, order) {
+    const orderEarningTotalLimit = Math.max(0, Number(order.total) || 0);
+    const rules = activeEarningRulesForTarget(target);
+    if (!rules.length) {
+      return `<section class="settlement-target-card settlement-target-unavailable"><div class="settlement-target-heading"><div><span class="field-label">${escapeHTML(target.role === 'vendor' ? 'VENDOR EARNING' : 'RIDER EARNING')}</span><h3>${escapeHTML(target.provider.name)}</h3><small>${escapeHTML(target.provider.label)} · ${escapeHTML(target.service)}</small></div><span class="badge badge-amber">No active rule</span></div><p>No active earning rule covers this provider and service. Add or activate a matching rule before recording this line.</p><button class="button button-secondary" type="button" data-page="earnings">Manage earning rules</button></section>`;
+    }
+    const providerId = target.provider.id;
+    const options = rules.map((rule) => `<option value="${escapeAttr(rule.id)}">${escapeHTML(ruleTitle(rule))} · ${escapeHTML(rule.scope || 'Custom scope')} · ${escapeHTML(modeRateText(rule))}</option>`).join('');
+    const selectedRule = rules[0];
+    return `<section class="settlement-target-card" data-settlement-line data-provider-id="${escapeAttr(providerId)}">
+      <div class="settlement-target-heading"><div><span class="field-label">${escapeHTML(target.role === 'vendor' ? 'VENDOR EARNING' : 'RIDER EARNING')}</span><h3>${escapeHTML(target.provider.name)}</h3><small>${escapeHTML(target.provider.label)}${target.provider.company ? ` · ${escapeHTML(target.provider.company)}` : ''} · ${escapeHTML(target.service)}</small></div><span class="badge badge-blue">${escapeHTML(BENEFICIARIES.find((item) => item.type === (target.provider.type === 'individual_rider' ? 'individual' : target.provider.type))?.label || target.provider.label)}</span></div>
+      <div class="settlement-fields-grid">
+        <label class="form-field"><span class="field-label">Applicable active rule</span><select class="select-control" data-settlement-rule>${options}</select><small class="field-help">Choose the scope that applies to this completed demo order.</small></label>
+        <label class="form-field"><span class="field-label">Eligible calculation base</span><small class="settlement-basis-label" data-settlement-basis>${escapeHTML(BASIS_LABELS[selectedRule.basis])}</small><div class="input-with-prefix"><span>₦</span><input class="input-control" data-settlement-base type="number" min="1" max="${escapeAttr(orderEarningTotalLimit)}" step="1" placeholder="Enter illustrative base" inputmode="numeric"></div><small class="field-help">Enter a demo base for this rule. It must not exceed the order total of ${formatNaira(orderEarningTotalLimit)}.</small></label>
+        <label class="form-field settlement-manual-field" data-settlement-manual-wrap hidden><span class="field-label">Amount set for this request</span><div class="input-with-prefix"><span>₦</span><input class="input-control" data-settlement-manual type="number" min="0" max="${escapeAttr(orderEarningTotalLimit)}" step="1" placeholder="Enter this order’s payout" inputmode="numeric"></div><small class="field-help">This amount is entered for this order only; no default is stored in the rule.</small></label>
+      </div>
+      <div class="settlement-preview" data-settlement-preview role="status" aria-live="polite">Enter the eligible base to preview this rule.</div>
+    </section>`;
+  }
+
+  function renderOrderEarningsModal(orderId) {
+    const order = state.orders.find((item) => item.id === orderId);
+    if (!order || order.state !== 'COMPLETED') { toast('Calculate demo earnings only after the order reaches Completed.'); return; }
+    const existing = orderLedgerEntries(order.id);
+    const missingTargets = missingOrderEarningTargets(order);
+    const targetSections = missingTargets.map((target) => renderOrderEarningLine(target, order)).join('');
+    const existingEntries = existing.map((entry) => `<div class="settlement-existing-row"><span>${escapeHTML(entry.beneficiaryName)} · ${escapeHTML(entry.orderId)}</span><strong>${formatNaira(entry.amount)}</strong><small>${escapeHTML(entry.ruleName)} · ${escapeHTML(MODE_SHORT[entry.model] || entry.model)} · Pending settlement</small></div>`).join('');
+    let emptyMessage = '';
+    if (!missingTargets.length && !existing.length) emptyMessage = '<div class="settlement-empty">No linked sample provider profile could be matched to this completed order. No earning line was created.</div>';
+    else if (!missingTargets.length) emptyMessage = '<div class="settlement-empty">All matched provider earning lines for this order are already recorded. Existing ledger snapshots will not change if a rule is edited later.</div>';
+    document.getElementById('modalRoot').innerHTML = `<div class="modal-backdrop" data-action="modal-backdrop-close"><section class="modal order-earnings-modal" role="dialog" aria-modal="true" aria-labelledby="orderEarningsTitle" data-order-id="${escapeAttr(order.id)}">
+      <header class="modal-header"><div><div class="eyebrow">${escapeHTML(order.id)} <span class="eyebrow-separator">/</span> COMPLETED ORDER</div><h2 id="orderEarningsTitle">Calculate mock earnings</h2><p>${escapeHTML(order.customer)} · ${escapeHTML(order.service)} · ${formatNaira(order.total)}</p></div><button class="modal-close" type="button" data-action="close-modal" aria-label="Close dialog">${icon('close')}</button></header>
+      <div class="modal-body"><div class="settlement-disclaimer">${icon('info')}<span>Browser-only calculation. Enter the eligible base for each selected rule; this prototype does not infer fees, item subtotals or fleet allocations from the order total. New lines stay pending settlement. No money moves.</span></div>
+        ${existingEntries ? `<section class="settlement-existing"><div class="review-section-heading"><div><h3>Already recorded for this order</h3><p>Rule and amount snapshots are preserved.</p></div></div>${existingEntries}</section>` : ''}
+        ${targetSections ? `<div class="settlement-target-list">${targetSections}</div>` : emptyMessage}
+      </div><footer class="modal-footer"><span class="modal-footer-note">${icon('lock')}Pending settlement only · no transfer</span><div class="modal-footer-actions"><button class="button button-secondary" type="button" data-action="close-modal">Close</button>${missingTargets.some((target) => activeEarningRulesForTarget(target).length) ? `<button class="button button-primary" type="button" data-action="save-order-earnings">${icon('check')}<span>Record demo ledger entries</span></button>` : ''}</div></footer>
+    </section></div>`;
+    document.querySelectorAll('[data-settlement-line]').forEach((section) => {
+      const update = () => updateOrderEarningPreview(section);
+      section.querySelector('[data-settlement-rule]')?.addEventListener('change', update);
+      section.querySelector('[data-settlement-base]')?.addEventListener('input', update);
+      section.querySelector('[data-settlement-manual]')?.addEventListener('input', update);
+      update();
+    });
+  }
+
+  function updateOrderEarningPreview(section) {
+    const providerId = section.dataset.providerId;
+    const dialog = document.querySelector('.order-earnings-modal');
+    const order = state.orders.find((item) => item.id === dialog?.dataset.orderId);
+    const target = orderEarningTargets(order).find((item) => item.provider.id === providerId);
+    const ruleId = section.querySelector('[data-settlement-rule]')?.value;
+    const rule = target && activeEarningRulesForTarget(target).find((item) => item.id === ruleId);
+    const baseInput = section.querySelector('[data-settlement-base]');
+    const manualInput = section.querySelector('[data-settlement-manual]');
+    const manualWrap = section.querySelector('[data-settlement-manual-wrap]');
+    const basisLabel = section.querySelector('[data-settlement-basis]');
+    const preview = section.querySelector('[data-settlement-preview]');
+    if (!rule || !baseInput || !preview) return;
+    if (basisLabel) basisLabel.textContent = BASIS_LABELS[rule.basis];
+    if (manualWrap) manualWrap.hidden = rule.model !== 'per_request';
+    if (baseInput) baseInput.max = String(Math.max(0, Number(order?.total) || 0));
+    if (manualInput) manualInput.max = String(Math.max(0, Number(order?.total) || 0));
+    const baseRaw = baseInput.value.trim();
+    if (!baseRaw) {
+      preview.className = 'settlement-preview';
+      preview.innerHTML = `Enter the eligible ${escapeHTML(BASIS_LABELS[rule.basis].toLowerCase())} base to preview this rule.`;
+      return;
+    }
+    const base = Number(baseRaw);
+    if (!Number.isInteger(base) || base <= 0 || base > (Number(order?.total) || 0)) {
+      preview.className = 'settlement-preview settlement-preview-error';
+      preview.textContent = 'Enter a whole-naira eligible base no greater than this order total.';
+      return;
+    }
+    let payout = 0;
+    if (rule.model === 'percentage') {
+      const rate = Number(rule.rate);
+      if (!Number.isFinite(rate) || rate < 0 || rate > 100) {
+        preview.className = 'settlement-preview settlement-preview-error';
+        preview.textContent = 'This saved percentage rule is invalid; edit it before calculating earnings.';
+        return;
+      }
+      payout = Math.round(base * rate / 100);
+    } else if (rule.model === 'fixed') {
+      const amount = Number(rule.amount);
+      if (!Number.isFinite(amount) || amount < 0) {
+        preview.className = 'settlement-preview settlement-preview-error';
+        preview.textContent = 'This saved fixed-amount rule is invalid; edit it before calculating earnings.';
+        return;
+      }
+      payout = Math.round(amount);
+    } else {
+      const manualRaw = manualInput?.value.trim() || '';
+      if (!manualRaw) {
+        preview.className = 'settlement-preview';
+        preview.textContent = 'Enter the amount set for this request to preview the payout.';
+        return;
+      }
+      const manual = Number(manualRaw);
+      if (!Number.isInteger(manual) || manual < 0 || manual > (Number(order?.total) || 0)) {
+        preview.className = 'settlement-preview settlement-preview-error';
+        preview.textContent = 'Enter a valid request amount no greater than this order total.';
+        return;
+      }
+      payout = Math.round(manual);
+    }
+    if (payout > base) {
+      preview.className = 'settlement-preview settlement-preview-error';
+      preview.textContent = `Calculated payout ${formatNaira(payout)} exceeds the eligible base ${formatNaira(base)}.`;
+      return;
+    }
+    preview.className = 'settlement-preview';
+    preview.innerHTML = `<span>${escapeHTML(ruleTitle(rule))} · ${escapeHTML(MODE_SHORT[rule.model] || rule.model)}</span><strong>${formatNaira(payout)}</strong><small>${formatNaira(base)} ${escapeHTML(BASIS_LABELS[rule.basis].toLowerCase())} base · ${formatNaira(base - payout)} remains before other fees.</small>`;
+  }
+
+  function createLedgerEntryId() {
+    return `LG-D${Date.now().toString(36).toUpperCase()}${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+  }
+
+  function saveOrderEarnings() {
+    const dialog = document.querySelector('.order-earnings-modal');
+    const order = state.orders.find((item) => item.id === dialog?.dataset.orderId);
+    if (!order || order.state !== 'COMPLETED') { toast('The order must remain completed to record a demo earning.'); return; }
+    const targets = missingOrderEarningTargets(order);
+    const lines = [];
+    for (const target of targets) {
+      const section = [...document.querySelectorAll('[data-settlement-line]')].find((item) => item.dataset.providerId === target.provider.id);
+      if (!section) continue;
+      const ruleId = section.querySelector('[data-settlement-rule]')?.value;
+      const rule = activeEarningRulesForTarget(target).find((item) => item.id === ruleId);
+      const baseRaw = section.querySelector('[data-settlement-base]')?.value.trim() || '';
+      const base = Number(baseRaw);
+      if (!rule || !baseRaw || !Number.isInteger(base) || base <= 0 || base > Number(order.total)) {
+        toast(`Enter a valid eligible base and active rule for ${target.provider.name}.`);
+        return;
+      }
+      let payout = 0;
+      if (rule.model === 'percentage') {
+        const rate = Number(rule.rate);
+        if (!Number.isFinite(rate) || rate < 0 || rate > 100) { toast('Correct the selected percentage rule before calculating.'); return; }
+        payout = Math.round(base * rate / 100);
+      } else if (rule.model === 'fixed') {
+        const amount = Number(rule.amount);
+        if (!Number.isFinite(amount) || amount < 0) { toast('Correct the selected fixed amount before calculating.'); return; }
+        payout = Math.round(amount);
+      } else {
+        const manualRaw = section.querySelector('[data-settlement-manual]')?.value.trim() || '';
+        const manual = Number(manualRaw);
+        if (!manualRaw || !Number.isInteger(manual) || manual < 0 || manual > Number(order.total)) { toast(`Enter a valid per-request amount for ${target.provider.name}.`); return; }
+        payout = Math.round(manual);
+      }
+      if (payout > base) { toast(`The payout for ${target.provider.name} cannot exceed its eligible base.`); return; }
+      lines.push({ target, rule, base: Math.round(base), payout });
+    }
+    if (!lines.length) { toast('No eligible earning lines are ready to record.'); return; }
+    const createdAt = new Date().toISOString();
+    const entries = lines.map(({ target, rule, base, payout }) => ({
+      id: createLedgerEntryId(), orderId: order.id, providerId: target.provider.id, beneficiaryName: target.provider.name,
+      beneficiaryType: target.provider.type, role: target.role, ruleId: rule.id, ruleName: ruleTitle(rule), ruleScope: rule.scope || '',
+      model: rule.model, rate: rule.model === 'percentage' ? Number(rule.rate) : 0, fixedAmount: rule.model === 'fixed' ? Number(rule.amount) : 0,
+      basis: rule.basis, basisAmount: base, amount: payout, status: 'PENDING_SETTLEMENT', createdAt
+    }));
+    state.ledgerEntries = [...entries, ...state.ledgerEntries];
+    const total = entries.reduce((sum, entry) => sum + entry.amount, 0);
+    addActivity('Order-linked demo earnings calculated', `${order.id} · ${entries.length} provider line${entries.length === 1 ? '' : 's'}`, formatNaira(total));
+    saveState();
+    closeModal();
+    render();
+    renderOrderModal(order.id);
+    toast(`${entries.length} mock earning line${entries.length === 1 ? '' : 's'} recorded as pending settlement.`);
+  }
+
+  function renderLedgerEntryModal(entryId) {
+    const entry = state.ledgerEntries.find((item) => item.id === entryId);
+    if (!entry) return;
+    const order = state.orders.find((item) => item.id === entry.orderId);
+    const method = entry.model === 'percentage' ? `${entry.rate}% of eligible base` : entry.model === 'fixed' ? `${formatNaira(entry.fixedAmount)} per completed order` : 'Amount set for this request';
+    const recordedAt = entry.createdAt ? new Date(entry.createdAt) : null;
+    const time = recordedAt && !Number.isNaN(recordedAt.getTime()) ? new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeStyle: 'short' }).format(recordedAt) : 'Recorded locally';
+    document.getElementById('modalRoot').innerHTML = `<div class="modal-backdrop" data-action="modal-backdrop-close"><section class="modal ledger-entry-modal" role="dialog" aria-modal="true" aria-labelledby="ledgerEntryTitle"><header class="modal-header"><div><div class="eyebrow">${escapeHTML(entry.id)} <span class="eyebrow-separator">/</span> ${escapeHTML(entry.orderId)}</div><h2 id="ledgerEntryTitle">Order-linked earning</h2><p>${escapeHTML(entry.beneficiaryName)} · ${escapeHTML(BENEFICIARIES.find((item) => item.type === (entry.beneficiaryType === 'individual_rider' ? 'individual' : entry.beneficiaryType))?.label || entry.beneficiaryType)}</p></div><button class="modal-close" type="button" data-action="close-modal" aria-label="Close dialog">${icon('close')}</button></header><div class="modal-body"><div class="settlement-disclaimer">${icon('info')}<span>Browser-only ledger snapshot. This line is pending settlement; no transfer or withdrawal occurred.</span></div><dl class="ledger-entry-details"><div><dt>Selected rule</dt><dd>${escapeHTML(entry.ruleName)}${entry.ruleScope ? ` · ${escapeHTML(entry.ruleScope)}` : ''}</dd></div><div><dt>Method</dt><dd>${escapeHTML(method)}</dd></div><div><dt>Calculation base</dt><dd>${escapeHTML(BASIS_LABELS[entry.basis] || entry.basis)} · ${formatNaira(entry.basisAmount)}</dd></div><div><dt>Calculated earning</dt><dd>${formatNaira(entry.amount)}</dd></div><div><dt>Order total</dt><dd>${formatNaira(order?.total || 0)}</dd></div><div><dt>Status / recorded</dt><dd>Pending settlement · ${escapeHTML(time)}</dd></div></dl></div><footer class="modal-footer"><span class="modal-footer-note">${icon('lock')}No money moved</span><div class="modal-footer-actions"><button class="button button-secondary" type="button" data-action="close-modal">Close</button>${order ? `<button class="button button-primary" type="button" data-action="open-order" data-id="${escapeAttr(order.id)}">View order</button>` : ''}</div></footer></section></div>`;
+  }
+
   function renderOrderModal(orderId) {
     const order = state.orders.find((item) => item.id === orderId);
     if (!order) return;
@@ -1436,9 +1694,14 @@
     const nextButton = nextState
       ? `<button class="button button-primary" type="button" data-action="transition-order" data-id="${escapeAttr(order.id)}" data-next="${escapeAttr(nextState)}">${icon('arrow-right')}<span>${escapeHTML(ORDER_NEXT_ACTIONS[nextState] || ORDER_STATE_LABELS[nextState])}</span></button>`
       : `<span class="badge badge-green">${icon('check')}Workflow complete</span>`;
+    const recordedEarnings = orderLedgerEntries(order.id);
+    const missingEarningTargets = order.state === 'COMPLETED' ? missingOrderEarningTargets(order) : [];
     const settlementCopy = order.state === 'COMPLETED'
-      ? 'A production ledger settlement would be created only after verified completion. No money moved in this demo.'
+      ? recordedEarnings.length ? `${recordedEarnings.length} browser-only earning line${recordedEarnings.length === 1 ? '' : 's'} recorded; all remain pending settlement. No money moved.` : orderEarningTargets(order).length ? 'Order completed. Calculate mock earnings from the active rules; new ledger lines remain pending settlement.' : 'No linked sample provider profile was found for this order, so no earning line can be calculated.'
       : 'Partner earnings remain unavailable until completion and payment reconciliation.';
+    const earningsAction = order.state !== 'COMPLETED' ? '' : missingEarningTargets.length
+      ? `<button class="button button-primary" type="button" data-action="calculate-order-earnings" data-id="${escapeAttr(order.id)}">${icon('chart')}<span>${recordedEarnings.length ? 'Add missing earning lines' : 'Calculate demo earnings'}</span></button>`
+      : recordedEarnings.length ? `<button class="button button-secondary" type="button" data-page="ledger">${icon('receipt')}<span>View ledger</span></button>` : '';
     document.getElementById('modalRoot').innerHTML = `<div class="modal-backdrop" data-action="modal-backdrop-close"><section class="modal order-modal" role="dialog" aria-modal="true" aria-labelledby="orderModalTitle">
       <header class="modal-header"><div><div class="eyebrow">${escapeHTML(order.id)} <span class="eyebrow-separator">/</span> ${escapeHTML(order.service)}</div><h2 id="orderModalTitle">Order workflow</h2><p>${escapeHTML(order.customer)} · ${escapeHTML(order.area)} · ${formatNaira(order.total)}</p></div><button class="modal-close" type="button" data-action="close-modal" aria-label="Close dialog">${icon('close')}</button></header>
       <div class="modal-body">
@@ -1447,7 +1710,7 @@
         <div class="order-settlement-note">${icon('wallet')}<span><strong>Settlement guard</strong>${escapeHTML(settlementCopy)}</span></div>
         ${latest ? `<p class="order-last-event">Last event: ${escapeHTML(ORDER_STATE_LABELS[latest.state] || latest.state)} · ${escapeHTML(latest.actor || 'Recorded')} · ${escapeHTML(latest.at || '')}</p>` : ''}
       </div>
-      <footer class="modal-footer"><span class="modal-footer-note">${icon('info')}Local simulation · No credentials or payments are verified</span><div class="modal-footer-actions"><button class="button button-secondary" type="button" data-action="close-modal">Close</button>${nextButton}</div></footer>
+      <footer class="modal-footer"><span class="modal-footer-note">${icon('info')}Local simulation · No credentials or payments are verified</span><div class="modal-footer-actions"><button class="button button-secondary" type="button" data-action="close-modal">Close</button>${nextButton}${earningsAction}</div></footer>
     </section></div>`;
   }
 
@@ -2020,6 +2283,36 @@
     </div>`;
   }
 
+  function renderLedgerPage() {
+    const meta = PAGE_META.ledger;
+    const entries = state.ledgerEntries.slice();
+    const earned = entries.reduce((sum, entry) => sum + entry.amount, 0);
+    const entryStats = entries.length ? [
+      ['Order-linked earnings', formatNaira(earned), `${entries.length} calculated demo line${entries.length === 1 ? '' : 's'}`, 'banknote', 'orange'],
+      ['Pending settlement', formatNaira(entries.filter((entry) => entry.status === 'PENDING_SETTLEMENT').reduce((sum, entry) => sum + entry.amount, 0)), 'No money has moved', 'clock', 'amber'],
+      ['Calculated entries', String(entries.length), 'Rule snapshots preserved', 'receipt', 'blue'],
+      ['Completed orders', String(new Set(entries.map((entry) => entry.orderId)).size), 'With order-linked demo earnings', 'check', 'green']
+    ] : meta.stats;
+    const calculatedRows = entries.map((entry) => {
+      const roleLabel = entry.role === 'vendor' ? 'Vendor earning' : 'Rider earning';
+      const method = entry.model === 'percentage' ? `${entry.rate}%` : entry.model === 'fixed' ? formatNaira(entry.fixedAmount) : 'Set per request';
+      return `<tr><td><div class="table-person"><span class="table-avatar">${escapeHTML(initials(entry.beneficiaryName))}</span><span><strong>${escapeHTML(entry.id)}</strong><small>${escapeHTML(roleLabel)} · ${escapeHTML(entry.orderId)} · ${escapeHTML(entry.ruleName)}</small></span></div></td><td><span class="basis-label">${escapeHTML(entry.beneficiaryName)}</span><small class="ledger-basis-detail">${escapeHTML(BASIS_LABELS[entry.basis] || entry.basis)} · ${formatNaira(entry.basisAmount)} base · ${escapeHTML(method)}</small></td><td><span class="rate-primary">+${formatNaira(entry.amount)}</span><small class="ledger-basis-detail">Pending · no transfer</small></td><td><span class="badge badge-amber">Pending settlement</span></td><td><button class="icon-action" type="button" aria-label="View ${escapeAttr(entry.id)} details" data-action="open-ledger-entry" data-id="${escapeAttr(entry.id)}">${icon('arrow-right')}</button></td></tr>`;
+    }).join('');
+    const sampleRows = meta.rows.map((row) => `<tr><td><div class="table-person"><span class="table-avatar">${escapeHTML(row.initials || initials(row.name))}</span><span><strong>${escapeHTML(row.name)}</strong><small>${escapeHTML(row.detail)}</small></span></div></td><td><span class="basis-label">${escapeHTML(row.area)}</span></td><td><span class="rate-primary">${escapeHTML(row.amount)}</span></td><td><span class="badge badge-${escapeAttr(row.badge || 'gray')}">${escapeHTML(row.status)}</span></td><td><button class="icon-action" type="button" aria-label="Open ${escapeAttr(row.name)} details" data-action="record-info" data-name="${escapeAttr(row.name)}">${icon('arrow-right')}</button></td></tr>`).join('');
+    const allRows = calculatedRows + sampleRows;
+    const sectionCopy = entries.length ? 'New order-linked demo earnings appear first. They remain pending and do not change a wallet or initiate a payment.' : meta.sectionCopy;
+    const buttons = `<button class="button button-secondary" type="button" data-action="module-help">${icon('info')}<span>Ledger guidance</span></button><button class="button button-primary" type="button" data-page="live-orders">${icon('activity')}<span>View completed orders</span></button>`;
+    return `<div class="page module-page ledger-page">
+      ${renderPageHeading(meta.title, meta.eyebrow, meta.description, buttons)}
+      ${renderStatCards(entryStats)}
+      <div class="module-hero"><div class="module-hero-copy"><h2>${escapeHTML(meta.heroTitle)}</h2><p>${escapeHTML(meta.heroCopy)}${entries.length ? ' New browser-only earnings are calculated from saved rule snapshots and remain pending settlement.' : ''}</p></div><span class="module-hero-badge">${icon('wallet')}DEMO LEDGER · No transfers</span></div>
+      <div class="module-content-grid"><section class="card"><div class="card-header"><div><h2 class="card-title">${escapeHTML(meta.sectionTitle)}</h2><p class="card-subtitle">${escapeHTML(sectionCopy)}</p></div><span class="badge badge-blue">${entries.length} order-linked demo line${entries.length === 1 ? '' : 's'}</span></div>
+        <div class="table-scroll"><table class="module-table ledger-table"><thead><tr><th>Ledger entry</th><th>Beneficiary / base</th><th>Earning</th><th>Status</th><th><span class="sr-only">Open</span></th></tr></thead><tbody>${allRows}</tbody></table></div>
+        <div class="table-foot"><span>Showing <strong>${entries.length + meta.rows.length}</strong> illustrative and order-linked records</span><span>Local snapshots · No bank movement</span></div>
+      </section><aside class="card module-info-card"><h3>${escapeHTML(meta.sideTitle)}</h3><p>${escapeHTML(meta.sideCopy)}</p><div class="info-list">${meta.infoItems.map((item) => `<div class="info-list-item">${icon('check')}<span>${escapeHTML(item)}</span></div>`).join('')}</div><div class="rule-note ledger-safety-note">${icon('shield')}<span>New demo entries are pending settlement only. They are not withdrawable, posted to a wallet or evidence of a transfer.</span></div></aside></div>
+    </div>`;
+  }
+
   function moduleActionLabel(pageKey) {
     const labels = {
       'live-orders': 'Create test order', 'assignment-queue': 'Refresh queue', errands: 'Add category', vendors: 'Add partner', customers: 'Invite customer',
@@ -2378,7 +2671,7 @@
         <div class="form-field form-span-2"><span class="field-label">Earning method</span><div class="mode-options" role="radiogroup" aria-label="Earning method">
           <label class="mode-option ${selectedModel === 'percentage' ? 'selected' : ''}"><input type="radio" name="model" value="percentage" ${selectedModel === 'percentage' ? 'checked' : ''}><span class="mode-radio"></span><strong>Percentage</strong><small>Share a percentage of the eligible base.</small></label>
           <label class="mode-option ${selectedModel === 'fixed' ? 'selected' : ''}"><input type="radio" name="model" value="fixed" ${selectedModel === 'fixed' ? 'checked' : ''}><span class="mode-radio"></span><strong>Custom amount</strong><small>Set a fixed amount per completed order.</small></label>
-          <label class="mode-option ${selectedModel === 'per_request' ? 'selected' : ''}"><input type="radio" name="model" value="per_request" ${selectedModel === 'per_request' ? 'checked' : ''}><span class="mode-radio"></span><strong>Set per request</strong><small>An authorized operator enters the payout at assignment.</small></label>
+          <label class="mode-option ${selectedModel === 'per_request' ? 'selected' : ''}"><input type="radio" name="model" value="per_request" ${selectedModel === 'per_request' ? 'checked' : ''}><span class="mode-radio"></span><strong>Set per request</strong><small>An authorized operator enters a naira amount for each order.</small></label>
         </div></div>
         <div class="form-field form-span-2" id="ruleModeDetail">${renderModeDetail(selectedModel, rule)}</div>
         <div class="form-field form-span-2"><span class="field-label">Eligible services</span><div class="checkbox-group">${SERVICE_OPTIONS.map((service) => `<label class="checkbox-chip"><input type="checkbox" name="service" value="${escapeAttr(service)}" ${defaultServices.includes(service) ? 'checked' : ''}>${escapeHTML(service)}</label>`).join('')}</div><div class="form-error" id="serviceError">Select at least one service.</div></div>
@@ -2417,7 +2710,7 @@
   function renderModeDetail(model, rule = null) {
     if (model === 'percentage') return `<div class="mode-detail"><label class="field-label" for="ruleRate">Payout percentage <small>0–100% of the eligible base</small></label><div class="input-with-prefix"><span>%</span><input class="input-control" id="ruleRate" name="rate" type="number" min="0" max="100" step="0.01" value="${escapeAttr(rule ? (Number(rule.rate) || 0) : '78')}" required inputmode="decimal"></div><div class="form-error">Enter a percentage from 0 to 100.</div></div>`;
     if (model === 'fixed') return `<div class="mode-detail"><label class="field-label" for="ruleAmount">Custom amount per completed order</label><div class="input-with-prefix"><span>₦</span><input class="input-control" id="ruleAmount" name="amount" type="number" min="0" step="50" value="${escapeAttr(rule ? (Number(rule.amount) || 0) : '1500')}" required inputmode="decimal"></div><div class="field-help">The settlement service should reject an amount above the available eligible base unless an authorized subsidy is recorded.</div><div class="form-error">Enter a valid non-negative naira amount.</div></div>`;
-    return `<div class="mode-detail"><strong style="display:block;color:#55655a;font-size:9px">Amount set individually for each request</strong><p style="margin-top:5px;color:#8e9991;font-size:8px;line-height:1.5">No default payout is stored. At assignment, an authorized operator enters the amount for that order. Production must validate the order, operator permission, available balance and any approval threshold.</p><input type="hidden" name="amount" value="0"><input type="hidden" name="rate" value="0"></div>`;
+    return `<div class="mode-detail"><strong style="display:block;color:#55655a;font-size:9px">Amount set individually for each request</strong><p style="margin-top:5px;color:#8e9991;font-size:8px;line-height:1.5">No default payout is stored. An authorized operator enters the amount for the specific order. Production must validate the order, operator permission, available balance and any approval threshold.</p><input type="hidden" name="amount" value="0"><input type="hidden" name="rate" value="0"></div>`;
   }
 
   function syncModalMode() {
@@ -2618,7 +2911,7 @@
 
   function infoMessage(action, button = null) {
     if (action === 'rule-help') {
-      toast('Percentage = share of eligible base · Custom amount = fixed payout per completed order · Per request = operator enters a payout before assignment.');
+      toast('Percentage = share of eligible base · Custom amount = fixed payout per completed order · Per request = operator enters an amount for that specific order.');
     } else if (action === 'audit-info') {
       toast('A production audit trail should record actor, permission, resource, before/after values and timestamp.');
     } else if (action === 'role-help') {
@@ -2647,6 +2940,7 @@
 
   function setPage(page, shouldPush = true) {
     if (!validPage(page)) page = 'earnings';
+    closeModal();
     activePage = page;
     if (shouldPush && location.hash.slice(1) !== page) history.pushState({ page }, '', `#${page}`);
     closeMobileNav();
@@ -2728,6 +3022,9 @@
       if (action === 'open-order') { renderOrderModal(actionButton.dataset.id); return; }
       if (action === 'add-test-order') { addTestOrder(); return; }
       if (action === 'transition-order') { transitionOrder(actionButton.dataset.id, actionButton.dataset.next); return; }
+      if (action === 'calculate-order-earnings') { renderOrderEarningsModal(actionButton.dataset.id); return; }
+      if (action === 'save-order-earnings') { saveOrderEarnings(); return; }
+      if (action === 'open-ledger-entry') { renderLedgerEntryModal(actionButton.dataset.id); return; }
       if (action === 'new-form') { renderNewFormModal(); return; }
       if (action === 'save-new-form') { saveNewForm(); return; }
       if (action === 'edit-form') { editingFormId = actionButton.dataset.id; closeModal(); render(); return; }

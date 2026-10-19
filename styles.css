@@ -356,6 +356,40 @@ tr:last-child td { border-bottom: 0; }
 .order-settlement-note { display: flex; align-items: flex-start; gap: 8px; margin-top: 10px; padding: 10px; border: 1px solid #e5ede6; border-radius: 8px; color: #77847b; background: #f8fbf8; font-size: 8px; line-height: 1.5; }
 .order-settlement-note .icon { width: 14px; height: 14px; flex: 0 0 auto; color: #568266; }
 .order-settlement-note strong { display: block; margin-bottom: 2px; color: #506357; font-size: 8.5px; }
+.order-earnings-modal { width: min(790px, 100%); }
+.ledger-entry-modal { width: min(640px, 100%); }
+.settlement-disclaimer { display: flex; align-items: flex-start; gap: 8px; padding: 10px 11px; border: 1px solid #dfe9e1; border-radius: 8px; color: #708076; background: #f7faf7; font-size: 8px; line-height: 1.55; }
+.settlement-disclaimer > .icon { width: 14px; height: 14px; flex: 0 0 auto; color: #5c8967; }
+.settlement-existing, .settlement-target-list { display: grid; gap: 9px; margin-top: 13px; }
+.settlement-existing { padding: 12px; border: 1px solid #e8ede8; border-radius: 9px; }
+.settlement-existing-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; padding: 8px 0; border-top: 1px solid #edf0ed; color: #536257; font-size: 8px; }
+.settlement-existing-row strong { color: #34734c; font-size: 9px; }
+.settlement-existing-row small { grid-column: 1 / -1; color: #929e95; font-size: 7.5px; }
+.settlement-target-card { padding: 13px; border: 1px solid #e4ebe5; border-radius: 9px; background: #fff; }
+.settlement-target-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+.settlement-target-heading .field-label { display: block; margin-bottom: 4px; color: #89978d; font-size: 7px; letter-spacing: .7px; }
+.settlement-target-heading h3 { color: #35473b; font: 800 10px Manrope, 'DM Sans', sans-serif; }
+.settlement-target-heading small { display: block; margin-top: 4px; color: #929d95; font-size: 7.5px; }
+.settlement-fields-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.settlement-fields-grid .form-field { min-width: 0; margin: 0; }
+.settlement-fields-grid .field-help { line-height: 1.45; }
+.settlement-basis-label { display: block; margin: -3px 0 5px; color: #88958b; font-size: 7.5px; }
+.settlement-manual-field[hidden] { display: none; }
+.settlement-preview { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 3px 9px; margin-top: 10px; padding: 9px 10px; border: 1px solid #dfebe1; border-radius: 7px; color: #607266; background: #f5faf6; font-size: 7.8px; }
+.settlement-preview strong { color: #34734c; font-size: 9px; }
+.settlement-preview small { grid-column: 1 / -1; color: #8d9a90; font-size: 7px; }
+.settlement-preview-error { border-color: #efd9d6; color: #9c5a52; background: #fff8f7; }
+.settlement-preview-error strong, .settlement-preview-error small { color: #9c5a52; }
+.settlement-target-unavailable { border-color: #f0e5d1; background: #fffcf6; }
+.settlement-target-unavailable > p { margin: 0 0 9px; color: #8a795b; font-size: 8px; line-height: 1.5; }
+.settlement-empty { margin-top: 13px; padding: 15px; border: 1px dashed #dfe7e0; border-radius: 8px; color: #839087; font-size: 8.5px; line-height: 1.5; }
+.ledger-entry-details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin-top: 13px; }
+.ledger-entry-details > div { padding: 10px; border: 1px solid #e9eeea; border-radius: 8px; background: #fbfcfb; }
+.ledger-entry-details dt { color: #939f96; font-size: 7px; text-transform: uppercase; letter-spacing: .5px; }
+.ledger-entry-details dd { margin-top: 5px; color: #44574a; font-size: 8px; line-height: 1.5; }
+.ledger-basis-detail { display: block; margin-top: 4px; color: #8f9a92; font-size: 7px; line-height: 1.4; }
+.ledger-safety-note { margin: 12px 15px 15px; }
+.ledger-table { min-width: 800px; }
 .order-last-event { margin-top: 9px; color: #98a29b; font-size: 7.5px; }
 
 /* Location-aware provider assignment */
@@ -731,4 +765,6 @@ tr:last-child td { border-bottom: 0; }
   .provider-capacity-field { grid-column: auto; }
   .provider-coverage-add { grid-template-columns: 1fr 1fr; }
   .provider-coverage-add .button { grid-column: span 2; }
+  .settlement-fields-grid, .ledger-entry-details { grid-template-columns: 1fr; }
+  .order-earnings-modal .modal-footer-actions { flex-wrap: wrap; }
 }
