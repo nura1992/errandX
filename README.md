@@ -31,7 +31,7 @@ The seeded rates and activity in this prototype are illustrative only. They are 
 
 ## Prototype coverage
 
-The sidebar includes mock screens for operations, the marketplace, rider and vendor onboarding, finance, locations, order forms, website content, roles and feature controls. The roles, feature flags, location selector, sample service-area addition and earning-rule tools are interactive. Pages intentionally disclose when they use demo records.
+The admin sidebar includes screens for operations, the marketplace, rider and vendor onboarding, finance, locations, order forms, website content, roles and feature controls. The public marketing preview is available at `/site.html` and is also linked from Website Builder. The Live orders view has a controlled, sequential errand/vendor workflow with a local event timeline, test-order creation and completion/settlement guardrails. The form builder supports field creation/editing, required validation, conditional questions, accessible reordering, draft/publish, preview and version-history snapshots. Roles, feature flags, location selector, sample service-area addition and earning-rule tools are interactive. Pages disclose demo data; no order, sign-in, partner application or form action is sent to a server.
 
 ## Not production-ready
 
