@@ -84,12 +84,14 @@
     { id: 'EX-20481', workflow: 'vendor', state: 'ON_TRANSIT', service: 'Restaurant order', customer: 'Aisha Bello', provider: 'Arewa Kitchen', rider: 'Sadiq Umar', area: 'Nassarawa, Kano', total: 8450, created: '10:14 AM', history: [
       { state: 'REQUESTED', actor: 'Customer', at: '10:14 AM' }, { state: 'VENDOR_ACCEPTED', actor: 'Arewa Kitchen', at: '10:16 AM' }, { state: 'PAYMENT_VERIFIED', actor: 'Payment service (demo)', at: '10:18 AM' }, { state: 'PREPARING', actor: 'Arewa Kitchen', at: '10:20 AM' }, { state: 'READY_FOR_PICKUP', actor: 'Arewa Kitchen', at: '10:38 AM' }, { state: 'PICKUP_VERIFIED', actor: 'Rider (demo)', at: '10:43 AM' }, { state: 'ON_TRANSIT', actor: 'Rider (demo)', at: '10:44 AM' }
     ] },
-    { id: 'EX-20479', workflow: 'errand', state: 'REQUESTED', service: 'Document errand', customer: 'Musa Sani', provider: 'Awaiting eligible rider', rider: 'Unassigned', area: 'Kano Municipal', total: 3200, created: '10:52 AM', history: [{ state: 'REQUESTED', actor: 'Customer', at: '10:52 AM' }] },
+    { id: 'EX-20479', workflow: 'errand', state: 'REQUESTED', service: 'Document errand', customer: 'Musa Sani', provider: 'Awaiting eligible rider', rider: 'Unassigned', area: 'Fagge, Kano', total: 3200, created: '10:52 AM', history: [{ state: 'REQUESTED', actor: 'Customer', at: '10:52 AM' }] },
+    { id: 'EX-20468', workflow: 'vendor', state: 'REQUESTED', service: 'Restaurant order', customer: 'Maryam Ibrahim', provider: 'Awaiting eligible vendor', rider: 'Pending vendor acceptance', area: 'Nassarawa, Kano', total: 4600, created: '11:02 AM', history: [{ state: 'REQUESTED', actor: 'Customer (sample)', at: '11:02 AM' }] },
+    { id: 'EX-20465', workflow: 'vendor', state: 'REQUESTED', service: 'Small-chops order', customer: 'Rukayya Sani', provider: 'Awaiting eligible vendor', rider: 'Pending vendor acceptance', area: 'Gwale, Kano', total: 5200, created: '11:05 AM', history: [{ state: 'REQUESTED', actor: 'Customer (sample)', at: '11:05 AM' }] },
     { id: 'EX-20475', workflow: 'vendor', state: 'PREPARING', service: 'Small-chops order', customer: 'Zainab Yusuf', provider: 'Zee Small Chops', rider: 'Pending fleet assignment', area: 'Tarauni, Kano', total: 12800, created: '10:32 AM', history: [
       { state: 'REQUESTED', actor: 'Customer', at: '10:32 AM' }, { state: 'VENDOR_ACCEPTED', actor: 'Zee Small Chops', at: '10:35 AM' }, { state: 'PAYMENT_VERIFIED', actor: 'Payment service (demo)', at: '10:37 AM' }, { state: 'PREPARING', actor: 'Zee Small Chops', at: '10:39 AM' }
     ] },
-    { id: 'EX-20472', workflow: 'errand', state: 'PICKUP_VERIFIED', service: 'Market pickup', customer: 'Ibrahim Ali', provider: 'Individual rider', rider: 'Halima Ibrahim', area: 'Fagge, Kano', total: 5600, created: '10:01 AM', history: [
-      { state: 'REQUESTED', actor: 'Customer', at: '10:01 AM' }, { state: 'PROVIDER_ACCEPTED', actor: 'Halima Ibrahim', at: '10:04 AM' }, { state: 'PAYMENT_VERIFIED', actor: 'Payment service (demo)', at: '10:07 AM' }, { state: 'PICKUP_VERIFIED', actor: 'Rider (demo)', at: '10:12 AM' }
+    { id: 'EX-20472', workflow: 'errand', state: 'PICKUP_VERIFIED', service: 'Market pickup', customer: 'Ibrahim Ali', provider: 'Individual rider', rider: 'Amina Garba', area: 'Fagge, Kano', total: 5600, created: '10:01 AM', history: [
+      { state: 'REQUESTED', actor: 'Customer', at: '10:01 AM' }, { state: 'PROVIDER_ACCEPTED', actor: 'Amina Garba', at: '10:04 AM' }, { state: 'PAYMENT_VERIFIED', actor: 'Payment service (demo)', at: '10:07 AM' }, { state: 'PICKUP_VERIFIED', actor: 'Rider (demo)', at: '10:12 AM' }
     ] }
   ];
   const FORM_FIELD_TYPES = {
@@ -180,6 +182,128 @@
     'withdrawals.approve': [false, false, true, false],
     'roles.manage': [false, false, false, false]
   };
+
+  const APPLICATION_STATUS_LABELS = {
+    SUBMITTED: 'Submitted',
+    IN_REVIEW: 'In review',
+    INFO_REQUESTED: 'More info requested',
+    APPROVED: 'Approved',
+    REJECTED: 'Rejected'
+  };
+  const APPLICATION_CHECKLISTS = {
+    rider: [
+      'Profile details complete',
+      'Identity provider result reviewed',
+      'Address evidence meets configured policy',
+      'Guarantor consent recorded',
+      'Liveness provider session reviewed'
+    ],
+    company: [
+      'Company registration check complete',
+      'Business address evidence reviewed',
+      'Principal officer verification complete',
+      'Service areas and fleet details reviewed'
+    ],
+    vendor: [
+      'Business contact details reviewed',
+      'Service area and opening hours checked',
+      'Menu or product catalogue reviewed',
+      'Partner terms accepted'
+    ]
+  };
+  const DEFAULT_APPLICATIONS = [
+    {
+      id: 'APP-RD-0149', kind: 'rider', category: 'Individual rider', name: 'Halima Ibrahim', location: 'Kano Municipal', submitted: 'Today, 09:42', status: 'SUBMITTED', reviewer: '',
+      evidence: [{ label: 'Identity provider result', status: 'Received' }, { label: 'Address evidence', status: 'Received' }, { label: 'Guarantor consent record', status: 'Received' }, { label: 'Liveness session result', status: 'Received' }],
+      checks: [false, false, false, false, false], lastNote: '', history: [{ title: 'Application submitted', actor: 'Applicant', at: '09:42 AM', note: '' }]
+    },
+    {
+      id: 'APP-CO-0038', kind: 'company', category: 'Company fleet', name: 'Kano Rapid', location: 'Kano Municipal', submitted: 'Today, 08:15', status: 'IN_REVIEW', reviewer: 'KYC Reviewer',
+      evidence: [{ label: 'Company registration check', status: 'Received' }, { label: 'Business address evidence', status: 'Received' }, { label: 'Principal officer session result', status: 'Received' }, { label: 'Fleet and service area details', status: 'Received' }],
+      checks: [true, true, false, false], lastNote: '', history: [{ title: 'Application submitted', actor: 'Applicant', at: '08:15 AM', note: '' }, { title: 'Assigned for review', actor: 'Operations Manager', at: '08:32 AM', note: 'Assigned to KYC Reviewer' }]
+    },
+    {
+      id: 'APP-VN-0084', kind: 'vendor', category: 'Restaurant', name: 'Savour House', location: 'Tarauni, Kano', submitted: 'Yesterday, 16:20', status: 'INFO_REQUESTED', reviewer: 'Operations Manager',
+      evidence: [{ label: 'Business contact review', status: 'Received' }, { label: 'Service area details', status: 'Received' }, { label: 'Menu and opening hours', status: 'Needs update' }, { label: 'Partner terms', status: 'Received' }],
+      checks: [true, true, false, false], lastNote: 'Please add current menu prices and opening hours.', history: [{ title: 'Application submitted', actor: 'Applicant', at: 'Yesterday, 04:20 PM', note: '' }, { title: 'More information requested', actor: 'Operations Manager', at: 'Yesterday, 05:03 PM', note: 'Please add current menu prices and opening hours.' }]
+    },
+    {
+      id: 'APP-SC-0031', kind: 'vendor', category: 'Small-chops vendor', name: 'Binta Bites', location: 'Gwale, Kano', submitted: 'Oct 17, 2026', status: 'APPROVED', reviewer: 'KYC Reviewer',
+      evidence: [{ label: 'Business contact review', status: 'Received' }, { label: 'Service area details', status: 'Received' }, { label: 'Menu and opening hours', status: 'Received' }, { label: 'Partner terms', status: 'Received' }],
+      checks: [true, true, true, true], lastNote: 'Approved for the current service area.', history: [{ title: 'Application submitted', actor: 'Applicant', at: 'Oct 17, 2026', note: '' }, { title: 'Application approved', actor: 'KYC Reviewer', at: 'Oct 18, 2026', note: 'Approved for the current service area.' }]
+    },
+    {
+      id: 'APP-RD-0182', kind: 'rider', category: 'Individual rider', name: 'Sani Umar', location: 'Fagge, Kano', submitted: 'Oct 16, 2026', status: 'REJECTED', reviewer: 'KYC Reviewer',
+      evidence: [{ label: 'Identity provider result', status: 'Received' }, { label: 'Address evidence', status: 'Needs update' }, { label: 'Guarantor consent record', status: 'Received' }, { label: 'Liveness session result', status: 'Received' }],
+      checks: [true, true, false, true, true], lastNote: 'Address evidence could not be verified. The applicant may reapply with updated documentation.', history: [{ title: 'Application submitted', actor: 'Applicant', at: 'Oct 16, 2026', note: '' }, { title: 'Application rejected', actor: 'KYC Reviewer', at: 'Oct 17, 2026', note: 'Address evidence could not be verified. The applicant may reapply with updated documentation.' }]
+    },
+    {
+      id: 'APP-RD-0092', kind: 'rider', category: 'Company fleet rider', name: 'Sadiq Umar', location: 'Kano Municipal', submitted: 'Oct 14, 2026', status: 'APPROVED', reviewer: 'KYC Reviewer',
+      evidence: [{ label: 'Identity provider result', status: 'Received' }, { label: 'Address evidence', status: 'Received' }, { label: 'Guarantor consent record', status: 'Received' }, { label: 'Liveness session result', status: 'Received' }],
+      checks: [true, true, true, true, true], lastNote: 'Individual rider review complete.', history: [{ title: 'Application submitted', actor: 'Applicant', at: 'Oct 14, 2026', note: '' }, { title: 'Application approved', actor: 'KYC Reviewer', at: 'Oct 15, 2026', note: 'Individual rider review complete.' }]
+    },
+    {
+      id: 'APP-CO-0042', kind: 'company', category: 'Company fleet', name: 'Kano Express', location: 'Kano Municipal', submitted: 'Oct 13, 2026', status: 'APPROVED', reviewer: 'Operations Manager',
+      evidence: [{ label: 'Company registration check', status: 'Received' }, { label: 'Business address evidence', status: 'Received' }, { label: 'Principal officer session result', status: 'Received' }, { label: 'Fleet and service area details', status: 'Received' }],
+      checks: [true, true, true, true], lastNote: 'Company fleet review complete.', history: [{ title: 'Application submitted', actor: 'Applicant', at: 'Oct 13, 2026', note: '' }, { title: 'Application approved', actor: 'Operations Manager', at: 'Oct 14, 2026', note: 'Company fleet review complete.' }]
+    },
+    {
+      id: 'APP-RD-0227', kind: 'rider', category: 'Individual rider', name: 'Amina Garba', location: 'Fagge, Kano', submitted: 'Oct 12, 2026', status: 'APPROVED', reviewer: 'KYC Reviewer',
+      evidence: [{ label: 'Identity provider result', status: 'Received' }, { label: 'Address evidence', status: 'Received' }, { label: 'Guarantor consent record', status: 'Received' }, { label: 'Liveness session result', status: 'Received' }],
+      checks: [true, true, true, true, true], lastNote: 'Individual rider review complete.', history: [{ title: 'Application submitted', actor: 'Applicant', at: 'Oct 12, 2026', note: '' }, { title: 'Application approved', actor: 'KYC Reviewer', at: 'Oct 13, 2026', note: 'Individual rider review complete.' }]
+    },
+    {
+      id: 'APP-RD-0711', kind: 'rider', category: 'Company fleet rider', name: 'Bashir Lawal', location: 'Kano Municipal', submitted: 'Oct 12, 2026', status: 'APPROVED', reviewer: 'KYC Reviewer',
+      evidence: [{ label: 'Identity provider result', status: 'Received' }, { label: 'Address evidence', status: 'Received' }, { label: 'Guarantor consent record', status: 'Received' }, { label: 'Liveness session result', status: 'Received' }],
+      checks: [true, true, true, true, true], lastNote: 'Individual rider review complete. Company approval is separate.', history: [{ title: 'Application submitted', actor: 'Applicant', at: 'Oct 12, 2026', note: '' }, { title: 'Application approved', actor: 'KYC Reviewer', at: 'Oct 13, 2026', note: 'Individual rider review complete. Company approval is separate.' }]
+    },
+    {
+      id: 'APP-RD-0408', kind: 'rider', category: 'Individual rider', name: 'Fatima Bello', location: 'Kano Municipal', submitted: 'Oct 11, 2026', status: 'APPROVED', reviewer: 'KYC Reviewer',
+      evidence: [{ label: 'Identity provider result', status: 'Received' }, { label: 'Address evidence', status: 'Received' }, { label: 'Guarantor consent record', status: 'Received' }, { label: 'Liveness session result', status: 'Received' }],
+      checks: [true, true, true, true, true], lastNote: 'Individual rider review complete.', history: [{ title: 'Application submitted', actor: 'Applicant', at: 'Oct 11, 2026', note: '' }, { title: 'Application approved', actor: 'KYC Reviewer', at: 'Oct 12, 2026', note: 'Individual rider review complete.' }]
+    },
+    {
+      id: 'APP-VN-0042', kind: 'vendor', category: 'Restaurant', name: 'Arewa Kitchen', location: 'Nassarawa, Kano', submitted: 'Oct 10, 2026', status: 'APPROVED', reviewer: 'Operations Manager',
+      evidence: [{ label: 'Business contact review', status: 'Received' }, { label: 'Service area details', status: 'Received' }, { label: 'Menu and opening hours', status: 'Received' }, { label: 'Partner terms', status: 'Received' }],
+      checks: [true, true, true, true], lastNote: 'Restaurant partner review complete.', history: [{ title: 'Application submitted', actor: 'Applicant', at: 'Oct 10, 2026', note: '' }, { title: 'Application approved', actor: 'Operations Manager', at: 'Oct 11, 2026', note: 'Restaurant partner review complete.' }]
+    },
+    {
+      id: 'APP-VN-0102', kind: 'vendor', category: 'Restaurant', name: 'Kano Dine-In', location: 'Kano Municipal', submitted: 'Oct 09, 2026', status: 'APPROVED', reviewer: 'Operations Manager',
+      evidence: [{ label: 'Business contact review', status: 'Received' }, { label: 'Service area details', status: 'Received' }, { label: 'Menu and opening hours', status: 'Received' }, { label: 'Partner terms', status: 'Received' }],
+      checks: [true, true, true, true], lastNote: 'Restaurant partner review complete.', history: [{ title: 'Application submitted', actor: 'Applicant', at: 'Oct 09, 2026', note: '' }, { title: 'Application approved', actor: 'Operations Manager', at: 'Oct 10, 2026', note: 'Restaurant partner review complete.' }]
+    },
+    {
+      id: 'APP-SC-0071', kind: 'vendor', category: 'Small-chops vendor', name: 'Zee Small Chops', location: 'Tarauni, Kano', submitted: 'Oct 08, 2026', status: 'APPROVED', reviewer: 'Operations Manager',
+      evidence: [{ label: 'Business contact review', status: 'Received' }, { label: 'Service area details', status: 'Received' }, { label: 'Menu and opening hours', status: 'Received' }, { label: 'Partner terms', status: 'Received' }],
+      checks: [true, true, true, true], lastNote: 'Small-chops partner review complete.', history: [{ title: 'Application submitted', actor: 'Applicant', at: 'Oct 08, 2026', note: '' }, { title: 'Application approved', actor: 'Operations Manager', at: 'Oct 09, 2026', note: 'Small-chops partner review complete.' }]
+    }
+  ];
+
+  const NIGERIAN_STATES = [
+    'Abia State', 'Adamawa State', 'Akwa Ibom State', 'Anambra State', 'Bauchi State', 'Bayelsa State', 'Benue State', 'Borno State', 'Cross River State', 'Delta State', 'Ebonyi State', 'Edo State', 'Ekiti State', 'Enugu State', 'Federal Capital Territory', 'Gombe State', 'Imo State', 'Jigawa State', 'Kaduna State', 'Kano State', 'Katsina State', 'Kebbi State', 'Kogi State', 'Kwara State', 'Lagos State', 'Nasarawa State', 'Niger State', 'Ogun State', 'Ondo State', 'Osun State', 'Oyo State', 'Plateau State', 'Rivers State', 'Sokoto State', 'Taraba State', 'Yobe State', 'Zamfara State'
+  ];
+  const DEFAULT_COVERAGE = [{
+    name: 'Kano State',
+    lgas: [
+      { name: 'Kano Municipal', areas: ['Central Market', 'Fagge', 'Kofar Mata', 'Sabon Gari'] },
+      { name: 'Nassarawa', areas: ['Bompai', 'Hotoro', 'Giginyu', 'Tudun Wada'] },
+      { name: 'Tarauni', areas: ['Gyadi-Gyadi', 'Unguwa Uku', 'Ja’en'] },
+      { name: 'Gwale', areas: ['Dorayi', 'Goron Dutse', 'Dandago'] }
+    ]
+  }];
+  const MATCHING_PROVIDERS = [
+    { id: 'RD-0149', applicationId: 'APP-RD-0149', name: 'Halima Ibrahim', type: 'individual_rider', label: 'Individual rider', company: '', approved: true, companyApproved: true, online: true, available: true, serviceGroups: ['errand', 'delivery'], coverage: [{ state: 'Kano State', lga: 'Kano Municipal', areas: ['Central Market', 'Fagge', 'Kofar Mata'] }, { state: 'Kano State', lga: 'Nassarawa', areas: [] }, { state: 'Kano State', lga: 'Tarauni', areas: [] }], rating: '4.9', capacity: 3, vehicle: 'Motorcycle' },
+    { id: 'RD-0092', applicationId: 'APP-RD-0092', companyApplicationId: 'APP-CO-0042', name: 'Sadiq Umar', type: 'company_rider', label: 'Company fleet rider', company: 'Kano Express', approved: true, companyApproved: true, online: true, available: true, serviceGroups: ['errand', 'delivery'], coverage: [{ state: 'Kano State', lga: 'Kano Municipal', areas: [] }, { state: 'Kano State', lga: 'Nassarawa', areas: [] }, { state: 'Kano State', lga: 'Tarauni', areas: [] }], rating: '4.8', capacity: 4, vehicle: 'Company motorcycle' },
+    { id: 'RD-0227', applicationId: 'APP-RD-0227', name: 'Amina Garba', type: 'individual_rider', label: 'Individual rider', company: '', approved: true, companyApproved: true, online: true, available: true, serviceGroups: ['errand', 'delivery'], coverage: [{ state: 'Kano State', lga: 'Kano Municipal', areas: ['Fagge', 'Sabon Gari'] }, { state: 'Kano State', lga: 'Gwale', areas: [] }], rating: '4.7', capacity: 3, vehicle: 'Motorcycle' },
+    { id: 'RD-0711', applicationId: 'APP-RD-0711', companyApplicationId: 'APP-CO-0038', name: 'Bashir Lawal', type: 'company_rider', label: 'Company fleet rider', company: 'Kano Rapid', approved: true, companyApproved: false, online: true, available: true, serviceGroups: ['errand', 'delivery'], coverage: [{ state: 'Kano State', lga: 'Kano Municipal', areas: [] }], rating: '4.6', capacity: 3, vehicle: 'Company motorcycle' },
+    { id: 'RD-0408', applicationId: 'APP-RD-0408', name: 'Fatima Bello', type: 'individual_rider', label: 'Individual rider', company: '', approved: true, companyApproved: true, online: false, available: true, serviceGroups: ['errand', 'delivery'], coverage: [{ state: 'Kano State', lga: 'Kano Municipal', areas: [] }], rating: '4.8', capacity: 3, vehicle: 'Motorcycle' },
+    { id: 'RD-0182', applicationId: 'APP-RD-0182', name: 'Sani Umar', type: 'individual_rider', label: 'Individual rider', company: '', approved: false, companyApproved: true, online: true, available: true, serviceGroups: ['errand', 'delivery'], coverage: [{ state: 'Kano State', lga: 'Kano Municipal', areas: [] }], rating: '—', capacity: 3, vehicle: 'Motorcycle' },
+    { id: 'VN-0042', applicationId: 'APP-VN-0042', name: 'Arewa Kitchen', type: 'restaurant', label: 'Restaurant', company: '', approved: true, companyApproved: true, online: true, available: true, serviceGroups: ['restaurant'], coverage: [{ state: 'Kano State', lga: 'Nassarawa', areas: [] }, { state: 'Kano State', lga: 'Kano Municipal', areas: ['Sabon Gari'] }], rating: '4.8', capacity: 8, vehicle: '' },
+    { id: 'VN-0102', applicationId: 'APP-VN-0102', name: 'Kano Dine-In', type: 'restaurant', label: 'Restaurant', company: '', approved: true, companyApproved: true, online: true, available: true, serviceGroups: ['restaurant'], coverage: [{ state: 'Kano State', lga: 'Kano Municipal', areas: [] }], rating: '4.6', capacity: 8, vehicle: '' },
+    { id: 'VN-0071', applicationId: 'APP-SC-0071', name: 'Zee Small Chops', type: 'small_chops', label: 'Small-chops vendor', company: '', approved: true, companyApproved: true, online: true, available: true, serviceGroups: ['small_chops'], coverage: [{ state: 'Kano State', lga: 'Tarauni', areas: [] }, { state: 'Kano State', lga: 'Kano Municipal', areas: ['Fagge'] }], rating: '4.9', capacity: 6, vehicle: '' },
+    { id: 'VN-0031', applicationId: 'APP-SC-0031', name: 'Binta Bites', type: 'small_chops', label: 'Small-chops vendor', company: '', approved: true, companyApproved: true, online: true, available: true, serviceGroups: ['small_chops'], coverage: [{ state: 'Kano State', lga: 'Gwale', areas: [] }], rating: '4.7', capacity: 6, vehicle: '' },
+    { id: 'VN-0084', applicationId: 'APP-VN-0084', name: 'Savour House', type: 'restaurant', label: 'Restaurant', company: '', approved: false, companyApproved: true, online: true, available: true, serviceGroups: ['restaurant'], coverage: [{ state: 'Kano State', lga: 'Tarauni', areas: [] }], rating: '—', capacity: 8, vehicle: '' }
+  ];
 
   const PAGE_META = {
     overview: {
@@ -292,11 +416,11 @@
       group: 'People & access', title: 'Applications & KYC', eyebrow: 'PEOPLE / VERIFICATION',
       description: 'Review rider, company and vendor applications with access controls for sensitive evidence.',
       stats: [['In review', '23', 'All application types', 'file', 'amber'], ['Rider applicants', '14', '8 ready for review', 'bike', 'blue'], ['Companies', '4', '2 need documents', 'building', 'orange'], ['Vendors', '5', 'Restaurant and small chops', 'store', 'green']],
-      sectionTitle: 'Review queue', sectionCopy: 'Only assigned reviewers can see protected KYC evidence.',
+      sectionTitle: 'Review queue', sectionCopy: 'Demo metadata only; production evidence access must be assignment- and permission-scoped.',
       heroTitle: 'Human review with clear accountability', heroCopy: 'Application decisions are separate from company and fleet setup. Every sensitive file preview, download and decision should produce an audit event.',
       rows: [
-        { name: 'Mariya Adamu', initials: 'MA', detail: 'Individual rider · Submitted 2h ago', area: 'Kano Municipal', amount: '4 documents', status: 'Ready to review', badge: 'amber' },
-        { name: 'Northline Logistics', initials: 'NL', detail: 'Company fleet · Submitted yesterday', area: 'Nassarawa, Kano', amount: '6 documents', status: 'More info needed', badge: 'orange' },
+        { name: 'Halima Ibrahim', initials: 'HI', detail: 'Individual rider · Submitted 2h ago', area: 'Kano Municipal', amount: '4 documents', status: 'Ready to review', badge: 'amber' },
+        { name: 'Kano Rapid', initials: 'KR', detail: 'Company fleet · In review', area: 'Kano Municipal', amount: '6 documents', status: 'More info needed', badge: 'orange' },
         { name: 'Savour House', initials: 'SH', detail: 'Restaurant · Submitted Oct 18', area: 'Tarauni, Kano', amount: '3 documents', status: 'Assigned', badge: 'blue' }
       ],
       sideTitle: 'KYC safety checklist', sideCopy: 'A demo screen is not an identity-verification provider.',
@@ -309,7 +433,7 @@
       sectionTitle: 'Recent ledger entries', sectionCopy: 'Every business event should create immutable, balanced ledger postings.',
       heroTitle: 'A ledger, not a mutable wallet number', heroCopy: 'Track collection, platform fees, rider earnings, vendor shares, refunds and withdrawals as linked transactions with references and reconciliation status.',
       rows: [
-        { name: 'LG-006824', initials: 'LG', detail: 'Rider earning · EX-20472', area: 'Halima Ibrahim', amount: '+₦3,900', status: 'Posted', badge: 'green' },
+        { name: 'LG-006824', initials: 'LG', detail: 'Rider earning · EX-20472', area: 'Amina Garba', amount: '+₦3,900', status: 'Posted', badge: 'green' },
         { name: 'LG-006823', initials: 'LG', detail: 'Platform fee · EX-20472', area: 'Marketplace ledger', amount: '+₦1,100', status: 'Posted', badge: 'green' },
         { name: 'LG-006821', initials: 'LG', detail: 'Vendor earning · EX-20469', area: 'Arewa Kitchen', amount: '+₦7,480', status: 'Pending settlement', badge: 'amber' }
       ],
@@ -394,6 +518,15 @@
   let ruleSearch = '';
   let selectedLocation = state.location || 'Kano State';
   let editingFormId = null;
+  let applicationFilter = 'all';
+  let applicationSearch = '';
+  let assignmentFilter = 'all';
+  let assignmentSearch = '';
+  let providerDirectoryFilter = 'all';
+  let providerDirectorySearch = '';
+  let providerDraft = null;
+  let providerCoverageLocationValue = '';
+  let providerCoverageAreaValue = '';
   let toastTimer = null;
 
   function icon(name, className = 'icon') {
@@ -420,13 +553,19 @@
     const initial = {
       rules: structuredCloneSafe(DEFAULT_RULES),
       orders: structuredCloneSafe(DEFAULT_ORDERS),
+      ledgerEntries: [],
       forms: structuredCloneSafe(DEFAULT_FORMS),
+      applications: structuredCloneSafe(DEFAULT_APPLICATIONS),
+      providers: structuredCloneSafe(MATCHING_PROVIDERS),
       features: { ...DEFAULT_FEATURES },
       permissions: structuredCloneSafe(DEFAULT_PERMISSIONS),
-      customAreas: [],
+      coverage: structuredCloneSafe(DEFAULT_COVERAGE),
+      selectedCoverageState: 'Kano State',
+      selectedLga: 'Kano Municipal',
       location: 'Kano State',
       activities: []
     };
+    initial.providers = providersWithApplicationApprovals(initial.providers, initial.applications);
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
       if (!saved || typeof saved !== 'object') return initial;
@@ -446,15 +585,41 @@
             service: String(order.service || 'Errand'),
             area: String(order.area || 'Kano State'),
             total: Math.max(0, Number(order.total) || 0),
-            history: Array.isArray(order.history) ? order.history.filter((entry) => entry && ORDER_STEPS[workflow].includes(entry.state)).slice(-20) : []
+            history: Array.isArray(order.history) ? order.history.filter((entry) => entry && ORDER_STEPS[workflow].includes(entry.state)).slice(-20) : [],
+            assignment: normalizeSavedAssignment(order.assignment),
+            assignmentHistory: normalizeAssignmentHistory(order.assignmentHistory)
           };
         });
+        const savedOrderIds = new Set(initial.orders.map((order) => order.id));
+        initial.orders.push(...structuredCloneSafe(DEFAULT_ORDERS.filter((order) => !savedOrderIds.has(order.id))));
       }
       if (Array.isArray(saved.forms)) initial.forms = saved.forms.filter((form) => form && typeof form === 'object' && typeof form.id === 'string').slice(0, 100).map(normalizeSavedForm);
+      if (Array.isArray(saved.applications)) {
+        initial.applications = saved.applications.filter((application) => application && typeof application === 'object' && typeof application.id === 'string').slice(0, 200).map(normalizeSavedApplication);
+        const savedApplicationIds = new Set(initial.applications.map((application) => application.id));
+        initial.applications.push(...structuredCloneSafe(DEFAULT_APPLICATIONS.filter((application) => !savedApplicationIds.has(application.id))));
+      }
+      if (Array.isArray(saved.coverage)) initial.coverage = normalizeCoverage(saved.coverage);
+      if (typeof saved.selectedCoverageState === 'string') initial.selectedCoverageState = saved.selectedCoverageState;
+      const selectedCoverageState = initial.coverage.find((item) => item.name === initial.selectedCoverageState) || initial.coverage[0];
+      initial.selectedCoverageState = selectedCoverageState.name;
+      if (typeof saved.selectedLga === 'string') initial.selectedLga = saved.selectedLga;
+      if (!Array.isArray(saved.coverage) && Array.isArray(saved.customAreas)) {
+        const legacyState = initial.coverage.find((item) => item.name === initial.selectedCoverageState) || initial.coverage[0];
+        const legacyLga = legacyState.lgas.find((item) => item.name === initial.selectedLga) || legacyState.lgas[0];
+        if (legacyLga) legacyLga.areas = [...new Set([...legacyLga.areas, ...saved.customAreas.filter((area) => typeof area === 'string').map((area) => area.trim()).filter(Boolean).slice(0, 100)])].slice(0, 100);
+      }
+      const selectedLga = selectedCoverageState.lgas.find((item) => item.name === initial.selectedLga) || selectedCoverageState.lgas[0];
+      initial.selectedLga = selectedLga ? selectedLga.name : '';
+      initial.providers = normalizeSavedProviders(Array.isArray(saved.providers) ? saved.providers : initial.providers, initial.coverage);
+      initial.providers = providersWithApplicationApprovals(initial.providers, initial.applications);
+      if (Array.isArray(saved.ledgerEntries)) initial.ledgerEntries = normalizeSavedLedgerEntries(saved.ledgerEntries, initial.orders);
       if (saved.features && typeof saved.features === 'object') initial.features = { ...initial.features, ...saved.features };
       if (saved.permissions && typeof saved.permissions === 'object') initial.permissions = { ...initial.permissions, ...saved.permissions };
-      if (Array.isArray(saved.customAreas)) initial.customAreas = saved.customAreas.filter((area) => typeof area === 'string').slice(0, 100);
-      if (typeof saved.location === 'string') initial.location = saved.location;
+      if (typeof saved.location === 'string') {
+        const previousViews = { 'Kano Municipal': 'Kano Municipal · Kano State', 'Nassarawa LGA': 'Nassarawa · Kano State' };
+        initial.location = previousViews[saved.location] || saved.location.slice(0, 100);
+      }
       if (Array.isArray(saved.activities)) initial.activities = saved.activities.slice(0, 10);
     } catch (_) {
       // A fresh, usable prototype is more important than a stale or malformed local setting.
@@ -464,6 +629,39 @@
 
   function structuredCloneSafe(value) {
     return JSON.parse(JSON.stringify(value));
+  }
+
+  function normalizeCoverage(records) {
+    if (!Array.isArray(records)) return structuredCloneSafe(DEFAULT_COVERAGE);
+    const coverage = [];
+    const seenStates = new Set();
+    let lgaCount = 0;
+    records.slice(0, NIGERIAN_STATES.length).forEach((record) => {
+      if (!record || typeof record !== 'object') return;
+      const name = NIGERIAN_STATES.find((item) => item.toLowerCase() === String(record.name || '').trim().toLowerCase());
+      if (!name || seenStates.has(name)) return;
+      seenStates.add(name);
+      const seenLgas = new Set();
+      const lgas = [];
+      (Array.isArray(record.lgas) ? record.lgas : []).slice(0, 774).forEach((lga) => {
+        if (!lga || typeof lga !== 'object' || lgaCount >= 774) return;
+        const lgaName = String(lga.name || '').trim().replace(/\s+/g, ' ').slice(0, 80);
+        const key = lgaName.toLowerCase();
+        if (!lgaName || seenLgas.has(key)) return;
+        seenLgas.add(key);
+        const seenAreas = new Set();
+        const areas = (Array.isArray(lga.areas) ? lga.areas : []).slice(0, 100).map((area) => String(area || '').trim().replace(/\s+/g, ' ').slice(0, 80)).filter((area) => {
+          const areaKey = area.toLowerCase();
+          if (!area || seenAreas.has(areaKey)) return false;
+          seenAreas.add(areaKey);
+          return true;
+        });
+        lgas.push({ name: lgaName, areas });
+        lgaCount += 1;
+      });
+      coverage.push({ name, lgas });
+    });
+    return coverage.length ? coverage : structuredCloneSafe(DEFAULT_COVERAGE);
   }
 
   function normalizeFormFields(fields) {
@@ -513,6 +711,131 @@
     };
   }
 
+  function normalizeSavedApplication(application) {
+    const kind = Object.prototype.hasOwnProperty.call(APPLICATION_CHECKLISTS, application.kind) ? application.kind : 'rider';
+    const validStatus = Object.prototype.hasOwnProperty.call(APPLICATION_STATUS_LABELS, application.status) ? application.status : 'SUBMITTED';
+    const legacyName = application.id === 'APP-RD-0149' && application.name === 'Mariya Adamu' ? 'Halima Ibrahim' : application.id === 'APP-CO-0038' && application.name === 'Northline Logistics' ? 'Kano Rapid' : application.name;
+    return {
+      id: String(application.id).slice(0, 60),
+      kind,
+      category: String(application.category || (kind === 'rider' ? 'Individual rider' : kind === 'company' ? 'Company fleet' : 'Vendor')).slice(0, 80),
+      name: String(legacyName || 'Applicant').slice(0, 100),
+      location: String(application.location || 'Kano State').slice(0, 100),
+      submitted: String(application.submitted || 'Recently').slice(0, 60),
+      status: validStatus,
+      reviewer: String(application.reviewer || '').slice(0, 80),
+      evidence: Array.isArray(application.evidence) ? application.evidence.filter((item) => item && typeof item === 'object').slice(0, 30).map((item) => ({ label: String(item.label || 'Evidence item').slice(0, 100), status: String(item.status || 'Received').slice(0, 40) })) : [],
+      checks: APPLICATION_CHECKLISTS[kind].map((_, index) => Boolean(Array.isArray(application.checks) && application.checks[index])),
+      lastNote: String(application.lastNote || '').slice(0, 500),
+      history: Array.isArray(application.history) ? application.history.filter((event) => event && typeof event === 'object').slice(-30).map((event) => ({ title: String(event.title || 'Application updated').slice(0, 100), actor: String(event.actor || 'Reviewer').slice(0, 80), at: String(event.at || '').slice(0, 50), note: String(event.note || '').slice(0, 500) })) : []
+    };
+  }
+
+  function normalizeSavedAssignment(assignment) {
+    if (!assignment || typeof assignment !== 'object' || !['rider', 'vendor'].includes(assignment.stage) || !['OFFERED', 'ACCEPTED', 'DECLINED', 'TIMED_OUT'].includes(assignment.status)) return null;
+    const provider = MATCHING_PROVIDERS.find((item) => item.id === assignment.providerId);
+    if (!provider) return null;
+    return { stage: assignment.stage, providerId: provider.id, providerName: provider.name, status: assignment.status, at: String(assignment.at || '').slice(0, 50), respondedAt: String(assignment.respondedAt || '').slice(0, 50) };
+  }
+
+  function normalizeAssignmentHistory(events) {
+    if (!Array.isArray(events)) return [];
+    return events.filter((event) => event && typeof event === 'object').slice(-30).map((event) => ({
+      stage: ['rider', 'vendor'].includes(event.stage) ? event.stage : 'rider',
+      title: String(event.title || 'Assignment updated').slice(0, 100),
+      providerId: String(event.providerId || '').slice(0, 60),
+      providerName: String(event.providerName || 'Unassigned').slice(0, 100),
+      actor: String(event.actor || 'Dispatch Manager (demo)').slice(0, 80),
+      at: String(event.at || '').slice(0, 50),
+      note: String(event.note || '').slice(0, 300)
+    }));
+  }
+
+  function normalizeSavedLedgerEntries(entries, orders) {
+    const orderIds = new Set(orders.map((order) => order.id));
+    const providersById = new Map(MATCHING_PROVIDERS.map((provider) => [provider.id, provider]));
+    const seenBeneficiaries = new Set();
+    return entries.filter((entry) => entry && typeof entry === 'object').map((entry) => {
+      const provider = providersById.get(String(entry.providerId || ''));
+      const orderId = String(entry.orderId || '').slice(0, 60);
+      const model = ['percentage', 'fixed', 'per_request'].includes(entry.model) ? entry.model : '';
+      const basis = Object.prototype.hasOwnProperty.call(BASIS_LABELS, entry.basis) ? entry.basis : '';
+      const basisAmount = Number(entry.basisAmount);
+      const amount = Number(entry.amount);
+      const key = `${orderId}:${provider?.id || ''}`;
+      if (!provider || !orderIds.has(orderId) || !model || !basis || !entry.id || seenBeneficiaries.has(key) || !Number.isInteger(basisAmount) || basisAmount <= 0 || !Number.isInteger(amount) || amount < 0 || amount > basisAmount) return null;
+      seenBeneficiaries.add(key);
+      const rate = Number(entry.rate);
+      const fixedAmount = Number(entry.fixedAmount);
+      return {
+        id: String(entry.id).slice(0, 80),
+        orderId,
+        providerId: provider.id,
+        beneficiaryName: String(entry.beneficiaryName || provider.name).slice(0, 100),
+        beneficiaryType: provider.type,
+        role: provider.type === 'restaurant' || provider.type === 'small_chops' ? 'vendor' : 'rider',
+        ruleId: String(entry.ruleId || '').slice(0, 80),
+        ruleName: String(entry.ruleName || 'Earning rule').slice(0, 100),
+        ruleScope: String(entry.ruleScope || '').slice(0, 120),
+        model,
+        rate: Number.isFinite(rate) && rate >= 0 && rate <= 100 ? rate : 0,
+        fixedAmount: Number.isFinite(fixedAmount) && fixedAmount >= 0 ? Math.round(fixedAmount) : 0,
+        basis,
+        basisAmount: Math.round(basisAmount),
+        amount: Math.round(amount),
+        status: 'PENDING_SETTLEMENT',
+        createdAt: String(entry.createdAt || '').slice(0, 50)
+      };
+    }).filter(Boolean);
+  }
+
+  function normalizeProviderCoverage(scopes, coverageCatalog = state.coverage) {
+    if (!Array.isArray(scopes)) return [];
+    return scopes.filter((scope) => scope && typeof scope === 'object').slice(0, 100).map((scope) => {
+      const coverageState = coverageCatalog.find((item) => item.name === scope.state);
+      const lga = coverageState?.lgas.find((item) => item.name === scope.lga);
+      if (!coverageState || !lga) return null;
+      const configuredAreas = new Set(lga.areas.map((area) => area.toLowerCase()));
+      if (!Array.isArray(scope.areas)) return null;
+      const sourceAreas = scope.areas.slice(0, 100);
+      const areas = [...new Set(sourceAreas.map((area) => String(area || '').trim()).filter((area) => configuredAreas.has(area.toLowerCase())))];
+      if (sourceAreas.length && !areas.length) return null;
+      return { state: coverageState.name, lga: lga.name, areas };
+    }).filter(Boolean);
+  }
+
+  function normalizeSavedProviders(records, coverageCatalog = state.coverage) {
+    const savedById = new Map((Array.isArray(records) ? records : []).filter((provider) => provider && typeof provider === 'object').map((provider) => [String(provider.id), provider]));
+    return MATCHING_PROVIDERS.map((base) => {
+      const saved = savedById.get(base.id) || {};
+      const numericCapacity = Number(saved.capacity);
+      return {
+        ...base,
+        online: typeof saved.online === 'boolean' ? saved.online : base.online,
+        available: typeof saved.available === 'boolean' ? saved.available : base.available,
+        capacity: Number.isFinite(numericCapacity) ? Math.min(50, Math.max(1, Math.floor(numericCapacity))) : base.capacity,
+        coverage: normalizeProviderCoverage(Array.isArray(saved.coverage) ? saved.coverage : base.coverage, coverageCatalog)
+      };
+    });
+  }
+
+  function providersWithApplicationApprovals(providers, applications) {
+    const applicationsById = new Map((Array.isArray(applications) ? applications : []).map((application) => [application.id, application]));
+    return providers.map((provider) => {
+      const partnerApplication = provider.applicationId ? applicationsById.get(provider.applicationId) : null;
+      const companyApplication = provider.companyApplicationId ? applicationsById.get(provider.companyApplicationId) : null;
+      return {
+        ...provider,
+        approved: provider.applicationId ? partnerApplication?.status === 'APPROVED' : Boolean(provider.approved),
+        companyApproved: provider.companyApplicationId ? companyApplication?.status === 'APPROVED' : Boolean(provider.companyApproved)
+      };
+    });
+  }
+
+  function syncProviderApplicationApprovals() {
+    state.providers = providersWithApplicationApprovals(state.providers, state.applications);
+  }
+
   function saveState() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -547,7 +870,7 @@
   function modeSummary(rule) {
     if (rule.model === 'percentage') return `${Number(rule.rate) || 0}% of eligible base`;
     if (rule.model === 'fixed') return `${formatNaira(rule.amount)} per completed order`;
-    return 'Amount entered at assignment';
+    return 'Amount entered per order';
   }
 
   function addActivity(title, detail, amount = '') {
@@ -568,6 +891,18 @@
     }
     const locationLabel = document.getElementById('currentLocation');
     if (locationLabel) locationLabel.textContent = selectedLocation;
+    const locationPopover = document.getElementById('locationPopover');
+    if (locationPopover) {
+      const options = [{ value: 'All locations', label: 'All locations' }];
+      state.coverage.forEach((coverageState) => {
+        options.push({ value: coverageState.name, label: coverageState.name });
+        coverageState.lgas.forEach((lga) => {
+          options.push({ value: `${lga.name} · ${coverageState.name}`, label: `${lga.name} · ${coverageState.name}` });
+        });
+      });
+      if (!options.some((option) => option.value === selectedLocation)) options.push({ value: selectedLocation, label: `${selectedLocation} · saved view` });
+      locationPopover.innerHTML = `<span class="popover-label">OPERATING VIEW</span>${options.map((option) => `<button class="popover-option ${option.value === selectedLocation ? 'selected' : ''}" type="button" data-location="${escapeAttr(option.value)}">${escapeHTML(option.label)}${option.value === selectedLocation ? icon('check') : ''}</button>`).join('')}`;
+    }
   }
 
   function render() {
@@ -582,11 +917,15 @@
     updateTopbar();
     if (activePage === 'earnings') main.innerHTML = renderEarningsPage();
     else if (activePage === 'live-orders') main.innerHTML = renderLiveOrdersPage();
+    else if (activePage === 'assignment-queue') main.innerHTML = renderAssignmentQueuePage();
     else if (activePage === 'order-forms') main.innerHTML = renderFormsPage();
     else if (activePage === 'features') main.innerHTML = renderFeaturesPage();
+    else if (activePage === 'applications') main.innerHTML = renderApplicationsPage();
     else if (activePage === 'roles') main.innerHTML = renderRolesPage();
+    else if (activePage === 'ledger') main.innerHTML = renderLedgerPage();
     else if (activePage === 'locations') main.innerHTML = renderLocationsPage();
     else if (activePage === 'overview') main.innerHTML = renderOverviewPage();
+    else if (activePage === 'riders' || activePage === 'vendors') main.innerHTML = renderProviderDirectoryPage(activePage);
     else main.innerHTML = renderStandardPage(activePage);
     bindPageInteractions();
   }
@@ -608,11 +947,17 @@
 
   function renderEarningsPage() {
     const activeRules = state.rules.filter((rule) => rule.active).length;
-    const buttons = `<button class="button button-secondary" type="button" data-action="export-rules">${icon('download')}<span>Export rules</span></button><button class="button button-primary" type="button" data-action="new-rule">${icon('plus')}<span>New earning rule</span></button>`;
+    const orderLinkedTotal = state.ledgerEntries.reduce((sum, entry) => sum + entry.amount, 0);
+    const pendingOrderLinkedTotal = state.ledgerEntries.filter((entry) => entry.status === 'PENDING_SETTLEMENT').reduce((sum, entry) => sum + entry.amount, 0);
+    const hasOrderLinkedEarnings = state.ledgerEntries.length > 0;
+    const averageOrderLinkedShare = state.ledgerEntries.reduce((sum, entry) => sum + entry.basisAmount, 0) > 0
+      ? `${(orderLinkedTotal / state.ledgerEntries.reduce((sum, entry) => sum + entry.basisAmount, 0) * 100).toFixed(1)}%`
+      : '82.4%';
+    const buttons = `<button class="button button-secondary" type="button" data-page="ledger">${icon('receipt')}<span>View ledger</span></button><button class="button button-secondary" type="button" data-action="export-rules">${icon('download')}<span>Export rules</span></button><button class="button button-primary" type="button" data-action="new-rule">${icon('plus')}<span>New earning rule</span></button>`;
     const stats = [
-      ['Partner earnings · MTD', '₦14.82m', '12.6% vs. last month', 'banknote', 'orange'],
-      ['Pending settlement', '₦684,200', '42 completed orders', 'clock', 'amber'],
-      ['Average partner share', '82.4%', 'Across completed orders', 'chart', 'blue'],
+      [hasOrderLinkedEarnings ? 'Order-linked earnings' : 'Partner earnings · MTD', hasOrderLinkedEarnings ? formatNaira(orderLinkedTotal) : '₦14.82m', hasOrderLinkedEarnings ? `${state.ledgerEntries.length} local calculated line${state.ledgerEntries.length === 1 ? '' : 's'}` : '12.6% vs. last month', 'banknote', 'orange'],
+      ['Pending settlement', hasOrderLinkedEarnings ? formatNaira(pendingOrderLinkedTotal) : '₦684,200', hasOrderLinkedEarnings ? 'New demo lines · not paid' : '42 completed orders', 'clock', 'amber'],
+      ['Average partner share', averageOrderLinkedShare, hasOrderLinkedEarnings ? 'Across calculated demo bases' : 'Across completed orders', 'chart', 'blue'],
       ['Active earning rules', String(activeRules), `${state.rules.length} configured in demo`, 'shield', 'green']
     ];
     return `<div class="page earnings-page">
@@ -672,7 +1017,7 @@
       return `<tr>
         <td><div class="beneficiary-cell"><span class="beneficiary-avatar ${type}">${icon(iconName)}</span><span><span class="beneficiary-name">${escapeHTML(ruleTitle(rule))}</span><span class="beneficiary-meta">${escapeHTML(rule.scope || 'Custom scope')}</span></span></div></td>
         <td class="method-cell"><span class="method-pill ${modelClass}">${icon(methodIcon)}${escapeHTML(methodShort)}</span></td>
-        <td><div class="rate-primary">${escapeHTML(modeRateText(rule))}</div><div class="rate-secondary">${escapeHTML(rule.model === 'percentage' ? 'of eligible base' : rule.model === 'fixed' ? 'per completed order' : 'set before assignment')}</div></td>
+        <td><div class="rate-primary">${escapeHTML(modeRateText(rule))}</div><div class="rate-secondary">${escapeHTML(rule.model === 'percentage' ? 'of eligible base' : rule.model === 'fixed' ? 'per completed order' : 'set per order')}</div></td>
         <td><span class="basis-label">${escapeHTML(base)}</span></td>
         <td><span class="scope-label">${escapeHTML((rule.services || []).join(', ') || 'All services')}</span></td>
         <td><span class="row-controls"><button class="status-switch" type="button" role="switch" aria-checked="${Boolean(rule.active)}" aria-label="${rule.active ? 'Deactivate' : 'Activate'} ${escapeAttr(ruleTitle(rule))}" data-action="toggle-rule" data-id="${escapeAttr(rule.id)}"></button><span class="status-label">${rule.active ? 'Active' : 'Paused'}</span></span></td>
@@ -694,7 +1039,7 @@
       { title: 'Payout rule reviewed', detail: 'Company fleet rider · Kano Express', amount: '72% share', time: 'Yesterday' }
     ];
     const activities = state.activities.length ? state.activities.concat(fallback).slice(0, 3) : fallback;
-    return `<section class="card activity-card"><div class="activity-head"><div><h2 class="card-title">Recent rule activity</h2><p class="card-subtitle">Illustrative entries · new edits in this browser appear here.</p></div><button type="button" class="text-button" data-action="audit-info">View audit trail ${icon('arrow-right')}</button></div><div class="activity-list">${activities.map((item) => `<div class="activity-row"><span class="activity-icon">${icon('shield')}</span><div class="activity-main"><strong>${escapeHTML(item.title)}</strong><small>${escapeHTML(item.detail)}</small></div><strong class="activity-amount">${escapeHTML(item.amount || '')}</strong><span class="activity-time">${escapeHTML(item.time || '')}</span></div>`).join('')}</div></section>`;
+    return `<section class="card activity-card"><div class="activity-head"><div><h2 class="card-title">Recent earning activity</h2><p class="card-subtitle">Illustrative entries plus rule changes and order-linked calculations in this browser.</p></div><button type="button" class="text-button" data-action="audit-info">View audit trail ${icon('arrow-right')}</button></div><div class="activity-list">${activities.map((item) => `<div class="activity-row"><span class="activity-icon">${icon('shield')}</span><div class="activity-main"><strong>${escapeHTML(item.title)}</strong><small>${escapeHTML(item.detail)}</small></div><strong class="activity-amount">${escapeHTML(item.amount || '')}</strong><span class="activity-time">${escapeHTML(item.time || '')}</span></div>`).join('')}</div></section>`;
   }
 
   function updatePreview() {
@@ -795,6 +1140,542 @@
     </div>`;
   }
 
+  function assignmentNormalize(value) {
+    return String(value || '').trim().toLowerCase().replace(/\s+/g, ' ').replace(/\s+lga$/, '');
+  }
+
+  function canonicalState(value) {
+    const normalized = assignmentNormalize(value);
+    return NIGERIAN_STATES.find((item) => {
+      const stateKey = item.toLowerCase();
+      return stateKey === normalized || stateKey.replace(/ state$/, '') === normalized || (item === 'Federal Capital Territory' && normalized === 'fct');
+    }) || '';
+  }
+
+  function parseAssignmentLocation(value) {
+    const source = String(value || '').trim();
+    if (!source) return { state: '', place: '' };
+    if (source === 'All locations') return { state: '', place: '' };
+    let place = source;
+    let stateName = '';
+    if (source.includes('·')) {
+      const parts = source.split('·');
+      place = parts.shift().trim();
+      stateName = canonicalState(parts.join('·'));
+    } else if (source.includes(',')) {
+      const parts = source.split(',');
+      place = parts.shift().trim();
+      stateName = canonicalState(parts.join(','));
+    } else {
+      stateName = canonicalState(source);
+      if (stateName) place = '';
+    }
+    place = place.trim().replace(/\s+(?:LGA|local government area)$/i, '');
+    return { state: stateName, place, placeKey: assignmentNormalize(place) };
+  }
+
+  function resolveConfiguredLocation(value) {
+    const parsed = parseAssignmentLocation(value);
+    const matchingStates = state.coverage.filter((item) => !parsed.state || item.name === parsed.state);
+    for (const coverageState of matchingStates) {
+      if (!parsed.placeKey) return { state: coverageState, lga: null, area: null };
+      for (const lga of coverageState.lgas) {
+        if (assignmentNormalize(lga.name) === parsed.placeKey) return { state: coverageState, lga, area: null };
+        const area = lga.areas.find((item) => assignmentNormalize(item) === parsed.placeKey);
+        if (area) return { state: coverageState, lga, area };
+      }
+    }
+    return null;
+  }
+
+  function providerCoversLocation(provider, location) {
+    const resolved = resolveConfiguredLocation(location);
+    if (!resolved) return false;
+    return provider.coverage.some((scope) => {
+      if (scope.state !== resolved.state.name) return false;
+      if (!resolved.lga) return !scope.lga;
+      if (scope.lga !== resolved.lga.name) return false;
+      if (!resolved.area) return !Array.isArray(scope.areas) || scope.areas.length === 0;
+      if (!Array.isArray(scope.areas) || scope.areas.length === 0) return true;
+      return scope.areas.some((area) => assignmentNormalize(area) === assignmentNormalize(resolved.area));
+    });
+  }
+
+  function assignmentStage(order) {
+    if (order.state === 'REQUESTED') return order.workflow === 'vendor' ? 'vendor' : 'rider';
+    if (order.workflow === 'vendor' && order.state === 'READY_FOR_PICKUP') {
+      if (['Unassigned', 'Pending fleet assignment', 'Pending rider assignment'].includes(order.rider)) return 'rider';
+      if (order.assignment?.stage === 'rider' && ['OFFERED', 'ACCEPTED', 'DECLINED', 'TIMED_OUT'].includes(order.assignment.status)) return 'rider';
+    }
+    return null;
+  }
+
+  function assignmentStageLabel(order, stage) {
+    if (stage === 'vendor') return /small.?chops/i.test(order.service) ? 'Match small-chops vendor' : 'Match restaurant';
+    return order.workflow === 'vendor' ? 'Assign pickup rider' : 'Assign errand rider';
+  }
+
+  function requiredProviderType(order, stage) {
+    if (stage === 'rider') return ['individual_rider', 'company_rider'];
+    return /small.?chops/i.test(order.service) ? ['small_chops'] : ['restaurant'];
+  }
+
+  function requiredServiceGroup(order, stage) {
+    if (stage === 'vendor') return /small.?chops/i.test(order.service) ? 'small_chops' : 'restaurant';
+    return order.workflow === 'vendor' ? 'delivery' : 'errand';
+  }
+
+  function providerLoad(provider, excludeOrderId = '') {
+    return state.orders.filter((order) => {
+      if (order.id === excludeOrderId || ['COMPLETED', 'CANCELLED'].includes(order.state)) return false;
+      if (['individual_rider', 'company_rider'].includes(provider.type)) return order.rider === provider.name;
+      return order.workflow === 'vendor' && order.provider === provider.name && ['REQUESTED', 'VENDOR_ACCEPTED', 'PAYMENT_VERIFIED', 'PREPARING', 'READY_FOR_PICKUP'].includes(order.state);
+    }).length;
+  }
+
+  function providerEligibility(provider, order, stage, excludeOrderId = '') {
+    const reasons = [];
+    if (!provider.approved) reasons.push('Partner approval is not complete');
+    if (provider.type === 'company_rider' && !provider.companyApproved) reasons.push('Company fleet approval is not complete');
+    if (!provider.online) reasons.push('Currently offline');
+    if (!provider.available) reasons.push('Marked unavailable');
+    const load = providerLoad(provider, excludeOrderId);
+    if (load >= provider.capacity) reasons.push('At configured assignment capacity');
+    if (!provider.serviceGroups.includes(requiredServiceGroup(order, stage))) reasons.push('Service category does not match');
+    if (!providerCoversLocation(provider, order.area)) reasons.push('Pickup is outside configured coverage');
+    return { eligible: reasons.length === 0, reasons, load };
+  }
+
+  function assignmentCandidates(order, stage) {
+    const types = requiredProviderType(order, stage);
+    return state.providers.filter((provider) => types.includes(provider.type)).map((provider) => ({
+      provider,
+      ...providerEligibility(provider, order, stage)
+    })).sort((a, b) => Number(b.eligible) - Number(a.eligible) || a.load - b.load || a.provider.name.localeCompare(b.provider.name));
+  }
+
+  function assignmentQueueItems() {
+    return state.orders.map((order) => {
+      const stage = assignmentStage(order);
+      if (!stage) return null;
+      const assignment = order.assignment?.stage === stage ? order.assignment : null;
+      if (assignment?.status === 'ACCEPTED') return null;
+      const status = assignment?.status === 'OFFERED' ? 'OFFERED' : assignment?.status === 'DECLINED' || assignment?.status === 'TIMED_OUT' ? 'REMATCH' : 'AVAILABLE';
+      const matches = status === 'OFFERED' ? 1 : assignmentCandidates(order, stage).filter((candidate) => candidate.eligible).length;
+      return { order, stage, assignment, status, matches };
+    }).filter(Boolean);
+  }
+
+  function filteredAssignmentQueue() {
+    const query = assignmentSearch.trim().toLowerCase();
+    return assignmentQueueItems().filter((item) => {
+      if (assignmentFilter === 'available' && item.status !== 'AVAILABLE' && item.status !== 'REMATCH') return false;
+      if (assignmentFilter === 'offered' && item.status !== 'OFFERED') return false;
+      if (assignmentFilter === 'rider' && item.stage !== 'rider') return false;
+      if (assignmentFilter === 'vendor' && item.stage !== 'vendor') return false;
+      return !query || [item.order.id, item.order.customer, item.order.service, item.order.area, item.order.provider, item.order.rider].join(' ').toLowerCase().includes(query);
+    });
+  }
+
+  function renderAssignmentRows() {
+    return filteredAssignmentQueue().map((item) => {
+      const { order, stage, assignment, status, matches } = item;
+      const statusText = status === 'OFFERED' ? `Offer sent · ${assignment.providerName}` : status === 'REMATCH' ? 'Re-match required' : matches ? `${matches} eligible` : 'No eligible providers';
+      const badge = status === 'OFFERED' ? 'blue' : status === 'REMATCH' ? 'orange' : matches ? 'green' : 'amber';
+      const actionText = status === 'OFFERED' ? 'Manage offer' : 'Find match';
+      return `<tr>
+        <td><div class="table-person"><span class="table-avatar">${icon(order.workflow === 'vendor' ? 'store' : 'bike')}</span><span><strong>${escapeHTML(order.id)}</strong><small>${escapeHTML(order.service)} · ${escapeHTML(order.customer)}</small></span></div></td>
+        <td><span class="match-stage-label">${escapeHTML(assignmentStageLabel(order, stage))}</span><small class="match-stage-sub">${escapeHTML(order.workflow === 'vendor' ? 'Vendor pathway' : 'Errand pathway')}</small></td>
+        <td><span class="basis-label">${escapeHTML(order.area)}</span></td>
+        <td><span class="badge badge-${badge}">${escapeHTML(statusText)}</span></td>
+        <td><span class="scope-label">${status === 'OFFERED' ? 'Awaiting simulated response' : status === 'REMATCH' ? 'Previous offer closed' : 'Review eligibility'}</span></td>
+        <td><button class="button button-secondary order-open-button" type="button" data-action="open-assignment" data-id="${escapeAttr(order.id)}">${actionText} ${icon('arrow-right')}</button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function renderAssignmentQueuePage() {
+    const items = assignmentQueueItems();
+    const openOffers = items.filter((item) => item.status === 'OFFERED').length;
+    const needsMatch = items.length - openOffers;
+    const eligibleCount = items.filter((item) => item.status !== 'OFFERED').reduce((sum, item) => sum + assignmentCandidates(item.order, item.stage).filter((candidate) => candidate.eligible).length, 0);
+    const noMatchCount = items.filter((item) => item.status !== 'OFFERED' && item.matches === 0).length;
+    const stats = [
+      ['Needs assignment', String(needsMatch), 'Errands, vendors and pickup riders', 'clipboard', 'amber'],
+      ['Offers awaiting response', String(openOffers), 'Not accepted until simulated', 'clock', 'blue'],
+      ['Eligible match options', String(eligibleCount), 'After policy checks', 'users', 'green'],
+      ['No eligible match', String(noMatchCount), 'Check coverage or readiness', 'shield', 'orange']
+    ];
+    const available = items.filter((item) => item.status !== 'OFFERED').length;
+    const filters = [
+      ['all', 'All', items.length], ['available', 'Needs match', available], ['offered', 'Offer pending', openOffers],
+      ['rider', 'Rider jobs', items.filter((item) => item.stage === 'rider').length], ['vendor', 'Vendor selection', items.filter((item) => item.stage === 'vendor').length]
+    ];
+    const buttons = `<button class="button button-secondary" type="button" data-action="module-help">${icon('info')}<span>Matching safeguards</span></button><button class="button button-secondary" type="button" data-action="add-test-order">${icon('plus')}<span>Test errand</span></button><button class="button button-primary" type="button" data-action="add-test-vendor-order">${icon('plus')}<span>Test vendor order</span></button>`;
+    const rows = renderAssignmentRows();
+    return `<div class="page assignment-page">
+      ${renderPageHeading('Assignment queue', 'WORKSPACE / LOCATION-AWARE MATCHING', 'Match each request to an approved, online provider with the right service capability, available capacity and configured pickup coverage. Offers and responses are simulated locally.', buttons)}
+      ${renderStatCards(stats)}
+      <div class="module-hero"><div class="module-hero-copy"><h2>Match the right partner—not just the nearest name.</h2><p>Errands go to rider candidates; restaurant and small-chops orders go to their own vendor types. Vendor pickup jobs enter the rider queue only when ready.</p></div><span class="module-hero-badge">${icon('map')}Coverage + approval + availability</span></div>
+      <section class="card"><div class="card-header"><div><h2 class="card-title">Requests needing a provider</h2><p class="card-subtitle">A sent offer remains pending until a simulated response moves the order workflow.</p></div><span class="badge badge-blue">${items.length} queue item${items.length === 1 ? '' : 's'}</span></div>
+        <div class="assignment-toolbar"><div class="rule-filters assignment-filters" role="group" aria-label="Filter assignment requests">${filters.map(([key, label, count]) => `<button class="filter-button ${assignmentFilter === key ? 'active' : ''}" type="button" data-assignment-filter="${escapeAttr(key)}">${escapeHTML(label)} <span>${count}</span></button>`).join('')}</div><label class="search-field"><span class="sr-only">Search assignment requests</span>${icon('search')}<input id="assignmentSearch" type="search" placeholder="Search order, customer or location…" value="${escapeAttr(assignmentSearch)}"></label></div>
+        <div class="table-scroll"><table class="module-table assignment-table"><thead><tr><th>Order / customer</th><th>Assignment stage</th><th>Pickup area</th><th>Match status</th><th>Response</th><th>Action</th></tr></thead><tbody id="assignmentTableBody">${rows || '<tr><td colspan="6"><div class="empty-state">No matching assignments in this view.</div></td></tr>'}</tbody></table></div>
+        <div class="table-foot"><span id="assignmentCountFoot">Showing <strong>${filteredAssignmentQueue().length}</strong> of ${items.length} requests needing an assignment</span><span>Sample providers · browser-only offers</span></div>
+      </section>
+      <div class="rule-note">${icon('shield')}<span><strong>Eligibility is a demo policy check.</strong> Production dispatch must verify current partner approval, rider/company scope, service-area geometry, live availability, capacity and offer expiry on the server before sending notifications.</span></div>
+    </div>`;
+  }
+
+  function assignmentEvent(order, stage, title, provider = null, note = '') {
+    const at = new Date().toLocaleTimeString('en-NG', { hour: '2-digit', minute: '2-digit' });
+    order.assignmentHistory = Array.isArray(order.assignmentHistory) ? order.assignmentHistory : [];
+    order.assignmentHistory.push({ stage, title, providerId: provider?.id || '', providerName: provider?.name || 'Unassigned', actor: 'Dispatch Manager (demo)', at, note });
+    order.assignmentHistory = order.assignmentHistory.slice(-30);
+    return at;
+  }
+
+  function renderAssignmentModal(orderId) {
+    const item = assignmentQueueItems().find((entry) => entry.order.id === orderId);
+    if (!item) return;
+    const { order, stage, assignment, status } = item;
+    const offered = status === 'OFFERED';
+    const candidate = offered ? state.providers.find((provider) => provider.id === assignment.providerId) : null;
+    const candidates = offered ? [] : assignmentCandidates(order, stage);
+    const candidateRows = candidates.map((result) => {
+      const provider = result.provider;
+      const detail = [provider.company, provider.vehicle, `${result.load}/${provider.capacity} active jobs`].filter(Boolean).join(' · ');
+      const statusCopy = result.eligible ? 'Eligible for this request' : result.reasons.join(' · ');
+      return `<article class="candidate-card ${result.eligible ? 'candidate-eligible' : 'candidate-ineligible'}"><div class="candidate-main"><span class="candidate-avatar">${escapeHTML(initials(provider.name))}</span><div class="candidate-copy"><strong>${escapeHTML(provider.name)}</strong><small>${escapeHTML(provider.label)}${provider.company ? ` · ${escapeHTML(provider.company)}` : ''}</small><small>${escapeHTML(detail)}${provider.rating !== '—' ? ` · ${escapeHTML(provider.rating)}★` : ''}</small></div><span class="badge badge-${result.eligible ? 'green' : 'gray'}">${result.eligible ? 'Eligible' : 'Not eligible'}</span></div><div class="candidate-reason">${escapeHTML(statusCopy)}</div><div class="candidate-actions"><span class="candidate-coverage">${icon('pin')}${escapeHTML(provider.coverage.map((scope) => `${scope.lga}, ${scope.state}`).join(' · '))}</span><button class="button ${result.eligible ? 'button-primary' : 'button-secondary'} order-open-button" type="button" data-action="send-assignment-offer" data-id="${escapeAttr(order.id)}" data-provider-id="${escapeAttr(provider.id)}" ${result.eligible ? '' : 'disabled'}>${icon(result.eligible ? 'arrow-right' : 'lock')}<span>${result.eligible ? 'Send demo offer' : 'Unavailable'}</span></button></div></article>`;
+    }).join('');
+    const history = (order.assignmentHistory || []).filter((event) => event.stage === stage).slice().reverse().map((event) => `<div class="assignment-event"><span class="application-event-dot"></span><div><strong>${escapeHTML(event.title)}</strong><small>${escapeHTML(event.providerName)} · ${escapeHTML(event.actor)} · ${escapeHTML(event.at)}</small>${event.note ? `<p>${escapeHTML(event.note)}</p>` : ''}</div></div>`).join('');
+    const responseActions = offered ? `<button class="button button-secondary" type="button" data-action="assignment-response" data-id="${escapeAttr(order.id)}" data-response="timeout">Simulate timeout</button><button class="button button-primary" type="button" data-action="assignment-response" data-id="${escapeAttr(order.id)}" data-response="accept">Simulate acceptance</button>` : '';
+    document.getElementById('modalRoot').innerHTML = `<div class="modal-backdrop" data-action="modal-backdrop-close"><section class="modal assignment-modal" role="dialog" aria-modal="true" aria-labelledby="assignmentModalTitle">
+      <header class="modal-header"><div><div class="eyebrow">${escapeHTML(order.id)} <span class="eyebrow-separator">/</span> ${escapeHTML(order.workflow === 'vendor' ? 'VENDOR PATH' : 'ERRAND PATH')}</div><h2 id="assignmentModalTitle">${escapeHTML(assignmentStageLabel(order, stage))}</h2><p>${escapeHTML(order.customer)} · ${escapeHTML(order.service)} · ${escapeHTML(order.area)}</p></div><button class="modal-close" type="button" data-action="close-modal" aria-label="Close dialog">${icon('close')}</button></header>
+      <div class="modal-body"><div class="assignment-order-summary"><div><span class="field-label">REQUEST TOTAL</span><strong>${formatNaira(order.total)}</strong></div><div><span class="field-label">CURRENT STATUS</span><strong>${escapeHTML(status === 'OFFERED' ? 'Offer awaiting response' : status === 'REMATCH' ? 'Previous offer closed' : 'Unassigned')}</strong></div></div>
+        ${offered && candidate ? `<div class="active-offer-card"><div><strong>Demo offer sent to ${escapeHTML(candidate.name)}</strong><p>${escapeHTML(candidate.label)}${candidate.company ? ` · ${escapeHTML(candidate.company)}` : ''} · ${escapeHTML(assignment.at || '')}</p></div><span class="badge badge-blue">Awaiting response</span></div><p class="assignment-disclaimer">Sending an offer is not acceptance. Current approval, availability, coverage and capacity are checked again on response; no notification was sent.</p>` : `<section class="assignment-candidate-section"><div class="review-section-heading"><div><h3>Eligible provider candidates</h3><p>Checked against current demo approval, company status, service, availability, capacity and saved coverage.</p></div><span class="badge badge-green">${candidates.filter((result) => result.eligible).length} eligible</span></div><div class="candidate-list">${candidateRows || '<div class="coverage-empty">No candidate records match this provider type.</div>'}</div></section>${status === 'REMATCH' ? '<p class="assignment-disclaimer">The previous offer closed. Choose an eligible provider to re-match this request.</p>' : ''}`}
+        <section class="review-section assignment-history-section"><div class="review-section-heading"><div><h3>Offer history</h3><p>Local dispatch events for this assignment stage.</p></div></div><div class="assignment-event-list">${history || '<p class="field-help">No offers have been sent for this stage.</p>'}</div></section>
+      </div><footer class="modal-footer"><span class="modal-footer-note">${icon('info')}Simulation only · No push/SMS sent</span><div class="modal-footer-actions"><button class="button button-secondary" type="button" data-action="close-modal">Close</button>${responseActions}</div></footer>
+    </section></div>`;
+  }
+
+  function sendAssignmentOffer(orderId, providerId) {
+    const item = assignmentQueueItems().find((entry) => entry.order.id === orderId);
+    if (!item || item.status === 'OFFERED') return;
+    const result = assignmentCandidates(item.order, item.stage).find((candidate) => candidate.provider.id === providerId);
+    if (!result || !result.eligible) { toast('This provider no longer meets the current demo matching rules.'); return; }
+    const order = item.order;
+    const provider = result.provider;
+    const at = new Date().toLocaleTimeString('en-NG', { hour: '2-digit', minute: '2-digit' });
+    order.assignment = { stage: item.stage, providerId: provider.id, providerName: provider.name, status: 'OFFERED', at, respondedAt: '' };
+    if (item.stage === 'vendor') {
+      order.provider = provider.name;
+      order.rider = 'Pending vendor acceptance';
+    } else if (order.workflow === 'vendor') {
+      order.rider = provider.name;
+    } else {
+      order.provider = provider.company ? `${provider.company} fleet` : 'Individual rider';
+      order.rider = provider.name;
+    }
+    assignmentEvent(order, item.stage, 'Demo offer sent', provider, 'Awaiting a simulated partner response.');
+    saveState();
+    render();
+    renderAssignmentModal(orderId);
+    toast(`Demo offer sent to ${provider.name}. It is not accepted until a response is simulated.`);
+  }
+
+  function returnAssignmentToQueue(order, stage) {
+    if (stage === 'vendor') {
+      order.provider = 'Awaiting eligible vendor';
+      order.rider = 'Pending vendor acceptance';
+    } else if (order.workflow === 'vendor') {
+      order.rider = 'Pending rider assignment';
+    } else {
+      order.provider = 'Awaiting eligible rider';
+      order.rider = 'Unassigned';
+    }
+  }
+
+  function respondToAssignment(orderId, response) {
+    const order = state.orders.find((item) => item.id === orderId);
+    const assignment = order?.assignment;
+    if (!order || !assignment || assignment.status !== 'OFFERED' || !['accept', 'timeout'].includes(response)) return;
+    const provider = state.providers.find((item) => item.id === assignment.providerId);
+    if (!provider) return;
+    assignment.respondedAt = new Date().toLocaleTimeString('en-NG', { hour: '2-digit', minute: '2-digit' });
+    if (response === 'accept') {
+      const eligibility = providerEligibility(provider, order, assignment.stage, order.id);
+      if (!eligibility.eligible) {
+        assignment.status = 'DECLINED';
+        assignmentEvent(order, assignment.stage, 'Offer invalidated (eligibility changed)', provider, eligibility.reasons.join(' · '));
+        returnAssignmentToQueue(order, assignment.stage);
+        saveState();
+        render();
+        renderAssignmentModal(orderId);
+        toast('Provider eligibility changed before acceptance; the request has returned to the matching queue.');
+        return;
+      }
+      assignment.status = 'ACCEPTED';
+      assignmentEvent(order, assignment.stage, 'Offer accepted (simulated)', provider, 'Acceptance is simulated locally.');
+      if (order.state === 'REQUESTED') {
+        const nextState = assignment.stage === 'vendor' ? 'VENDOR_ACCEPTED' : 'PROVIDER_ACCEPTED';
+        transitionOrder(orderId, nextState);
+        return;
+      }
+      saveState();
+      render();
+      closeModal();
+      toast(`${provider.name} accepted the simulated rider offer.`);
+      return;
+    }
+    assignment.status = 'TIMED_OUT';
+    assignmentEvent(order, assignment.stage, 'Offer timed out (simulated)', provider, 'Request returned to the matching queue.');
+    returnAssignmentToQueue(order, assignment.stage);
+    saveState();
+    render();
+    renderAssignmentModal(orderId);
+    toast('Offer timed out in the demo; the request is available for re-matching.');
+  }
+
+  function testOrderArea() {
+    const selected = selectedLocation;
+    if (selected === 'All locations') {
+      const fallbackState = state.coverage.find((item) => item.lgas.length) || state.coverage[0];
+      return fallbackState?.lgas[0] ? `${fallbackState.lgas[0].name} · ${fallbackState.name}` : (fallbackState?.name || 'Kano State');
+    }
+    const parsed = parseAssignmentLocation(selected);
+    const resolved = resolveConfiguredLocation(selected);
+    if (resolved && parsed.place) return `${parsed.place} · ${resolved.state.name}`;
+    if (resolved && parsed.state && !parsed.place) return resolved.state.lgas[0] ? `${resolved.state.lgas[0].name} · ${resolved.state.name}` : resolved.state.name;
+    if (resolved?.lga) return `${resolved.lga.name} · ${resolved.state.name}`;
+    return selected || 'Kano Municipal · Kano State';
+  }
+
+  function addTestVendorOrder() {
+    const suffix = `${Date.now().toString(36).slice(-4).toUpperCase()}${Math.random().toString(36).slice(2, 4).toUpperCase()}`;
+    const at = new Date().toLocaleTimeString('en-NG', { hour: '2-digit', minute: '2-digit' });
+    const order = {
+      id: `EX-V${suffix}`, workflow: 'vendor', state: 'REQUESTED', service: 'Restaurant order', customer: 'Demo customer',
+      provider: 'Awaiting eligible vendor', rider: 'Pending vendor acceptance', area: testOrderArea(), total: 4600, created: at,
+      history: [{ state: 'REQUESTED', actor: 'Customer (simulated)', at }]
+    };
+    state.orders.unshift(order);
+    saveState();
+    render();
+    renderAssignmentModal(order.id);
+    toast('Vendor test order added to the local matching queue.');
+  }
+
+  function orderLedgerEntries(orderId) {
+    return state.ledgerEntries.filter((entry) => entry.orderId === orderId);
+  }
+
+  function orderEarningTargets(order) {
+    if (!order) return [];
+    const targets = [];
+    if (order.workflow === 'vendor') {
+      const vendor = state.providers.find((provider) => provider.name === order.provider && ['restaurant', 'small_chops'].includes(provider.type));
+      if (vendor) targets.push({ provider: vendor, role: 'vendor', service: vendor.type === 'small_chops' ? 'Small-chops orders' : 'Restaurant orders' });
+    }
+    const rider = state.providers.find((provider) => provider.name === order.rider && ['individual_rider', 'company_rider'].includes(provider.type));
+    if (rider) {
+      const service = rider.type === 'company_rider' ? 'Company dispatch' : /food/i.test(order.service) || order.workflow === 'vendor' ? 'Food delivery' : 'Errands';
+      targets.push({ provider: rider, role: 'rider', service });
+    }
+    return targets;
+  }
+
+  function missingOrderEarningTargets(order) {
+    return orderEarningTargets(order).filter((target) => !state.ledgerEntries.some((entry) => entry.orderId === order.id && entry.providerId === target.provider.id));
+  }
+
+  function activeEarningRulesForTarget(target) {
+    const ruleType = target.provider.type === 'individual_rider' ? 'individual' : target.provider.type;
+    return state.rules.filter((rule) => rule && rule.active === true && rule.type === ruleType && Array.isArray(rule.services) && rule.services.includes(target.service) && ['percentage', 'fixed', 'per_request'].includes(rule.model) && Object.prototype.hasOwnProperty.call(BASIS_LABELS, rule.basis));
+  }
+
+  function renderOrderEarningLine(target, order) {
+    const orderEarningTotalLimit = Math.max(0, Number(order.total) || 0);
+    const rules = activeEarningRulesForTarget(target);
+    if (!rules.length) {
+      return `<section class="settlement-target-card settlement-target-unavailable"><div class="settlement-target-heading"><div><span class="field-label">${escapeHTML(target.role === 'vendor' ? 'VENDOR EARNING' : 'RIDER EARNING')}</span><h3>${escapeHTML(target.provider.name)}</h3><small>${escapeHTML(target.provider.label)} · ${escapeHTML(target.service)}</small></div><span class="badge badge-amber">No active rule</span></div><p>No active earning rule covers this provider and service. Add or activate a matching rule before recording this line.</p><button class="button button-secondary" type="button" data-page="earnings">Manage earning rules</button></section>`;
+    }
+    const providerId = target.provider.id;
+    const options = rules.map((rule) => `<option value="${escapeAttr(rule.id)}">${escapeHTML(ruleTitle(rule))} · ${escapeHTML(rule.scope || 'Custom scope')} · ${escapeHTML(modeRateText(rule))}</option>`).join('');
+    const selectedRule = rules[0];
+    return `<section class="settlement-target-card" data-settlement-line data-provider-id="${escapeAttr(providerId)}">
+      <div class="settlement-target-heading"><div><span class="field-label">${escapeHTML(target.role === 'vendor' ? 'VENDOR EARNING' : 'RIDER EARNING')}</span><h3>${escapeHTML(target.provider.name)}</h3><small>${escapeHTML(target.provider.label)}${target.provider.company ? ` · ${escapeHTML(target.provider.company)}` : ''} · ${escapeHTML(target.service)}</small></div><span class="badge badge-blue">${escapeHTML(BENEFICIARIES.find((item) => item.type === (target.provider.type === 'individual_rider' ? 'individual' : target.provider.type))?.label || target.provider.label)}</span></div>
+      <div class="settlement-fields-grid">
+        <label class="form-field"><span class="field-label">Applicable active rule</span><select class="select-control" data-settlement-rule>${options}</select><small class="field-help">Choose the scope that applies to this completed demo order.</small></label>
+        <label class="form-field"><span class="field-label">Eligible calculation base</span><small class="settlement-basis-label" data-settlement-basis>${escapeHTML(BASIS_LABELS[selectedRule.basis])}</small><div class="input-with-prefix"><span>₦</span><input class="input-control" data-settlement-base type="number" min="1" max="${escapeAttr(orderEarningTotalLimit)}" step="1" placeholder="Enter illustrative base" inputmode="numeric"></div><small class="field-help">Enter a demo base for this rule. It must not exceed the order total of ${formatNaira(orderEarningTotalLimit)}.</small></label>
+        <label class="form-field settlement-manual-field" data-settlement-manual-wrap hidden><span class="field-label">Amount set for this request</span><div class="input-with-prefix"><span>₦</span><input class="input-control" data-settlement-manual type="number" min="0" max="${escapeAttr(orderEarningTotalLimit)}" step="1" placeholder="Enter this order’s payout" inputmode="numeric"></div><small class="field-help">This amount is entered for this order only; no default is stored in the rule.</small></label>
+      </div>
+      <div class="settlement-preview" data-settlement-preview role="status" aria-live="polite">Enter the eligible base to preview this rule.</div>
+    </section>`;
+  }
+
+  function renderOrderEarningsModal(orderId) {
+    const order = state.orders.find((item) => item.id === orderId);
+    if (!order || order.state !== 'COMPLETED') { toast('Calculate demo earnings only after the order reaches Completed.'); return; }
+    const existing = orderLedgerEntries(order.id);
+    const missingTargets = missingOrderEarningTargets(order);
+    const targetSections = missingTargets.map((target) => renderOrderEarningLine(target, order)).join('');
+    const existingEntries = existing.map((entry) => `<div class="settlement-existing-row"><span>${escapeHTML(entry.beneficiaryName)} · ${escapeHTML(entry.orderId)}</span><strong>${formatNaira(entry.amount)}</strong><small>${escapeHTML(entry.ruleName)} · ${escapeHTML(MODE_SHORT[entry.model] || entry.model)} · Pending settlement</small></div>`).join('');
+    let emptyMessage = '';
+    if (!missingTargets.length && !existing.length) emptyMessage = '<div class="settlement-empty">No linked sample provider profile could be matched to this completed order. No earning line was created.</div>';
+    else if (!missingTargets.length) emptyMessage = '<div class="settlement-empty">All matched provider earning lines for this order are already recorded. Existing ledger snapshots will not change if a rule is edited later.</div>';
+    document.getElementById('modalRoot').innerHTML = `<div class="modal-backdrop" data-action="modal-backdrop-close"><section class="modal order-earnings-modal" role="dialog" aria-modal="true" aria-labelledby="orderEarningsTitle" data-order-id="${escapeAttr(order.id)}">
+      <header class="modal-header"><div><div class="eyebrow">${escapeHTML(order.id)} <span class="eyebrow-separator">/</span> COMPLETED ORDER</div><h2 id="orderEarningsTitle">Calculate mock earnings</h2><p>${escapeHTML(order.customer)} · ${escapeHTML(order.service)} · ${formatNaira(order.total)}</p></div><button class="modal-close" type="button" data-action="close-modal" aria-label="Close dialog">${icon('close')}</button></header>
+      <div class="modal-body"><div class="settlement-disclaimer">${icon('info')}<span>Browser-only calculation. Enter the eligible base for each selected rule; this prototype does not infer fees, item subtotals or fleet allocations from the order total. New lines stay pending settlement. No money moves.</span></div>
+        ${existingEntries ? `<section class="settlement-existing"><div class="review-section-heading"><div><h3>Already recorded for this order</h3><p>Rule and amount snapshots are preserved.</p></div></div>${existingEntries}</section>` : ''}
+        ${targetSections ? `<div class="settlement-target-list">${targetSections}</div>` : emptyMessage}
+      </div><footer class="modal-footer"><span class="modal-footer-note">${icon('lock')}Pending settlement only · no transfer</span><div class="modal-footer-actions"><button class="button button-secondary" type="button" data-action="close-modal">Close</button>${missingTargets.some((target) => activeEarningRulesForTarget(target).length) ? `<button class="button button-primary" type="button" data-action="save-order-earnings">${icon('check')}<span>Record demo ledger entries</span></button>` : ''}</div></footer>
+    </section></div>`;
+    document.querySelectorAll('[data-settlement-line]').forEach((section) => {
+      const update = () => updateOrderEarningPreview(section);
+      section.querySelector('[data-settlement-rule]')?.addEventListener('change', update);
+      section.querySelector('[data-settlement-base]')?.addEventListener('input', update);
+      section.querySelector('[data-settlement-manual]')?.addEventListener('input', update);
+      update();
+    });
+  }
+
+  function updateOrderEarningPreview(section) {
+    const providerId = section.dataset.providerId;
+    const dialog = document.querySelector('.order-earnings-modal');
+    const order = state.orders.find((item) => item.id === dialog?.dataset.orderId);
+    const target = orderEarningTargets(order).find((item) => item.provider.id === providerId);
+    const ruleId = section.querySelector('[data-settlement-rule]')?.value;
+    const rule = target && activeEarningRulesForTarget(target).find((item) => item.id === ruleId);
+    const baseInput = section.querySelector('[data-settlement-base]');
+    const manualInput = section.querySelector('[data-settlement-manual]');
+    const manualWrap = section.querySelector('[data-settlement-manual-wrap]');
+    const basisLabel = section.querySelector('[data-settlement-basis]');
+    const preview = section.querySelector('[data-settlement-preview]');
+    if (!rule || !baseInput || !preview) return;
+    if (basisLabel) basisLabel.textContent = BASIS_LABELS[rule.basis];
+    if (manualWrap) manualWrap.hidden = rule.model !== 'per_request';
+    if (baseInput) baseInput.max = String(Math.max(0, Number(order?.total) || 0));
+    if (manualInput) manualInput.max = String(Math.max(0, Number(order?.total) || 0));
+    const baseRaw = baseInput.value.trim();
+    if (!baseRaw) {
+      preview.className = 'settlement-preview';
+      preview.innerHTML = `Enter the eligible ${escapeHTML(BASIS_LABELS[rule.basis].toLowerCase())} base to preview this rule.`;
+      return;
+    }
+    const base = Number(baseRaw);
+    if (!Number.isInteger(base) || base <= 0 || base > (Number(order?.total) || 0)) {
+      preview.className = 'settlement-preview settlement-preview-error';
+      preview.textContent = 'Enter a whole-naira eligible base no greater than this order total.';
+      return;
+    }
+    let payout = 0;
+    if (rule.model === 'percentage') {
+      const rate = Number(rule.rate);
+      if (!Number.isFinite(rate) || rate < 0 || rate > 100) {
+        preview.className = 'settlement-preview settlement-preview-error';
+        preview.textContent = 'This saved percentage rule is invalid; edit it before calculating earnings.';
+        return;
+      }
+      payout = Math.round(base * rate / 100);
+    } else if (rule.model === 'fixed') {
+      const amount = Number(rule.amount);
+      if (!Number.isFinite(amount) || amount < 0) {
+        preview.className = 'settlement-preview settlement-preview-error';
+        preview.textContent = 'This saved fixed-amount rule is invalid; edit it before calculating earnings.';
+        return;
+      }
+      payout = Math.round(amount);
+    } else {
+      const manualRaw = manualInput?.value.trim() || '';
+      if (!manualRaw) {
+        preview.className = 'settlement-preview';
+        preview.textContent = 'Enter the amount set for this request to preview the payout.';
+        return;
+      }
+      const manual = Number(manualRaw);
+      if (!Number.isInteger(manual) || manual < 0 || manual > (Number(order?.total) || 0)) {
+        preview.className = 'settlement-preview settlement-preview-error';
+        preview.textContent = 'Enter a valid request amount no greater than this order total.';
+        return;
+      }
+      payout = Math.round(manual);
+    }
+    if (payout > base) {
+      preview.className = 'settlement-preview settlement-preview-error';
+      preview.textContent = `Calculated payout ${formatNaira(payout)} exceeds the eligible base ${formatNaira(base)}.`;
+      return;
+    }
+    preview.className = 'settlement-preview';
+    preview.innerHTML = `<span>${escapeHTML(ruleTitle(rule))} · ${escapeHTML(MODE_SHORT[rule.model] || rule.model)}</span><strong>${formatNaira(payout)}</strong><small>${formatNaira(base)} ${escapeHTML(BASIS_LABELS[rule.basis].toLowerCase())} base · ${formatNaira(base - payout)} remains before other fees.</small>`;
+  }
+
+  function createLedgerEntryId() {
+    return `LG-D${Date.now().toString(36).toUpperCase()}${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+  }
+
+  function saveOrderEarnings() {
+    const dialog = document.querySelector('.order-earnings-modal');
+    const order = state.orders.find((item) => item.id === dialog?.dataset.orderId);
+    if (!order || order.state !== 'COMPLETED') { toast('The order must remain completed to record a demo earning.'); return; }
+    const targets = missingOrderEarningTargets(order);
+    const lines = [];
+    for (const target of targets) {
+      const section = [...document.querySelectorAll('[data-settlement-line]')].find((item) => item.dataset.providerId === target.provider.id);
+      if (!section) continue;
+      const ruleId = section.querySelector('[data-settlement-rule]')?.value;
+      const rule = activeEarningRulesForTarget(target).find((item) => item.id === ruleId);
+      const baseRaw = section.querySelector('[data-settlement-base]')?.value.trim() || '';
+      const base = Number(baseRaw);
+      if (!rule || !baseRaw || !Number.isInteger(base) || base <= 0 || base > Number(order.total)) {
+        toast(`Enter a valid eligible base and active rule for ${target.provider.name}.`);
+        return;
+      }
+      let payout = 0;
+      if (rule.model === 'percentage') {
+        const rate = Number(rule.rate);
+        if (!Number.isFinite(rate) || rate < 0 || rate > 100) { toast('Correct the selected percentage rule before calculating.'); return; }
+        payout = Math.round(base * rate / 100);
+      } else if (rule.model === 'fixed') {
+        const amount = Number(rule.amount);
+        if (!Number.isFinite(amount) || amount < 0) { toast('Correct the selected fixed amount before calculating.'); return; }
+        payout = Math.round(amount);
+      } else {
+        const manualRaw = section.querySelector('[data-settlement-manual]')?.value.trim() || '';
+        const manual = Number(manualRaw);
+        if (!manualRaw || !Number.isInteger(manual) || manual < 0 || manual > Number(order.total)) { toast(`Enter a valid per-request amount for ${target.provider.name}.`); return; }
+        payout = Math.round(manual);
+      }
+      if (payout > base) { toast(`The payout for ${target.provider.name} cannot exceed its eligible base.`); return; }
+      lines.push({ target, rule, base: Math.round(base), payout });
+    }
+    if (!lines.length) { toast('No eligible earning lines are ready to record.'); return; }
+    const createdAt = new Date().toISOString();
+    const entries = lines.map(({ target, rule, base, payout }) => ({
+      id: createLedgerEntryId(), orderId: order.id, providerId: target.provider.id, beneficiaryName: target.provider.name,
+      beneficiaryType: target.provider.type, role: target.role, ruleId: rule.id, ruleName: ruleTitle(rule), ruleScope: rule.scope || '',
+      model: rule.model, rate: rule.model === 'percentage' ? Number(rule.rate) : 0, fixedAmount: rule.model === 'fixed' ? Number(rule.amount) : 0,
+      basis: rule.basis, basisAmount: base, amount: payout, status: 'PENDING_SETTLEMENT', createdAt
+    }));
+    state.ledgerEntries = [...entries, ...state.ledgerEntries];
+    const total = entries.reduce((sum, entry) => sum + entry.amount, 0);
+    addActivity('Order-linked demo earnings calculated', `${order.id} · ${entries.length} provider line${entries.length === 1 ? '' : 's'}`, formatNaira(total));
+    saveState();
+    closeModal();
+    render();
+    renderOrderModal(order.id);
+    toast(`${entries.length} mock earning line${entries.length === 1 ? '' : 's'} recorded as pending settlement.`);
+  }
+
+  function renderLedgerEntryModal(entryId) {
+    const entry = state.ledgerEntries.find((item) => item.id === entryId);
+    if (!entry) return;
+    const order = state.orders.find((item) => item.id === entry.orderId);
+    const method = entry.model === 'percentage' ? `${entry.rate}% of eligible base` : entry.model === 'fixed' ? `${formatNaira(entry.fixedAmount)} per completed order` : 'Amount set for this request';
+    const recordedAt = entry.createdAt ? new Date(entry.createdAt) : null;
+    const time = recordedAt && !Number.isNaN(recordedAt.getTime()) ? new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeStyle: 'short' }).format(recordedAt) : 'Recorded locally';
+    document.getElementById('modalRoot').innerHTML = `<div class="modal-backdrop" data-action="modal-backdrop-close"><section class="modal ledger-entry-modal" role="dialog" aria-modal="true" aria-labelledby="ledgerEntryTitle"><header class="modal-header"><div><div class="eyebrow">${escapeHTML(entry.id)} <span class="eyebrow-separator">/</span> ${escapeHTML(entry.orderId)}</div><h2 id="ledgerEntryTitle">Order-linked earning</h2><p>${escapeHTML(entry.beneficiaryName)} · ${escapeHTML(BENEFICIARIES.find((item) => item.type === (entry.beneficiaryType === 'individual_rider' ? 'individual' : entry.beneficiaryType))?.label || entry.beneficiaryType)}</p></div><button class="modal-close" type="button" data-action="close-modal" aria-label="Close dialog">${icon('close')}</button></header><div class="modal-body"><div class="settlement-disclaimer">${icon('info')}<span>Browser-only ledger snapshot. This line is pending settlement; no transfer or withdrawal occurred.</span></div><dl class="ledger-entry-details"><div><dt>Selected rule</dt><dd>${escapeHTML(entry.ruleName)}${entry.ruleScope ? ` · ${escapeHTML(entry.ruleScope)}` : ''}</dd></div><div><dt>Method</dt><dd>${escapeHTML(method)}</dd></div><div><dt>Calculation base</dt><dd>${escapeHTML(BASIS_LABELS[entry.basis] || entry.basis)} · ${formatNaira(entry.basisAmount)}</dd></div><div><dt>Calculated earning</dt><dd>${formatNaira(entry.amount)}</dd></div><div><dt>Order total</dt><dd>${formatNaira(order?.total || 0)}</dd></div><div><dt>Status / recorded</dt><dd>Pending settlement · ${escapeHTML(time)}</dd></div></dl></div><footer class="modal-footer"><span class="modal-footer-note">${icon('lock')}No money moved</span><div class="modal-footer-actions"><button class="button button-secondary" type="button" data-action="close-modal">Close</button>${order ? `<button class="button button-primary" type="button" data-action="open-order" data-id="${escapeAttr(order.id)}">View order</button>` : ''}</div></footer></section></div>`;
+  }
+
   function renderOrderModal(orderId) {
     const order = state.orders.find((item) => item.id === orderId);
     if (!order) return;
@@ -813,9 +1694,14 @@
     const nextButton = nextState
       ? `<button class="button button-primary" type="button" data-action="transition-order" data-id="${escapeAttr(order.id)}" data-next="${escapeAttr(nextState)}">${icon('arrow-right')}<span>${escapeHTML(ORDER_NEXT_ACTIONS[nextState] || ORDER_STATE_LABELS[nextState])}</span></button>`
       : `<span class="badge badge-green">${icon('check')}Workflow complete</span>`;
+    const recordedEarnings = orderLedgerEntries(order.id);
+    const missingEarningTargets = order.state === 'COMPLETED' ? missingOrderEarningTargets(order) : [];
     const settlementCopy = order.state === 'COMPLETED'
-      ? 'A production ledger settlement would be created only after verified completion. No money moved in this demo.'
+      ? recordedEarnings.length ? `${recordedEarnings.length} browser-only earning line${recordedEarnings.length === 1 ? '' : 's'} recorded; all remain pending settlement. No money moved.` : orderEarningTargets(order).length ? 'Order completed. Calculate mock earnings from the active rules; new ledger lines remain pending settlement.' : 'No linked sample provider profile was found for this order, so no earning line can be calculated.'
       : 'Partner earnings remain unavailable until completion and payment reconciliation.';
+    const earningsAction = order.state !== 'COMPLETED' ? '' : missingEarningTargets.length
+      ? `<button class="button button-primary" type="button" data-action="calculate-order-earnings" data-id="${escapeAttr(order.id)}">${icon('chart')}<span>${recordedEarnings.length ? 'Add missing earning lines' : 'Calculate demo earnings'}</span></button>`
+      : recordedEarnings.length ? `<button class="button button-secondary" type="button" data-page="ledger">${icon('receipt')}<span>View ledger</span></button>` : '';
     document.getElementById('modalRoot').innerHTML = `<div class="modal-backdrop" data-action="modal-backdrop-close"><section class="modal order-modal" role="dialog" aria-modal="true" aria-labelledby="orderModalTitle">
       <header class="modal-header"><div><div class="eyebrow">${escapeHTML(order.id)} <span class="eyebrow-separator">/</span> ${escapeHTML(order.service)}</div><h2 id="orderModalTitle">Order workflow</h2><p>${escapeHTML(order.customer)} · ${escapeHTML(order.area)} · ${formatNaira(order.total)}</p></div><button class="modal-close" type="button" data-action="close-modal" aria-label="Close dialog">${icon('close')}</button></header>
       <div class="modal-body">
@@ -824,7 +1710,7 @@
         <div class="order-settlement-note">${icon('wallet')}<span><strong>Settlement guard</strong>${escapeHTML(settlementCopy)}</span></div>
         ${latest ? `<p class="order-last-event">Last event: ${escapeHTML(ORDER_STATE_LABELS[latest.state] || latest.state)} · ${escapeHTML(latest.actor || 'Recorded')} · ${escapeHTML(latest.at || '')}</p>` : ''}
       </div>
-      <footer class="modal-footer"><span class="modal-footer-note">${icon('info')}Local simulation · No credentials or payments are verified</span><div class="modal-footer-actions"><button class="button button-secondary" type="button" data-action="close-modal">Close</button>${nextButton}</div></footer>
+      <footer class="modal-footer"><span class="modal-footer-note">${icon('info')}Local simulation · No credentials or payments are verified</span><div class="modal-footer-actions"><button class="button button-secondary" type="button" data-action="close-modal">Close</button>${nextButton}${earningsAction}</div></footer>
     </section></div>`;
   }
 
@@ -835,9 +1721,11 @@
       return;
     }
     order.state = requestedState;
+    if (requestedState === 'VENDOR_ACCEPTED' && /^Awaiting/.test(order.provider)) order.provider = 'Eligible vendor (simulated)';
+    if (requestedState === 'VENDOR_ACCEPTED' && ['Pending vendor acceptance', 'Unassigned'].includes(order.rider)) order.rider = 'Pending rider assignment';
     const actor = requestedState === 'PAYMENT_VERIFIED' ? 'Payment service (simulated)' :
       requestedState === 'VENDOR_ACCEPTED' || requestedState === 'PREPARING' || requestedState === 'READY_FOR_PICKUP' ? order.provider :
-      requestedState === 'PROVIDER_ACCEPTED' ? 'Eligible provider (simulated)' :
+      requestedState === 'PROVIDER_ACCEPTED' ? (order.rider && order.rider !== 'Unassigned' ? order.rider : 'Eligible provider (simulated)') :
       requestedState === 'COMPLETED' ? 'Settlement service (simulated)' : 'Assigned rider (simulated)';
     const at = new Date().toLocaleTimeString('en-NG', { hour: '2-digit', minute: '2-digit' });
     order.history = Array.isArray(order.history) ? order.history : [];
@@ -864,7 +1752,7 @@
       customer: 'Demo customer',
       provider: 'Awaiting eligible rider',
       rider: 'Unassigned',
-      area: selectedLocation === 'All locations' ? 'Kano Municipal' : selectedLocation,
+      area: testOrderArea(),
       total: 3200,
       created: at,
       history: [{ state: 'REQUESTED', actor: 'Customer (simulated)', at }]
@@ -872,7 +1760,8 @@
     state.orders.unshift(order);
     saveState();
     render();
-    renderOrderModal(order.id);
+    if (activePage === 'assignment-queue') renderAssignmentModal(order.id);
+    else renderOrderModal(order.id);
     toast('Test order added. Continue through the state machine to explore the demo.');
   }
 
@@ -1175,6 +2064,207 @@
     toast('Field removed from the draft. Published versions are unchanged.');
   }
 
+  function providerDirectoryRows(pageKey) {
+    return filteredProviders(pageKey).map((provider) => {
+      const load = providerLoad(provider);
+      const scopes = provider.coverage.map((scope) => `${scope.areas.length ? scope.areas.join(', ') : 'Entire LGA'} · ${scope.lga}, ${scope.state}`).join(' / ');
+      const approval = provider.approved
+        ? `<span class="badge badge-green">Partner approved</span>`
+        : `<span class="badge badge-amber">Partner review needed</span>`;
+      const fleetApproval = provider.type === 'company_rider'
+        ? `<span class="badge badge-${provider.companyApproved ? 'green' : 'amber'}">${provider.companyApproved ? 'Fleet approved' : 'Fleet review needed'}</span>`
+        : '';
+      const dispatchStatus = !provider.approved ? ['Approval needed', 'amber'] : provider.type === 'company_rider' && !provider.companyApproved ? ['Fleet approval needed', 'amber'] : !provider.coverage.length ? ['Coverage needed', 'amber'] : !provider.online ? ['Offline', 'gray'] : !provider.available ? ['Not accepting', 'orange'] : load >= provider.capacity ? ['At capacity', 'amber'] : ['Online · available', 'green'];
+      return `<tr>
+        <td><div class="table-person"><span class="table-avatar">${escapeHTML(initials(provider.name))}</span><span><strong>${escapeHTML(provider.name)}</strong><small>${escapeHTML(provider.id)} · ${escapeHTML(provider.label)}${provider.company ? ` · ${escapeHTML(provider.company)}` : ''}</small></span></div></td>
+        <td><div class="provider-approval-stack">${approval}${fleetApproval}</div></td>
+        <td><span class="provider-coverage-summary">${escapeHTML(scopes || 'No configured coverage')}</span></td>
+        <td><span class="provider-load-value">${load}<small> / ${provider.capacity}</small></span><small class="provider-load-label">active jobs</small></td>
+        <td><span class="badge badge-${dispatchStatus[1]}">${escapeHTML(dispatchStatus[0])}</span></td>
+        <td><button class="button button-secondary order-open-button" type="button" data-action="edit-provider-settings" data-id="${escapeAttr(provider.id)}">Manage ${icon('arrow-right')}</button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function filteredProviders(pageKey) {
+    const types = pageKey === 'riders' ? ['individual_rider', 'company_rider'] : ['restaurant', 'small_chops'];
+    const query = providerDirectorySearch.trim().toLowerCase();
+    return state.providers.filter((provider) => {
+      if (!types.includes(provider.type)) return false;
+      const load = providerLoad(provider);
+      const dispatchReady = provider.approved && (provider.type !== 'company_rider' || provider.companyApproved) && provider.online && provider.available && provider.coverage.length > 0 && load < provider.capacity;
+      const needsApproval = !provider.approved || (provider.type === 'company_rider' && !provider.companyApproved);
+      if (providerDirectoryFilter === 'ready' && !dispatchReady) return false;
+      if (providerDirectoryFilter === 'unavailable' && dispatchReady) return false;
+      if (providerDirectoryFilter === 'review' && !needsApproval) return false;
+      if (!query) return true;
+      return [provider.id, provider.name, provider.label, provider.company, ...provider.coverage.map((scope) => `${scope.state} ${scope.lga} ${scope.areas.join(' ')}`)].join(' ').toLowerCase().includes(query);
+    });
+  }
+
+  function renderProviderDirectoryPage(pageKey) {
+    const meta = PAGE_META[pageKey];
+    const providers = state.providers.filter((provider) => pageKey === 'riders' ? ['individual_rider', 'company_rider'].includes(provider.type) : ['restaurant', 'small_chops'].includes(provider.type));
+    const ready = providers.filter((provider) => provider.approved && (provider.type !== 'company_rider' || provider.companyApproved) && provider.online && provider.available && provider.coverage.length > 0 && providerLoad(provider) < provider.capacity).length;
+    const active = providers.filter((provider) => provider.online).length;
+    const needsReview = providers.filter((provider) => !provider.approved || (provider.type === 'company_rider' && !provider.companyApproved)).length;
+    const filters = [
+      ['all', 'All partners', providers.length],
+      ['ready', 'Dispatch ready', ready],
+      ['unavailable', 'Not dispatch ready', providers.length - ready],
+      ['review', 'Approval needed', needsReview]
+    ];
+    const buttons = `<button class="button button-secondary" type="button" data-page="locations">${icon('map')}<span>Service areas</span></button><button class="button button-primary" type="button" data-page="assignment-queue">${icon('clipboard')}<span>Assignment queue</span></button>`;
+    const stats = [
+      [pageKey === 'riders' ? 'Rider profiles' : 'Vendor profiles', String(providers.length), pageKey === 'riders' ? 'Individual and fleet riders' : 'Restaurants and small-chops', pageKey === 'riders' ? 'bike' : 'store', 'green'],
+      ['Dispatch ready', String(ready), 'Approval, coverage, availability and capacity', 'check', 'blue'],
+      ['Online', String(active), 'May still be unavailable or full', 'activity', 'orange'],
+      ['Approval needed', String(needsReview), 'Review before matching', 'shield', 'amber']
+    ];
+    const rows = providerDirectoryRows(pageKey);
+    return `<div class="page provider-directory-page">
+      ${renderPageHeading(meta.title, meta.eyebrow, 'Manage demo provider availability, workload limits and service-area coverage. These local settings immediately affect Assignment Queue eligibility.', buttons)}
+      ${renderStatCards(stats)}
+      <div class="module-hero"><div class="module-hero-copy"><h2>${pageKey === 'riders' ? 'Availability is not the same as approval.' : 'Partner readiness, by configured service area.'}</h2><p>${pageKey === 'riders' ? 'Company fleet approval and each rider’s approval are checked independently. Set demo online status, availability, capacity and coverage below.' : 'Restaurants and small-chops vendors have separate service types. Online status, capacity and configured coverage determine which requests can be offered.'}</p></div><span class="module-hero-badge">${icon('shield')}Demo controls · Browser only</span></div>
+      <section class="card"><div class="card-header"><div><h2 class="card-title">${escapeHTML(meta.sectionTitle)}</h2><p class="card-subtitle">Partner and fleet approval derive from linked sample Applications; review decisions affect demo matching only.</p></div><span class="badge badge-blue">${providers.length} demo profiles</span></div>
+        <div class="provider-toolbar"><div class="rule-filters provider-filters" role="group" aria-label="Filter provider profiles">${filters.map(([key, label, count]) => `<button class="filter-button ${providerDirectoryFilter === key ? 'active' : ''}" type="button" data-provider-filter="${escapeAttr(key)}">${escapeHTML(label)} <span>${count}</span></button>`).join('')}</div><label class="search-field"><span class="sr-only">Search provider profiles</span>${icon('search')}<input id="providerDirectorySearch" type="search" placeholder="Search provider, company or coverage…" value="${escapeAttr(providerDirectorySearch)}"></label></div>
+        <div class="table-scroll"><table class="module-table provider-directory-table"><thead><tr><th>Provider</th><th>Approval</th><th>Configured service coverage</th><th>Workload</th><th>Dispatch status</th><th>Controls</th></tr></thead><tbody id="providerDirectoryBody">${rows || '<tr><td colspan="6"><div class="empty-state">No providers match this view. Try another filter.</div></td></tr>'}</tbody></table></div>
+        <div class="table-foot"><span id="providerCountFoot">Showing <strong>${filteredProviders(pageKey).length}</strong> of ${providers.length} demo profiles</span><span>Sample providers · Not live availability</span></div>
+      </section>
+      <div class="rule-note">${icon('info')}<span><strong>Approval safeguard.</strong> Partner and company approval are linked to the corresponding mock application decisions. Production dispatch must use server-verified identity review, company approval and live availability.</span></div>
+    </div>`;
+  }
+
+  function providerLocationFromKey(key) {
+    const match = /^(\d+):(\d+)$/.exec(String(key || ''));
+    if (!match) return null;
+    const coverageState = state.coverage[Number(match[1])];
+    const lga = coverageState?.lgas[Number(match[2])];
+    return coverageState && lga ? { coverageState, lga } : null;
+  }
+
+  function providerLocationKey(stateName, lgaName) {
+    const stateIndex = state.coverage.findIndex((item) => item.name === stateName);
+    const lgaIndex = state.coverage[stateIndex]?.lgas.findIndex((item) => item.name === lgaName) ?? -1;
+    return stateIndex >= 0 && lgaIndex >= 0 ? `${stateIndex}:${lgaIndex}` : '';
+  }
+
+  function providerCoverageOptions(key, selected = '') {
+    const location = providerLocationFromKey(key);
+    const options = location ? `<option value="*" ${selected === '*' ? 'selected' : ''}>Entire LGA · all configured neighborhoods</option>${location.lga.areas.map((area) => `<option value="${escapeAttr(area)}" ${selected === area ? 'selected' : ''}>${escapeHTML(area)}</option>`).join('')}` : '<option value="*">Entire LGA · all configured neighborhoods</option>';
+    return `<option value="" disabled ${selected === '' ? 'selected' : ''}>Choose an LGA or neighborhood scope</option>${options}`;
+  }
+
+  function renderProviderCoverageRows(provider) {
+    if (!provider.coverage.length) return '<p class="coverage-empty">No service areas configured for this provider.</p>';
+    return provider.coverage.map((scope) => {
+      const entries = scope.areas.length ? scope.areas.map((area) => ({ area, label: `${area} · ${scope.lga}, ${scope.state}` })) : [{ area: '*', label: `Entire LGA · ${scope.lga}, ${scope.state}` }];
+      return entries.map((entry) => `<div class="provider-scope-row"><span>${icon('pin')}${escapeHTML(entry.label)}</span><button class="text-button" type="button" data-action="remove-provider-draft-scope" data-state="${escapeAttr(scope.state)}" data-lga="${escapeAttr(scope.lga)}" data-area="${escapeAttr(entry.area)}">Remove</button></div>`).join('');
+    }).join('');
+  }
+
+  function renderProviderSettingsModal(providerId) {
+    const provider = state.providers.find((item) => item.id === providerId);
+    if (!provider) return;
+    if (!providerDraft || providerDraft.id !== providerId) {
+      providerDraft = { id: providerId, online: provider.online, available: provider.available, capacity: String(provider.capacity), coverage: structuredCloneSafe(provider.coverage) };
+      providerCoverageLocationValue = state.coverage.find((item) => item.name === selectedLocation)?.lgas.length ? providerLocationKey(selectedLocation, state.coverage.find((item) => item.name === selectedLocation).lgas[0].name) : '';
+      if (!providerCoverageLocationValue && state.coverage[0]?.lgas[0]) providerCoverageLocationValue = providerLocationKey(state.coverage[0].name, state.coverage[0].lgas[0].name);
+      providerCoverageAreaValue = '';
+    }
+    const draft = providerDraft;
+    const locationOptions = state.coverage.flatMap((coverageState, stateIndex) => coverageState.lgas.map((lga, lgaIndex) => `<option value="${stateIndex}:${lgaIndex}" ${providerLocationKey(coverageState.name, lga.name) === providerCoverageLocationValue ? 'selected' : ''}>${escapeHTML(lga.name)}, ${escapeHTML(coverageState.name)}</option>`)).join('');
+    const approval = provider.approved ? 'Partner approval: approved (demo)' : 'Partner approval: not approved (demo)';
+    const fleetApproval = provider.type === 'company_rider' ? `<p class="provider-modal-approval">Fleet approval: ${provider.companyApproved ? 'approved' : 'not approved'} (demo)</p>` : '';
+    const scopeRows = renderProviderCoverageRows(draft);
+    document.getElementById('modalRoot').innerHTML = `<div class="modal-backdrop" data-action="modal-backdrop-close"><section class="modal provider-settings-modal" role="dialog" aria-modal="true" aria-labelledby="providerSettingsTitle">
+      <header class="modal-header"><div><div class="eyebrow">${escapeHTML(provider.id)} <span class="eyebrow-separator">/</span> ${escapeHTML(provider.label)}</div><h2 id="providerSettingsTitle">Manage provider readiness</h2><p>${escapeHTML(provider.name)}${provider.company ? ` · ${escapeHTML(provider.company)}` : ''}</p></div><button class="modal-close" type="button" data-action="close-modal" aria-label="Close dialog">${icon('close')}</button></header>
+      <div class="modal-body"><div class="provider-modal-status"><span class="badge badge-${provider.approved ? 'green' : 'amber'}">${provider.approved ? 'Partner approved' : 'Approval needed'}</span>${provider.type === 'company_rider' ? `<span class="badge badge-${provider.companyApproved ? 'green' : 'amber'}">${provider.companyApproved ? 'Fleet approved' : 'Fleet approval needed'}</span>` : ''}</div><p class="provider-modal-approval">${escapeHTML(approval)} · Approval derives from linked mock Applications; no real identity or business verification occurred.</p>${fleetApproval}
+        <div class="provider-settings-grid"><label class="provider-setting-toggle"><input id="providerOnline" type="checkbox" ${draft.online ? 'checked' : ''}><span><strong>Online</strong><small>Visible as online in the demo.</small></span></label><label class="provider-setting-toggle"><input id="providerAvailable" type="checkbox" ${draft.available ? 'checked' : ''}><span><strong>Accepting assignments</strong><small>Can receive new demo offers.</small></span></label><div class="form-field provider-capacity-field"><label class="field-label" for="providerCapacity">Maximum active jobs</label><input id="providerCapacity" class="input-control" type="number" min="1" max="50" step="1" value="${escapeAttr(draft.capacity)}"><small class="field-help">Current workload: ${providerLoad(provider)} active job${providerLoad(provider) === 1 ? '' : 's'}.</small><div class="form-error">Set a whole-number capacity from 1 to 50.</div></div></div>
+        <section class="provider-coverage-editor"><div class="review-section-heading"><div><h3>Provider service coverage</h3><p>Scopes must exist in configured platform coverage. Broad LGA and neighborhood scopes are distinct.</p></div></div><div class="provider-scope-list">${scopeRows}</div><div class="provider-coverage-add"><label class="form-field"><span class="field-label">Configured LGA</span><select id="providerCoverageLocation" class="select-control" ${locationOptions ? '' : 'disabled'}>${locationOptions || '<option value="">No configured LGAs</option>'}</select></label><label class="form-field"><span class="field-label">Scope</span><select id="providerCoverageArea" class="select-control" ${locationOptions ? '' : 'disabled'}>${providerCoverageOptions(providerCoverageLocationValue, providerCoverageAreaValue)}</select></label><button class="button button-secondary" type="button" data-action="add-provider-draft-scope" ${locationOptions ? '' : 'disabled'}>${icon('plus')}<span>Add scope</span></button></div><p class="provider-coverage-help">Changes to coverage are included when you save this provider profile. They immediately affect future demo matches only.</p></section>
+      </div><footer class="modal-footer"><span class="modal-footer-note">${icon('info')}Local demo settings · No real status changed</span><div class="modal-footer-actions"><button class="button button-secondary" type="button" data-action="close-modal">Cancel</button><button class="button button-primary" type="button" data-action="save-provider-settings">${icon('check')}<span>Save profile</span></button></div></footer>
+    </section></div>`;
+    document.getElementById('providerCoverageLocation')?.addEventListener('change', (event) => {
+      providerCoverageLocationValue = event.target.value;
+      providerCoverageAreaValue = '';
+      const areaSelect = document.getElementById('providerCoverageArea');
+      if (areaSelect) {
+        areaSelect.innerHTML = providerCoverageOptions(providerCoverageLocationValue, '');
+        areaSelect.value = '';
+      }
+    });
+    document.getElementById('providerCoverageArea')?.addEventListener('change', (event) => { providerCoverageAreaValue = event.target.value; });
+  }
+
+  function captureProviderDraftFields() {
+    if (!providerDraft) return;
+    const online = document.getElementById('providerOnline');
+    const available = document.getElementById('providerAvailable');
+    const capacity = document.getElementById('providerCapacity');
+    if (online) providerDraft.online = online.checked;
+    if (available) providerDraft.available = available.checked;
+    if (capacity) providerDraft.capacity = capacity.value;
+  }
+
+  function addProviderDraftScope() {
+    captureProviderDraftFields();
+    if (!providerDraft) return;
+    const location = providerLocationFromKey(document.getElementById('providerCoverageLocation')?.value || providerCoverageLocationValue);
+    const area = document.getElementById('providerCoverageArea')?.value || providerCoverageAreaValue;
+    if (!location) { toast('Choose a configured LGA before adding provider coverage.'); return; }
+    if (!area) { toast('Choose an LGA-wide or neighborhood scope before adding it.'); return; }
+    const { coverageState, lga } = location;
+    const existing = providerDraft.coverage.find((scope) => scope.state === coverageState.name && scope.lga === lga.name);
+    if (area === '*') {
+      providerDraft.coverage = providerDraft.coverage.filter((scope) => scope.state !== coverageState.name || scope.lga !== lga.name);
+      providerDraft.coverage.push({ state: coverageState.name, lga: lga.name, areas: [] });
+    } else if (existing?.areas.length === 0) {
+      toast('This provider already has broad coverage across that LGA. Remove it first to narrow the scope.');
+      return;
+    } else if (existing) {
+      if (!existing.areas.includes(area)) existing.areas.push(area);
+    } else {
+      providerDraft.coverage.push({ state: coverageState.name, lga: lga.name, areas: [area] });
+    }
+    providerCoverageLocationValue = document.getElementById('providerCoverageLocation')?.value || providerCoverageLocationValue;
+    providerCoverageAreaValue = '';
+    renderProviderSettingsModal(providerDraft.id);
+  }
+
+  function removeProviderDraftScope(stateName, lgaName, area) {
+    captureProviderDraftFields();
+    if (!providerDraft) return;
+    if (area === '*') {
+      providerDraft.coverage = providerDraft.coverage.filter((scope) => scope.state !== stateName || scope.lga !== lgaName);
+    } else {
+      providerDraft.coverage = providerDraft.coverage.map((scope) => scope.state === stateName && scope.lga === lgaName ? { ...scope, areas: scope.areas.filter((item) => item !== area) } : scope).filter((scope) => scope.areas.length || !scope.state || !scope.lga);
+    }
+    renderProviderSettingsModal(providerDraft.id);
+  }
+
+  function saveProviderSettings() {
+    captureProviderDraftFields();
+    if (!providerDraft) return;
+    const capacity = Number(providerDraft.capacity);
+    const field = document.getElementById('providerCapacity')?.closest('.form-field');
+    if (!Number.isInteger(capacity) || capacity < 1 || capacity > 50) {
+      field?.classList.add('has-error');
+      document.getElementById('providerCapacity')?.focus();
+      return;
+    }
+    const provider = state.providers.find((item) => item.id === providerDraft.id);
+    if (!provider) return;
+    provider.online = Boolean(providerDraft.online);
+    provider.available = Boolean(providerDraft.available);
+    provider.capacity = capacity;
+    provider.coverage = normalizeProviderCoverage(providerDraft.coverage, state.coverage);
+    saveState();
+    const name = provider.name;
+    closeModal();
+    render();
+    toast(`${name} provider settings saved in this browser.`);
+  }
+
   function renderStandardPage(pageKey) {
     const meta = PAGE_META[pageKey] || PAGE_META['live-orders'];
     const buttons = pageKey === 'website'
@@ -1190,6 +2280,36 @@
         <section class="card"><div class="card-header"><div><h2 class="card-title">${escapeHTML(meta.sectionTitle)}</h2><p class="card-subtitle">${escapeHTML(meta.sectionCopy)}</p></div><button type="button" class="text-button" data-action="module-view-all">View all ${icon('arrow-right')}</button></div><div class="table-scroll"><table class="module-table"><thead><tr><th>Record</th><th>Location / owner</th><th>Amount / metric</th><th>Status</th><th><span class="sr-only">Open</span></th></tr></thead><tbody>${tableRows}</tbody></table></div><div class="table-foot"><span>Showing <strong>${meta.rows.length}</strong> illustrative records</span><span>Updated just now</span></div></section>
         <aside class="card module-info-card"><h3>${escapeHTML(meta.sideTitle)}</h3><p>${escapeHTML(meta.sideCopy)}</p><div class="info-list">${infoItems}</div><div style="margin-top:15px"><button class="button button-secondary" type="button" data-action="module-help">View module guidance ${icon('arrow-right')}</button></div></aside>
       </div>
+    </div>`;
+  }
+
+  function renderLedgerPage() {
+    const meta = PAGE_META.ledger;
+    const entries = state.ledgerEntries.slice();
+    const earned = entries.reduce((sum, entry) => sum + entry.amount, 0);
+    const entryStats = entries.length ? [
+      ['Order-linked earnings', formatNaira(earned), `${entries.length} calculated demo line${entries.length === 1 ? '' : 's'}`, 'banknote', 'orange'],
+      ['Pending settlement', formatNaira(entries.filter((entry) => entry.status === 'PENDING_SETTLEMENT').reduce((sum, entry) => sum + entry.amount, 0)), 'No money has moved', 'clock', 'amber'],
+      ['Calculated entries', String(entries.length), 'Rule snapshots preserved', 'receipt', 'blue'],
+      ['Completed orders', String(new Set(entries.map((entry) => entry.orderId)).size), 'With order-linked demo earnings', 'check', 'green']
+    ] : meta.stats;
+    const calculatedRows = entries.map((entry) => {
+      const roleLabel = entry.role === 'vendor' ? 'Vendor earning' : 'Rider earning';
+      const method = entry.model === 'percentage' ? `${entry.rate}%` : entry.model === 'fixed' ? formatNaira(entry.fixedAmount) : 'Set per request';
+      return `<tr><td><div class="table-person"><span class="table-avatar">${escapeHTML(initials(entry.beneficiaryName))}</span><span><strong>${escapeHTML(entry.id)}</strong><small>${escapeHTML(roleLabel)} · ${escapeHTML(entry.orderId)} · ${escapeHTML(entry.ruleName)}</small></span></div></td><td><span class="basis-label">${escapeHTML(entry.beneficiaryName)}</span><small class="ledger-basis-detail">${escapeHTML(BASIS_LABELS[entry.basis] || entry.basis)} · ${formatNaira(entry.basisAmount)} base · ${escapeHTML(method)}</small></td><td><span class="rate-primary">+${formatNaira(entry.amount)}</span><small class="ledger-basis-detail">Pending · no transfer</small></td><td><span class="badge badge-amber">Pending settlement</span></td><td><button class="icon-action" type="button" aria-label="View ${escapeAttr(entry.id)} details" data-action="open-ledger-entry" data-id="${escapeAttr(entry.id)}">${icon('arrow-right')}</button></td></tr>`;
+    }).join('');
+    const sampleRows = meta.rows.map((row) => `<tr><td><div class="table-person"><span class="table-avatar">${escapeHTML(row.initials || initials(row.name))}</span><span><strong>${escapeHTML(row.name)}</strong><small>${escapeHTML(row.detail)}</small></span></div></td><td><span class="basis-label">${escapeHTML(row.area)}</span></td><td><span class="rate-primary">${escapeHTML(row.amount)}</span></td><td><span class="badge badge-${escapeAttr(row.badge || 'gray')}">${escapeHTML(row.status)}</span></td><td><button class="icon-action" type="button" aria-label="Open ${escapeAttr(row.name)} details" data-action="record-info" data-name="${escapeAttr(row.name)}">${icon('arrow-right')}</button></td></tr>`).join('');
+    const allRows = calculatedRows + sampleRows;
+    const sectionCopy = entries.length ? 'New order-linked demo earnings appear first. They remain pending and do not change a wallet or initiate a payment.' : meta.sectionCopy;
+    const buttons = `<button class="button button-secondary" type="button" data-action="module-help">${icon('info')}<span>Ledger guidance</span></button><button class="button button-primary" type="button" data-page="live-orders">${icon('activity')}<span>View completed orders</span></button>`;
+    return `<div class="page module-page ledger-page">
+      ${renderPageHeading(meta.title, meta.eyebrow, meta.description, buttons)}
+      ${renderStatCards(entryStats)}
+      <div class="module-hero"><div class="module-hero-copy"><h2>${escapeHTML(meta.heroTitle)}</h2><p>${escapeHTML(meta.heroCopy)}${entries.length ? ' New browser-only earnings are calculated from saved rule snapshots and remain pending settlement.' : ''}</p></div><span class="module-hero-badge">${icon('wallet')}DEMO LEDGER · No transfers</span></div>
+      <div class="module-content-grid"><section class="card"><div class="card-header"><div><h2 class="card-title">${escapeHTML(meta.sectionTitle)}</h2><p class="card-subtitle">${escapeHTML(sectionCopy)}</p></div><span class="badge badge-blue">${entries.length} order-linked demo line${entries.length === 1 ? '' : 's'}</span></div>
+        <div class="table-scroll"><table class="module-table ledger-table"><thead><tr><th>Ledger entry</th><th>Beneficiary / base</th><th>Earning</th><th>Status</th><th><span class="sr-only">Open</span></th></tr></thead><tbody>${allRows}</tbody></table></div>
+        <div class="table-foot"><span>Showing <strong>${entries.length + meta.rows.length}</strong> illustrative and order-linked records</span><span>Local snapshots · No bank movement</span></div>
+      </section><aside class="card module-info-card"><h3>${escapeHTML(meta.sideTitle)}</h3><p>${escapeHTML(meta.sideCopy)}</p><div class="info-list">${meta.infoItems.map((item) => `<div class="info-list-item">${icon('check')}<span>${escapeHTML(item)}</span></div>`).join('')}</div><div class="rule-note ledger-safety-note">${icon('shield')}<span>New demo entries are pending settlement only. They are not withdrawable, posted to a wallet or evidence of a transfer.</span></div></aside></div>
     </div>`;
   }
 
@@ -1212,6 +2332,217 @@
       <div class="dashboard-bottom-grid"><section class="card"><div class="card-header"><div><h2 class="card-title">${escapeHTML(meta.sectionTitle)}</h2><p class="card-subtitle">${escapeHTML(meta.sectionCopy)}</p></div><button class="text-button" type="button" data-page="live-orders">All live orders ${icon('arrow-right')}</button></div><div class="table-scroll"><table class="module-table"><thead><tr><th>Order</th><th>Service area</th><th>Order total</th><th>Status</th><th><span class="sr-only">Open</span></th></tr></thead><tbody>${tableRows}</tbody></table></div><div class="table-foot"><span>Showing <strong>4</strong> of 284 active sample orders</span><span>Refreshed a moment ago</span></div></section>
         <section class="card"><div class="card-header"><div><h2 class="card-title">${escapeHTML(meta.sideTitle)}</h2><p class="card-subtitle">${escapeHTML(meta.sideCopy)}</p></div><button class="icon-action" type="button" aria-label="Service health details" data-action="module-help">${icon('more')}</button></div><div class="service-health-list">${meta.health.map(([name, val]) => `<div class="service-health-row"><span>${escapeHTML(name)}</span><span class="progress-track"><span class="progress-bar" style="display:block;width:${Number(val)}%"></span></span><strong>${Number(val)}%</strong></div>`).join('')}</div><div class="table-foot"><span>Completion rate by service</span><span>Last 7 days</span></div></section></div>
     </div>`;
+  }
+
+  function applicationStatusColor(status) {
+    return status === 'APPROVED' ? 'green' : status === 'REJECTED' ? 'gray' : status === 'IN_REVIEW' ? 'blue' : status === 'INFO_REQUESTED' ? 'orange' : 'amber';
+  }
+
+  function filteredApplications() {
+    const query = applicationSearch.trim().toLowerCase();
+    return state.applications.filter((application) => {
+      if (applicationFilter !== 'all' && application.status !== applicationFilter) return false;
+      if (!query) return true;
+      return [application.id, application.name, application.category, application.location, application.reviewer].join(' ').toLowerCase().includes(query);
+    });
+  }
+
+  function renderApplicationRows() {
+    return filteredApplications().map((application) => `<tr>
+      <td><div class="table-person"><span class="table-avatar">${escapeHTML(initials(application.name))}</span><span><strong>${escapeHTML(application.name)}</strong><small>${escapeHTML(application.id)} · ${escapeHTML(application.category)}</small></span></div></td>
+      <td><span class="basis-label">${escapeHTML(application.location)}</span></td>
+      <td><span class="scope-label">${escapeHTML(application.submitted)}</span></td>
+      <td><span class="scope-label">${escapeHTML(application.reviewer || 'Unassigned')}</span></td>
+      <td><span class="badge badge-${applicationStatusColor(application.status)}">${escapeHTML(APPLICATION_STATUS_LABELS[application.status] || 'Submitted')}</span></td>
+      <td><button class="button button-secondary order-open-button" type="button" data-action="open-application" data-id="${escapeAttr(application.id)}">Review ${icon('arrow-right')}</button></td>
+    </tr>`).join('');
+  }
+
+  function renderApplicationsPage() {
+    const apps = state.applications || [];
+    const submitted = apps.filter((application) => application.status === 'SUBMITTED').length;
+    const reviewing = apps.filter((application) => application.status === 'IN_REVIEW').length;
+    const needsInfo = apps.filter((application) => application.status === 'INFO_REQUESTED').length;
+    const decided = apps.filter((application) => ['APPROVED', 'REJECTED'].includes(application.status)).length;
+    const stats = [
+      ['Awaiting review', String(submitted), 'New applications', 'file', 'amber'],
+      ['In review', String(reviewing), 'Assigned to a reviewer', 'shield', 'blue'],
+      ['More information', String(needsInfo), 'Applicant follow-up needed', 'clock', 'orange'],
+      ['Decided', String(decided), 'Approved or rejected', 'check', 'green']
+    ];
+    const filters = [
+      ['all', 'All', apps.length], ['SUBMITTED', 'Submitted', submitted], ['IN_REVIEW', 'In review', reviewing],
+      ['INFO_REQUESTED', 'Needs info', needsInfo], ['APPROVED', 'Approved', apps.filter((application) => application.status === 'APPROVED').length],
+      ['REJECTED', 'Rejected', apps.filter((application) => application.status === 'REJECTED').length]
+    ];
+    const rows = renderApplicationRows();
+    const buttons = `<button class="button button-secondary" type="button" data-action="application-guidance">${icon('shield')}<span>Review safeguards</span></button>`;
+    return `<div class="page applications-page">
+      ${renderPageHeading('Applications & KYC', 'PEOPLE / SECURE REVIEW', 'Review rider, fleet and vendor applications with clear assignment, decisions and access accountability. No sensitive identity files are shown in this demo.', buttons)}
+      ${renderStatCards(stats)}
+      <div class="module-hero"><div class="module-hero-copy"><h2>Keep identity evidence private. Keep decisions accountable.</h2><p>Review provider results and document metadata without exposing raw NIN, BVN, guarantor details or verification media in ordinary dashboards.</p></div><span class="module-hero-badge">${icon('lock')}Protected evidence · demo metadata only</span></div>
+      <section class="card"><div class="card-header"><div><h2 class="card-title">Application review queue</h2><p class="card-subtitle">Individual rider, company fleet and vendor decisions update linked sample provider approval. Evidence remains metadata-only.</p></div><span class="badge badge-blue">${apps.length} sample applications</span></div>
+        <div class="application-toolbar"><div class="rule-filters application-filters" role="group" aria-label="Filter applications">${filters.map(([key, label, count]) => `<button class="filter-button ${applicationFilter === key ? 'active' : ''}" type="button" data-application-filter="${escapeAttr(key)}">${escapeHTML(label)} <span>${count}</span></button>`).join('')}</div><label class="search-field"><span class="sr-only">Search applications</span>${icon('search')}<input id="applicationSearch" type="search" placeholder="Search name, type or ID…" value="${escapeAttr(applicationSearch)}"></label></div>
+        <div class="table-scroll"><table class="module-table applications-table"><thead><tr><th>Applicant / reference</th><th>Service area</th><th>Submitted</th><th>Reviewer</th><th>Status</th><th>Action</th></tr></thead><tbody id="applicationTableBody">${rows || '<tr><td colspan="6"><div class="empty-state">No applications match this filter.</div></td></tr>'}</tbody></table></div>
+        <div class="table-foot"><span id="applicationCountFoot">Showing <strong>${filteredApplications().length}</strong> of ${apps.length} sample applications</span><span>Changes persist only in this browser</span></div>
+      </section>
+      <div class="rule-note">${icon('shield')}<span><strong>Production controls.</strong> Restrict evidence preview/download to assigned reviewers, record every access, configure retention/deletion, and require a second authorized reviewer for decisions where separation of duties applies.</span></div>
+    </div>`;
+  }
+
+  function renderApplicationModal(applicationId) {
+    const application = state.applications.find((item) => item.id === applicationId);
+    if (!application) return;
+    const checklist = APPLICATION_CHECKLISTS[application.kind] || APPLICATION_CHECKLISTS.rider;
+    const linkedApprovalNotes = state.providers.flatMap((provider) => {
+      const notes = [];
+      if (provider.applicationId === application.id) notes.push(`${provider.name} partner approval is ${provider.approved ? 'approved' : 'not approved'}`);
+      if (provider.companyApplicationId === application.id) notes.push(`${provider.company} fleet approval for ${provider.name} is ${provider.companyApproved ? 'approved' : 'not approved'}`);
+      return notes;
+    });
+    const linkedApprovalMessage = linkedApprovalNotes.length ? `<div class="application-provider-link">${icon('shield')}<span>${linkedApprovalNotes.map((note) => escapeHTML(note)).join(' · ')}. This local decision changes demo Assignment Queue eligibility only.</span></div>` : '';
+    const checks = checklist.map((item, index) => `<label class="review-check-row"><input type="checkbox" data-action="application-check" data-id="${escapeAttr(application.id)}" data-index="${index}" ${application.checks[index] ? 'checked' : ''} ${application.status !== 'IN_REVIEW' ? 'disabled' : ''}><span>${escapeHTML(item)}</span></label>`).join('');
+    const evidence = application.evidence.map((item, index) => `<div class="evidence-row"><span class="evidence-icon">${icon(item.status === 'Received' ? 'file' : 'clock')}</span><span class="evidence-copy"><strong>${escapeHTML(item.label)}</strong><small>${escapeHTML(item.status)} · sensitive content hidden</small></span><button class="text-button" type="button" data-action="evidence-metadata" data-id="${escapeAttr(application.id)}" data-evidence-index="${index}">View metadata</button></div>`).join('');
+    const history = (application.history || []).slice().reverse().map((event) => `<div class="application-event"><span class="application-event-dot"></span><div><strong>${escapeHTML(event.title)}</strong><small>${escapeHTML(event.actor)} · ${escapeHTML(event.at)}</small>${event.note ? `<p>${escapeHTML(event.note)}</p>` : ''}</div></div>`).join('');
+    const reviewers = ['KYC Reviewer', 'Operations Manager', 'Company Reviewer'];
+    const allChecksComplete = checklist.length > 0 && checklist.every((_, index) => application.checks[index]);
+    const terminal = ['APPROVED', 'REJECTED'].includes(application.status);
+    let footerActions = '';
+    if (application.status === 'SUBMITTED') footerActions = `<button class="button button-primary" type="button" data-action="start-application-review" data-id="${escapeAttr(application.id)}">${icon('check')}<span>Start review</span></button>`;
+    else if (application.status === 'INFO_REQUESTED') footerActions = `<button class="button button-primary" type="button" data-action="application-resubmitted" data-id="${escapeAttr(application.id)}">${icon('file')}<span>Simulate applicant update</span></button>`;
+    else if (application.status === 'IN_REVIEW') footerActions = `<button class="button button-secondary" type="button" data-action="application-request-info" data-id="${escapeAttr(application.id)}">Request info</button><button class="button button-secondary reject-button" type="button" data-action="application-reject" data-id="${escapeAttr(application.id)}">Reject</button><button class="button button-primary" type="button" data-action="application-approve" data-id="${escapeAttr(application.id)}" ${allChecksComplete && application.reviewer ? '' : 'disabled'}>${icon('check')}<span>Approve</span></button>`;
+    else footerActions = `<span class="badge badge-${applicationStatusColor(application.status)}">${escapeHTML(APPLICATION_STATUS_LABELS[application.status])}</span>`;
+    const noteField = application.status === 'IN_REVIEW' ? `<div class="form-field application-note-field"><label class="field-label" for="applicationDecisionNote">Reviewer note <small>required for decisions or requests</small></label><textarea id="applicationDecisionNote" class="textarea-control" rows="3" maxlength="500" placeholder="Record a concise, respectful decision note. Do not enter full ID numbers or unnecessary sensitive details."></textarea><div class="form-error">Add a short reviewer note before continuing.</div></div>` : application.lastNote ? `<div class="application-last-note"><strong>Last reviewer note</strong><p>${escapeHTML(application.lastNote)}</p></div>` : '';
+    document.getElementById('modalRoot').innerHTML = `<div class="modal-backdrop" data-action="modal-backdrop-close"><section class="modal application-modal" role="dialog" aria-modal="true" aria-labelledby="applicationModalTitle">
+      <header class="modal-header"><div><div class="eyebrow">${escapeHTML(application.id)} <span class="eyebrow-separator">/</span> ${escapeHTML(application.category)}</div><h2 id="applicationModalTitle">Application review</h2><p>${escapeHTML(application.name)} · ${escapeHTML(application.location)} · Submitted ${escapeHTML(application.submitted)}</p></div><button class="modal-close" type="button" data-action="close-modal" aria-label="Close dialog">${icon('close')}</button></header>
+      <div class="modal-body"><div class="application-summary"><div class="application-summary-main"><span class="application-avatar">${escapeHTML(initials(application.name))}</span><div><strong>${escapeHTML(application.name)}</strong><small>${escapeHTML(application.category)} · ${escapeHTML(application.location)}</small></div></div><span class="badge badge-${applicationStatusColor(application.status)}">${escapeHTML(APPLICATION_STATUS_LABELS[application.status])}</span></div>${linkedApprovalMessage}
+        <div class="reviewer-assignment"><div><span class="field-label">Assigned reviewer</span><small>${application.reviewer ? escapeHTML(application.reviewer) : 'No reviewer assigned'}</small></div><div class="reviewer-assignment-controls"><select id="applicationReviewer" class="select-control" aria-label="Select an application reviewer" ${terminal ? 'disabled' : ''}>${reviewers.map((reviewer) => `<option ${reviewer === application.reviewer ? 'selected' : ''}>${escapeHTML(reviewer)}</option>`).join('')}</select><button class="button button-secondary order-open-button" type="button" data-action="assign-application-reviewer" data-id="${escapeAttr(application.id)}" ${terminal ? 'disabled' : ''}>Assign</button></div></div>
+        <section class="review-section"><div class="review-section-heading"><div><h3>Evidence register</h3><p>Metadata only. No identity documents or verification media are exposed.</p></div><span class="badge badge-gray">${application.evidence.length} items</span></div><div class="evidence-list">${evidence}</div></section>
+        <section class="review-section"><div class="review-section-heading"><div><h3>Review checklist</h3><p>${application.status === 'IN_REVIEW' ? 'Complete each applicable check before approval.' : 'Checklist is editable only while the case is in review.'}</p></div><span class="badge badge-${allChecksComplete ? 'green' : 'amber'}">${application.checks.filter(Boolean).length}/${checklist.length} complete</span></div><div class="review-checklist">${checks}</div></section>
+        ${noteField}
+        <section class="review-section review-history-section"><div class="review-section-heading"><div><h3>Decision history</h3><p>Local demo event timeline.</p></div></div><div class="application-history">${history || '<p class="field-help">No review events recorded.</p>'}</div></section>
+        ${terminal ? '' : '<div class="application-privacy-note">Do not enter full NIN/BVN values, bank details or unnecessary third-party information in reviewer notes.</div>'}
+      </div><footer class="modal-footer"><span class="modal-footer-note">${icon('lock')}${terminal ? 'Decision is final in this demo' : 'Sensitive file preview is not available'}</span><div class="modal-footer-actions"><button class="button button-secondary" type="button" data-action="close-modal">Close</button>${footerActions}</div></footer>
+    </section></div>`;
+  }
+
+  function applicationEvent(application, title, note = '', actor = 'Operations Manager') {
+    const at = new Date().toLocaleTimeString('en-NG', { hour: '2-digit', minute: '2-digit' });
+    application.history = Array.isArray(application.history) ? application.history : [];
+    application.history.push({ title, actor, at, note });
+    application.history = application.history.slice(-30);
+  }
+
+  function updateApplicationCheck(input) {
+    const application = state.applications.find((item) => item.id === input.dataset.id);
+    const index = Number(input.dataset.index);
+    if (!application || application.status !== 'IN_REVIEW' || !Number.isInteger(index) || index < 0 || index >= application.checks.length) return;
+    const checked = Boolean(input.checked);
+    if (application.checks[index] === checked) return;
+    application.checks[index] = checked;
+    const checklist = APPLICATION_CHECKLISTS[application.kind] || [];
+    applicationEvent(application, 'Review checklist updated', `${checklist[index]} marked ${checked ? 'complete' : 'incomplete'}`);
+    saveState();
+    const complete = checklist.length > 0 && checklist.every((_, itemIndex) => application.checks[itemIndex]);
+    const section = document.querySelectorAll('.review-section')[1];
+    const badge = section?.querySelector('.review-section-heading .badge');
+    if (badge) {
+      badge.textContent = `${application.checks.filter(Boolean).length}/${checklist.length} complete`;
+      badge.className = `badge badge-${complete ? 'green' : 'amber'}`;
+    }
+    const historyContainer = document.querySelector('.application-history');
+    if (historyContainer) historyContainer.innerHTML = application.history.slice().reverse().map((entry) => `<div class="application-event"><span class="application-event-dot"></span><div><strong>${escapeHTML(entry.title)}</strong><small>${escapeHTML(entry.actor)} · ${escapeHTML(entry.at)}</small>${entry.note ? `<p>${escapeHTML(entry.note)}</p>` : ''}</div></div>`).join('');
+    const approve = document.querySelector('[data-action="application-approve"]');
+    if (approve) approve.disabled = !complete || !application.reviewer;
+  }
+
+  function openApplicationReview(applicationId) {
+    const application = state.applications.find((item) => item.id === applicationId);
+    if (!application) return;
+    applicationEvent(application, 'Review record opened', '', 'Admin Owner (demo)');
+    saveState();
+    renderApplicationModal(applicationId);
+  }
+
+  function startApplicationReview(applicationId) {
+    const application = state.applications.find((item) => item.id === applicationId);
+    if (!application || application.status !== 'SUBMITTED') return;
+    application.status = 'IN_REVIEW';
+    if (!application.reviewer) application.reviewer = 'KYC Reviewer';
+    applicationEvent(application, 'Review started', `Assigned to ${application.reviewer}`);
+    syncProviderApplicationApprovals();
+    saveState();
+    render();
+    renderApplicationModal(applicationId);
+    toast('Application moved to review. This is a local demo state change.');
+  }
+
+  function setApplicationReviewer(applicationId) {
+    const application = state.applications.find((item) => item.id === applicationId);
+    const reviewer = document.getElementById('applicationReviewer')?.value;
+    if (!application || !reviewer || ['APPROVED', 'REJECTED'].includes(application.status)) return;
+    application.reviewer = reviewer;
+    applicationEvent(application, 'Reviewer assigned', `Assigned to ${reviewer}`);
+    saveState();
+    render();
+    renderApplicationModal(applicationId);
+    toast(`${reviewer} assigned in this browser.`);
+  }
+
+  function completeApplicationReview(applicationId, action) {
+    const application = state.applications.find((item) => item.id === applicationId);
+    if (!application || application.status !== 'IN_REVIEW' || !['APPROVED', 'REJECTED', 'INFO_REQUESTED'].includes(action)) return;
+    const noteInput = document.getElementById('applicationDecisionNote');
+    const note = noteInput?.value.trim() || '';
+    if (!note || /(?:\d[\s-]*){11}/.test(note)) {
+      const field = noteInput?.closest('.form-field');
+      field?.classList.add('has-error');
+      const error = field?.querySelector('.form-error');
+      if (error) error.textContent = note ? 'Do not enter NIN, BVN or other 11-digit identity numbers.' : 'Add a short reviewer note before continuing.';
+      noteInput?.focus();
+      return;
+    }
+    if (!application.reviewer) { toast('Assign an authorized reviewer before recording a decision.'); return; }
+    if (action === 'APPROVED') {
+      const requiredChecks = APPLICATION_CHECKLISTS[application.kind] || [];
+      if (!requiredChecks.length || !requiredChecks.every((_, index) => application.checks[index])) {
+        toast('Complete all review checklist items before approval.');
+        return;
+      }
+    }
+    const labels = { APPROVED: 'Application approved', REJECTED: 'Application rejected', INFO_REQUESTED: 'More information requested' };
+    application.status = action;
+    application.lastNote = note;
+    applicationEvent(application, labels[action] || 'Application updated', note);
+    syncProviderApplicationApprovals();
+    saveState();
+    render();
+    renderApplicationModal(applicationId);
+    toast(`${labels[action] || 'Application updated'} in this browser.`);
+  }
+
+  function simulateApplicationResubmission(applicationId) {
+    const application = state.applications.find((item) => item.id === applicationId);
+    if (!application || application.status !== 'INFO_REQUESTED') return;
+    application.status = 'IN_REVIEW';
+    application.lastNote = '';
+    application.checks = APPLICATION_CHECKLISTS[application.kind].map(() => false);
+    applicationEvent(application, 'Applicant update received (simulated)', 'No actual documents were uploaded.');
+    syncProviderApplicationApprovals();
+    saveState();
+    render();
+    renderApplicationModal(applicationId);
+    toast('Returned to review. No document was uploaded or stored.');
+  }
+
+  function logEvidenceMetadata(applicationId, evidenceIndex) {
+    const application = state.applications.find((item) => item.id === applicationId);
+    const item = application?.evidence[evidenceIndex];
+    if (!application || !item) return;
+    applicationEvent(application, 'Evidence metadata accessed', item.label, 'Admin Owner (demo)');
+    saveState();
+    renderApplicationModal(applicationId);
+    toast('Metadata access logged. Private file content is not available in this preview.');
   }
 
   function renderRolesPage() {
@@ -1264,23 +2595,60 @@
     </div>`;
   }
 
-  const LGA_LIST = [
-    { name: 'Kano Municipal', areas: ['Central Market', 'Fagge', 'Kofar Mata', 'Sabon Gari'] },
-    { name: 'Nassarawa', areas: ['Bompai', 'Hotoro', 'Giginyu', 'Tudun Wada'] },
-    { name: 'Tarauni', areas: ['Gyadi-Gyadi', 'Unguwa Uku', 'Ja’en'] },
-    { name: 'Gwale', areas: ['Dorayi', 'Goron Dutse', 'Dandago'] }
-  ];
+  function renderAddStateModal() {
+    const configured = new Set(state.coverage.map((item) => item.name));
+    const available = NIGERIAN_STATES.filter((name) => !configured.has(name));
+    const options = available.length ? available.map((name) => `<option value="${escapeAttr(name)}">${escapeHTML(name)}</option>`).join('') : '<option value="" selected>All Nigerian states are already configured</option>';
+    document.getElementById('modalRoot').innerHTML = `<div class="modal-backdrop" data-action="modal-backdrop-close"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="addStateTitle">
+      <header class="modal-header"><div><div class="eyebrow">PLATFORM / COVERAGE</div><h2 id="addStateTitle">Add a Nigerian state</h2><p>Start a service-area configuration for another state or the Federal Capital Territory.</p></div><button class="modal-close" type="button" data-action="close-modal" aria-label="Close dialog">${icon('close')}</button></header>
+      <div class="modal-body"><div class="form-field"><label class="field-label" for="coverageStateChoice">State or territory</label><select id="coverageStateChoice" class="select-control" ${available.length ? '' : 'disabled'}>${options}</select></div><div class="coverage-data-note">${icon('info')}<span>State names use the Nigeria-wide catalog. LGAs and neighborhoods are entered as demo configuration; validate official administrative boundaries before production use.</span></div></div>
+      <footer class="modal-footer"><span class="modal-footer-note">${icon('info')}Browser-only demo</span><div class="modal-footer-actions"><button class="button button-secondary" type="button" data-action="close-modal">Cancel</button><button class="button button-primary" type="button" data-action="confirm-add-state" ${available.length ? '' : 'disabled'}>${icon('plus')}<span>Add state</span></button></div></footer>
+    </section></div>`;
+    document.getElementById('coverageStateChoice')?.focus();
+  }
+
+  function addCoverageState() {
+    const name = document.getElementById('coverageStateChoice')?.value;
+    if (!NIGERIAN_STATES.includes(name) || state.coverage.some((item) => item.name === name)) {
+      toast('Choose a Nigerian state or territory that is not already configured.');
+      return;
+    }
+    state.coverage.push({ name, lgas: [] });
+    state.selectedCoverageState = name;
+    state.selectedLga = '';
+    addActivity('State coverage added', `${name} · No LGAs configured yet`, 'Coverage');
+    saveState();
+    closeModal();
+    render();
+    toast(`${name} added to this browser’s coverage configuration.`);
+  }
 
   function renderLocationsPage() {
-    const selectedLga = state.selectedLga || 'Kano Municipal';
-    const selected = LGA_LIST.find((item) => item.name === selectedLga) || LGA_LIST[0];
-    const allAreas = [...selected.areas, ...state.customAreas];
-    const stats = [['States configured', '1', 'Nigeria coverage can expand', 'map', 'green'], ['LGAs enabled', '4', 'Kano State · sample data', 'pin', 'blue'], ['Operational areas', String(LGA_LIST.reduce((sum, lga) => sum + lga.areas.length, 0) + state.customAreas.length), 'Specific neighborhoods', 'globe', 'orange'], ['Matching mode', 'Area-aware', 'GPS is optional and transparent', 'activity', 'amber']];
+    const coverageState = state.coverage.find((item) => item.name === state.selectedCoverageState) || state.coverage[0];
+    const lgas = coverageState?.lgas || [];
+    const selected = lgas.find((item) => item.name === state.selectedLga) || null;
+    const areas = selected?.areas || [];
+    const lgaCount = state.coverage.reduce((sum, item) => sum + item.lgas.length, 0);
+    const areaCount = state.coverage.reduce((sum, item) => sum + item.lgas.reduce((areaSum, lga) => areaSum + lga.areas.length, 0), 0);
+    const stats = [
+      ['States configured', String(state.coverage.length), 'Across Nigeria · demo config', 'map', 'green'],
+      ['LGAs configured', String(lgaCount), 'Entered per service state', 'pin', 'blue'],
+      ['Operational areas', String(areaCount), 'Neighborhood-level coverage', 'globe', 'orange'],
+      ['Matching mode', 'Area-aware', 'No location tracking in this demo', 'activity', 'amber']
+    ];
+    const stateOptions = state.coverage.map((item) => `<option value="${escapeAttr(item.name)}" ${item.name === coverageState?.name ? 'selected' : ''}>${escapeHTML(item.name)}</option>`).join('');
+    const lgaButtons = lgas.map((lga) => `<button class="${lga.name === selected?.name ? 'active' : ''}" type="button" data-action="select-lga" data-lga="${escapeAttr(lga.name)}">${escapeHTML(lga.name)}<small>${lga.areas.length} areas</small></button>`).join('');
+    const areaChips = areas.map((area) => `<span class="area-chip">${icon('pin')}<span>${escapeHTML(area)}</span><button class="area-remove" type="button" data-action="remove-coverage-area" data-state="${escapeAttr(coverageState.name)}" data-lga="${escapeAttr(selected.name)}" data-area="${escapeAttr(area)}" aria-label="Remove ${escapeAttr(area)}">${icon('close')}</button></span>`).join('');
+    const buttons = `<button class="button button-secondary" type="button" data-action="location-guidance">${icon('info')}<span>Matching rules</span></button><button class="button button-secondary" type="button" data-action="add-state">${icon('plus')}<span>Add state</span></button><button class="button button-primary" type="button" data-action="add-area" ${selected ? '' : 'disabled'}>${icon('plus')}<span>Add operational area</span></button>`;
     return `<div class="page locations-page">
-      ${renderPageHeading('Location & service areas', 'PLATFORM / COVERAGE', 'Configure Nigerian states, LGAs and operational neighborhoods used for rider eligibility and marketplace availability.', `<button class="button button-secondary" type="button" data-action="location-guidance">${icon('info')}<span>Matching rules</span></button><button class="button button-primary" type="button" data-action="add-area">${icon('plus')}<span>Add operational area</span></button>`)}
+      ${renderPageHeading('Location & service areas', 'PLATFORM / COVERAGE', 'Configure state, LGA and neighborhood coverage for Nigeria. Add service states as operations expand, then define the LGAs and areas riders can serve.', buttons)}
       ${renderStatCards(stats)}
-      <div class="module-hero"><div class="module-hero-copy"><h2>Start local. Expand without rebuilding.</h2><p>Providers match only when their verified service area includes the pickup location and they are approved, online and available for the requested service.</p></div><span class="module-hero-badge">${icon('pin')}${escapeHTML(selectedLocation)} · Configurable scope</span></div>
-      <section class="card"><div class="card-header"><div><h2 class="card-title">Operational coverage</h2><p class="card-subtitle">Sample configuration · Choose an LGA to see its service neighborhoods.</p></div><span class="badge badge-green">Location matching on</span></div><div class="location-panel" style="padding:0 17px 17px"><aside class="location-panel-aside"><label for="stateSelect">State</label><select id="stateSelect" class="select-control"><option>Kano State</option><option disabled>+ Configure another state</option></select><div style="height:14px"></div><label>Local government area</label><div class="location-list">${LGA_LIST.map((lga) => `<button class="${lga.name === selectedLga ? 'active' : ''}" type="button" data-action="select-lga" data-lga="${escapeAttr(lga.name)}">${escapeHTML(lga.name)}<small>${lga.areas.length} areas</small></button>`).join('')}</div></aside><div class="location-area-content"><div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px"><div><h3 style="font:800 12px Manrope,sans-serif;color:#324439">${escapeHTML(selected.name)} service areas</h3><p style="margin-top:4px;color:#89948d;font-size:9px">Eligible providers can cover these configured neighborhoods.</p></div><span class="badge badge-blue">${allAreas.length} areas</span></div>${allAreas.map((area) => `<span class="area-chip">${icon('pin')}${escapeHTML(area)}</span>`).join('')}${state.customAreas.length ? `<div class="field-help" style="margin-top:9px">Custom areas created in this browser are shown in the selected LGA.</div>` : ''}<div class="rule-note" style="margin-top:13px">${icon('info')}<span>Use a structured state/LGA/area dataset. GPS may support proximity checks, but request location permission transparently.</span></div></div></div></section>
+      <div class="module-hero"><div class="module-hero-copy"><h2>Start local. Expand without rebuilding.</h2><p>Use configured pickup areas to scope service availability. Production matching should also check partner approval, service type, online status and operational eligibility.</p></div><span class="module-hero-badge">${icon('pin')}${escapeHTML(selectedLocation)} · Configurable scope</span></div>
+      <section class="card"><div class="card-header"><div><h2 class="card-title">Operational coverage</h2><p class="card-subtitle">Kano opens with illustrative neighborhoods. Add states and configure their LGAs locally.</p></div><span class="badge badge-green">${state.coverage.length} configured state${state.coverage.length === 1 ? '' : 's'}</span></div>
+        <div class="location-panel coverage-panel"><aside class="location-panel-aside"><label for="coverageStateSelect">Configured state</label><div class="coverage-state-row"><select id="coverageStateSelect" class="select-control">${stateOptions}</select><button class="icon-action" type="button" data-action="add-state" aria-label="Add state">${icon('plus')}</button></div><div class="coverage-lga-heading"><label>Local government areas</label><button class="text-button" type="button" data-action="add-lga">Add LGA ${icon('plus')}</button></div><div class="location-list">${lgaButtons || '<p class="coverage-empty">No LGAs configured. Add one to start defining service neighborhoods.</p>'}</div></aside>
+          <div class="location-area-content">${selected ? `<div class="coverage-area-heading"><div><h3>${escapeHTML(selected.name)} service areas</h3><p>${escapeHTML(coverageState.name)} · Providers may be matched to configured neighborhoods.</p></div><span class="badge badge-blue">${areas.length} area${areas.length === 1 ? '' : 's'}</span></div>${areaChips || '<p class="coverage-empty">No operational areas in this LGA yet. Add an area to define local coverage.</p>'}` : `<div class="coverage-empty coverage-empty-large">Select a state and add an LGA before configuring service areas.</div>`}<div class="rule-note coverage-guidance">${icon('info')}<span>The state selector covers all 36 states and the FCT; LGA and neighborhood entries are maintained here as demo data. Import and validate an authoritative Nigerian administrative-boundary dataset before live matching. This prototype does not request GPS access.</span></div></div>
+        </div>
+      </section>
     </div>`;
   }
 
@@ -1303,7 +2671,7 @@
         <div class="form-field form-span-2"><span class="field-label">Earning method</span><div class="mode-options" role="radiogroup" aria-label="Earning method">
           <label class="mode-option ${selectedModel === 'percentage' ? 'selected' : ''}"><input type="radio" name="model" value="percentage" ${selectedModel === 'percentage' ? 'checked' : ''}><span class="mode-radio"></span><strong>Percentage</strong><small>Share a percentage of the eligible base.</small></label>
           <label class="mode-option ${selectedModel === 'fixed' ? 'selected' : ''}"><input type="radio" name="model" value="fixed" ${selectedModel === 'fixed' ? 'checked' : ''}><span class="mode-radio"></span><strong>Custom amount</strong><small>Set a fixed amount per completed order.</small></label>
-          <label class="mode-option ${selectedModel === 'per_request' ? 'selected' : ''}"><input type="radio" name="model" value="per_request" ${selectedModel === 'per_request' ? 'checked' : ''}><span class="mode-radio"></span><strong>Set per request</strong><small>An authorized operator enters the payout at assignment.</small></label>
+          <label class="mode-option ${selectedModel === 'per_request' ? 'selected' : ''}"><input type="radio" name="model" value="per_request" ${selectedModel === 'per_request' ? 'checked' : ''}><span class="mode-radio"></span><strong>Set per request</strong><small>An authorized operator enters a naira amount for each order.</small></label>
         </div></div>
         <div class="form-field form-span-2" id="ruleModeDetail">${renderModeDetail(selectedModel, rule)}</div>
         <div class="form-field form-span-2"><span class="field-label">Eligible services</span><div class="checkbox-group">${SERVICE_OPTIONS.map((service) => `<label class="checkbox-chip"><input type="checkbox" name="service" value="${escapeAttr(service)}" ${defaultServices.includes(service) ? 'checked' : ''}>${escapeHTML(service)}</label>`).join('')}</div><div class="form-error" id="serviceError">Select at least one service.</div></div>
@@ -1342,7 +2710,7 @@
   function renderModeDetail(model, rule = null) {
     if (model === 'percentage') return `<div class="mode-detail"><label class="field-label" for="ruleRate">Payout percentage <small>0–100% of the eligible base</small></label><div class="input-with-prefix"><span>%</span><input class="input-control" id="ruleRate" name="rate" type="number" min="0" max="100" step="0.01" value="${escapeAttr(rule ? (Number(rule.rate) || 0) : '78')}" required inputmode="decimal"></div><div class="form-error">Enter a percentage from 0 to 100.</div></div>`;
     if (model === 'fixed') return `<div class="mode-detail"><label class="field-label" for="ruleAmount">Custom amount per completed order</label><div class="input-with-prefix"><span>₦</span><input class="input-control" id="ruleAmount" name="amount" type="number" min="0" step="50" value="${escapeAttr(rule ? (Number(rule.amount) || 0) : '1500')}" required inputmode="decimal"></div><div class="field-help">The settlement service should reject an amount above the available eligible base unless an authorized subsidy is recorded.</div><div class="form-error">Enter a valid non-negative naira amount.</div></div>`;
-    return `<div class="mode-detail"><strong style="display:block;color:#55655a;font-size:9px">Amount set individually for each request</strong><p style="margin-top:5px;color:#8e9991;font-size:8px;line-height:1.5">No default payout is stored. At assignment, an authorized operator enters the amount for that order. Production must validate the order, operator permission, available balance and any approval threshold.</p><input type="hidden" name="amount" value="0"><input type="hidden" name="rate" value="0"></div>`;
+    return `<div class="mode-detail"><strong style="display:block;color:#55655a;font-size:9px">Amount set individually for each request</strong><p style="margin-top:5px;color:#8e9991;font-size:8px;line-height:1.5">No default payout is stored. An authorized operator enters the amount for the specific order. Production must validate the order, operator permission, available balance and any approval threshold.</p><input type="hidden" name="amount" value="0"><input type="hidden" name="rate" value="0"></div>`;
   }
 
   function syncModalMode() {
@@ -1486,11 +2854,44 @@
       document.getElementById('previewBase')?.addEventListener('input', updatePreview);
       document.getElementById('previewManual')?.addEventListener('input', updatePreview);
     }
+    if (activePage === 'applications') {
+      const search = document.getElementById('applicationSearch');
+      if (search) search.addEventListener('input', () => {
+        applicationSearch = search.value;
+        const body = document.getElementById('applicationTableBody');
+        if (body) body.innerHTML = renderApplicationRows() || '<tr><td colspan="6"><div class="empty-state">No applications match this filter.</div></td></tr>';
+        const foot = document.getElementById('applicationCountFoot');
+        if (foot) foot.innerHTML = `Showing <strong>${filteredApplications().length}</strong> of ${state.applications.length} sample applications`;
+      });
+    }
+    if (activePage === 'assignment-queue') {
+      const search = document.getElementById('assignmentSearch');
+      if (search) search.addEventListener('input', () => {
+        assignmentSearch = search.value;
+        const body = document.getElementById('assignmentTableBody');
+        if (body) body.innerHTML = renderAssignmentRows() || '<tr><td colspan="6"><div class="empty-state">No matching assignments in this view.</div></td></tr>';
+        const foot = document.getElementById('assignmentCountFoot');
+        if (foot) foot.innerHTML = `Showing <strong>${filteredAssignmentQueue().length}</strong> of ${assignmentQueueItems().length} requests needing an assignment`;
+      });
+    }
+    if (activePage === 'riders' || activePage === 'vendors') {
+      const search = document.getElementById('providerDirectorySearch');
+      if (search) search.addEventListener('input', () => {
+        providerDirectorySearch = search.value;
+        const body = document.getElementById('providerDirectoryBody');
+        if (body) body.innerHTML = providerDirectoryRows(activePage) || '<tr><td colspan="6"><div class="empty-state">No providers match this view. Try another filter.</div></td></tr>';
+        const foot = document.getElementById('providerCountFoot');
+        if (foot) foot.innerHTML = `Showing <strong>${filteredProviders(activePage).length}</strong> of ${state.providers.filter((provider) => activePage === 'riders' ? ['individual_rider', 'company_rider'].includes(provider.type) : ['restaurant', 'small_chops'].includes(provider.type)).length} demo profiles`;
+      });
+    }
   }
 
   function closeModal() {
     const root = document.getElementById('modalRoot');
     if (root) root.innerHTML = '';
+    providerDraft = null;
+    providerCoverageLocationValue = '';
+    providerCoverageAreaValue = '';
   }
 
   function toast(message) {
@@ -1510,7 +2911,7 @@
 
   function infoMessage(action, button = null) {
     if (action === 'rule-help') {
-      toast('Percentage = share of eligible base · Custom amount = fixed payout per completed order · Per request = operator enters a payout before assignment.');
+      toast('Percentage = share of eligible base · Custom amount = fixed payout per completed order · Per request = operator enters an amount for that specific order.');
     } else if (action === 'audit-info') {
       toast('A production audit trail should record actor, permission, resource, before/after values and timestamp.');
     } else if (action === 'role-help') {
@@ -1521,6 +2922,8 @@
       toast('Match by structured state, LGA and operational area, then check approval, availability and service requirements.');
     } else if (action === 'form-guidance') {
       toast('Publish a new form version to preserve the existing schema for historical orders. Conditions should reference an earlier field.');
+    } else if (action === 'application-guidance') {
+      toast('Production review requires assigned reviewers, private evidence storage, access logs and server-side approval checks.');
     } else if (action === 'module-help') {
       toast('This screen uses sample data. Connect a secure server-side module before using it operationally.');
     } else if (action === 'module-view-all') {
@@ -1537,6 +2940,7 @@
 
   function setPage(page, shouldPush = true) {
     if (!validPage(page)) page = 'earnings';
+    closeModal();
     activePage = page;
     if (shouldPush && location.hash.slice(1) !== page) history.pushState({ page }, '', `#${page}`);
     closeMobileNav();
@@ -1559,6 +2963,33 @@
       return;
     }
 
+    const providerFilterButton = event.target.closest('[data-provider-filter]');
+    if (providerFilterButton) {
+      providerDirectoryFilter = providerFilterButton.dataset.providerFilter;
+      const main = document.getElementById('mainContent');
+      if (main) main.innerHTML = renderProviderDirectoryPage(activePage);
+      bindPageInteractions();
+      return;
+    }
+
+    const assignmentFilterButton = event.target.closest('[data-assignment-filter]');
+    if (assignmentFilterButton) {
+      assignmentFilter = assignmentFilterButton.dataset.assignmentFilter;
+      const main = document.getElementById('mainContent');
+      if (main) main.innerHTML = renderAssignmentQueuePage();
+      bindPageInteractions();
+      return;
+    }
+
+    const applicationFilterButton = event.target.closest('[data-application-filter]');
+    if (applicationFilterButton) {
+      applicationFilter = applicationFilterButton.dataset.applicationFilter;
+      const main = document.getElementById('mainContent');
+      if (main) main.innerHTML = renderApplicationsPage();
+      bindPageInteractions();
+      return;
+    }
+
     const filter = event.target.closest('[data-rule-filter]');
     if (filter) {
       activeFilter = filter.dataset.ruleFilter;
@@ -1571,10 +3002,29 @@
     const actionButton = event.target.closest('[data-action]');
     if (actionButton) {
       const action = actionButton.dataset.action;
+      if (action === 'edit-provider-settings') { renderProviderSettingsModal(actionButton.dataset.id); return; }
+      if (action === 'add-provider-draft-scope') { addProviderDraftScope(); return; }
+      if (action === 'remove-provider-draft-scope') { removeProviderDraftScope(actionButton.dataset.state, actionButton.dataset.lga, actionButton.dataset.area); return; }
+      if (action === 'save-provider-settings') { saveProviderSettings(); return; }
+      if (action === 'open-assignment') { renderAssignmentModal(actionButton.dataset.id); return; }
+      if (action === 'send-assignment-offer') { sendAssignmentOffer(actionButton.dataset.id, actionButton.dataset.providerId); return; }
+      if (action === 'assignment-response') { respondToAssignment(actionButton.dataset.id, actionButton.dataset.response); return; }
+      if (action === 'add-test-vendor-order') { addTestVendorOrder(); return; }
+      if (action === 'open-application') { openApplicationReview(actionButton.dataset.id); return; }
+      if (action === 'start-application-review') { startApplicationReview(actionButton.dataset.id); return; }
+      if (action === 'assign-application-reviewer') { setApplicationReviewer(actionButton.dataset.id); return; }
+      if (action === 'application-request-info') { completeApplicationReview(actionButton.dataset.id, 'INFO_REQUESTED'); return; }
+      if (action === 'application-approve') { completeApplicationReview(actionButton.dataset.id, 'APPROVED'); return; }
+      if (action === 'application-reject') { completeApplicationReview(actionButton.dataset.id, 'REJECTED'); return; }
+      if (action === 'application-resubmitted') { simulateApplicationResubmission(actionButton.dataset.id); return; }
+      if (action === 'evidence-metadata') { logEvidenceMetadata(actionButton.dataset.id, Number(actionButton.dataset.evidenceIndex)); return; }
       if (action === 'new-rule') { renderRuleModal(); return; }
       if (action === 'open-order') { renderOrderModal(actionButton.dataset.id); return; }
       if (action === 'add-test-order') { addTestOrder(); return; }
       if (action === 'transition-order') { transitionOrder(actionButton.dataset.id, actionButton.dataset.next); return; }
+      if (action === 'calculate-order-earnings') { renderOrderEarningsModal(actionButton.dataset.id); return; }
+      if (action === 'save-order-earnings') { saveOrderEarnings(); return; }
+      if (action === 'open-ledger-entry') { renderLedgerEntryModal(actionButton.dataset.id); return; }
       if (action === 'new-form') { renderNewFormModal(); return; }
       if (action === 'save-new-form') { saveNewForm(); return; }
       if (action === 'edit-form') { editingFormId = actionButton.dataset.id; closeModal(); render(); return; }
@@ -1599,9 +3049,31 @@
       if (action === 'save-simple') { saveSimple(actionButton.dataset.saveAction); return; }
       if (action === 'toggle-feature') { toggleFeature(actionButton.dataset.feature); return; }
       if (action === 'toggle-permission') { togglePermission(actionButton.dataset.permission, Number(actionButton.dataset.roleIndex)); return; }
-      if (action === 'add-area') { simpleTextModal('Add operational area', 'Add a service neighborhood to the current Kano State coverage. A production system should validate it against the selected LGA.', 'Area name', 'area', 'e.g. Central Market'); return; }
-      if (action === 'select-lga') { state.selectedLga = actionButton.dataset.lga; saveState(); render(); return; }
-      if (['module-help', 'module-view-all', 'record-info', 'module-action', 'rule-help', 'audit-info', 'role-help', 'feature-help', 'location-guidance', 'form-guidance'].includes(action)) { infoMessage(action, actionButton); return; }
+      if (action === 'add-state') { renderAddStateModal(); return; }
+      if (action === 'confirm-add-state') { addCoverageState(); return; }
+      if (action === 'add-lga') {
+        const coverageState = state.coverage.find((item) => item.name === state.selectedCoverageState);
+        if (!coverageState) { toast('Select a configured state first.'); return; }
+        simpleTextModal(`Add an LGA · ${coverageState.name}`, 'Enter a local government area for this state. Validate names against an authoritative boundary dataset before live use.', 'LGA name', 'lga', 'e.g. Ikeja');
+        return;
+      }
+      if (action === 'add-area') {
+        const coverageState = state.coverage.find((item) => item.name === state.selectedCoverageState);
+        const selectedLga = coverageState?.lgas.find((item) => item.name === state.selectedLga);
+        if (!coverageState || !selectedLga) { toast('Add or select an LGA before adding a service area.'); return; }
+        simpleTextModal(`Add an area · ${selectedLga.name}`, `Add an operational neighborhood under ${selectedLga.name}, ${coverageState.name}. This change is stored in this browser only.`, 'Operational area', 'area', 'e.g. Central Market');
+        return;
+      }
+      if (action === 'remove-coverage-area') { removeCoverageArea(actionButton.dataset.state, actionButton.dataset.lga, actionButton.dataset.area); return; }
+      if (action === 'select-lga') {
+        const coverageState = state.coverage.find((item) => item.name === state.selectedCoverageState);
+        if (!coverageState?.lgas.some((item) => item.name === actionButton.dataset.lga)) return;
+        state.selectedLga = actionButton.dataset.lga;
+        saveState();
+        render();
+        return;
+      }
+      if (['module-help', 'module-view-all', 'record-info', 'module-action', 'rule-help', 'audit-info', 'role-help', 'feature-help', 'location-guidance', 'form-guidance', 'application-guidance'].includes(action)) { infoMessage(action, actionButton); return; }
     }
 
     const locationOpt = event.target.closest('[data-location]');
@@ -1667,10 +3139,25 @@
       syncFieldModalType();
       return;
     }
+    if (event.target.matches('#coverageStateSelect')) {
+      const coverageState = state.coverage.find((item) => item.name === event.target.value);
+      if (coverageState) {
+        state.selectedCoverageState = coverageState.name;
+        state.selectedLga = coverageState.lgas[0]?.name || '';
+        saveState();
+        render();
+      }
+      return;
+    }
+    if (event.target.matches('[data-action="application-check"]')) {
+      updateApplicationCheck(event.target);
+      return;
+    }
     if (event.target.matches('[data-preview-key]')) refreshFormPreviewConditions();
   });
 
   document.addEventListener('input', (event) => {
+    if (event.target.matches('#applicationDecisionNote')) event.target.closest('.form-field')?.classList.remove('has-error');
     if (event.target.matches('#ruleScope')) event.target.dataset.touched = 'true';
     if (event.target.matches('#fieldLabel')) {
       const keyInput = document.getElementById('fieldKey');
@@ -1690,20 +3177,50 @@
 
   function saveSimple(action) {
     const input = document.getElementById('simpleModalInput');
-    if (!input || !input.value.trim()) {
-      input?.closest('.form-field')?.classList.add('has-error');
+    const name = input?.value.trim().replace(/\s+/g, ' ') || '';
+    const field = input?.closest('.form-field');
+    const reject = (message) => {
+      field?.classList.add('has-error');
+      const error = field?.querySelector('.form-error');
+      if (error) error.textContent = message;
       input?.focus();
+    };
+    if (!input || !name) { reject('Enter a value.'); return; }
+
+    const coverageState = state.coverage.find((item) => item.name === state.selectedCoverageState);
+    if (action === 'lga') {
+      if (!coverageState) { toast('Select a configured state before adding an LGA.'); return; }
+      if (coverageState.lgas.some((item) => item.name.toLowerCase() === name.toLowerCase())) { reject('This LGA is already configured for the selected state.'); return; }
+      coverageState.lgas.push({ name, areas: [] });
+      state.selectedLga = name;
+      addActivity('LGA added', `${name} · ${coverageState.name}`, 'Coverage');
+    } else if (action === 'area') {
+      const selectedLga = coverageState?.lgas.find((item) => item.name === state.selectedLga);
+      if (!coverageState || !selectedLga) { toast('Select a configured LGA before adding an operational area.'); return; }
+      if (selectedLga.areas.some((item) => item.toLowerCase() === name.toLowerCase())) { reject('This operational area is already listed for the selected LGA.'); return; }
+      selectedLga.areas.push(name);
+      addActivity('Service area added', `${name} · ${selectedLga.name}, ${coverageState.name}`, 'Coverage');
+    } else {
       return;
     }
-    if (action === 'area') {
-      const name = input.value.trim();
-      if (!state.customAreas.some((area) => area.toLowerCase() === name.toLowerCase())) state.customAreas.push(name);
-      addActivity('Service area added', `${name} · ${state.selectedLga || 'Kano Municipal'}`, 'Coverage');
-      saveState();
-      closeModal();
-      render();
-      toast(`${name} added to this browser’s service-area demo.`);
-    }
+    saveState();
+    closeModal();
+    render();
+    toast(`${name} added to this browser’s coverage configuration.`);
+  }
+
+  function removeCoverageArea(stateName, lgaName, areaName) {
+    const coverageState = state.coverage.find((item) => item.name === stateName);
+    const lga = coverageState?.lgas.find((item) => item.name === lgaName);
+    if (!lga) return;
+    const index = lga.areas.indexOf(areaName);
+    if (index === -1) return;
+    lga.areas.splice(index, 1);
+    state.providers = providersWithApplicationApprovals(normalizeSavedProviders(state.providers, state.coverage), state.applications);
+    addActivity('Service area removed', `${areaName} · ${lga.name}, ${coverageState.name}`, 'Coverage');
+    saveState();
+    render();
+    toast(`${areaName} removed from this browser’s demo coverage.`);
   }
 
   function toggleFeature(key) {
