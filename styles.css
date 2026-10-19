@@ -411,6 +411,8 @@ tr:last-child td { border-bottom: 0; }
 .application-summary-main strong, .application-summary-main small { display: block; }
 .application-summary-main strong { color: #34463a; font-size: 9.5px; }
 .application-summary-main small { margin-top: 4px; color: #929d95; font-size: 8px; }
+.application-provider-link { display: flex; align-items: flex-start; gap: 7px; margin-top: 8px; padding: 8px 9px; border: 1px solid #dcebe0; border-radius: 7px; color: #5c7563; background: #f3f9f4; font-size: 7.8px; line-height: 1.45; }
+.application-provider-link .icon { width: 13px; height: 13px; flex: 0 0 auto; color: #508260; }
 .reviewer-assignment { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; padding: 10px 12px; border: 1px solid #ebefeb; border-radius: 8px; }
 .reviewer-assignment > div:first-child { display: flex; flex-direction: column; gap: 4px; }
 .reviewer-assignment .field-label { margin: 0; color: #97a199; font-size: 7.5px; text-transform: uppercase; letter-spacing: .7px; }

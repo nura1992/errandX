@@ -90,8 +90,8 @@
     { id: 'EX-20475', workflow: 'vendor', state: 'PREPARING', service: 'Small-chops order', customer: 'Zainab Yusuf', provider: 'Zee Small Chops', rider: 'Pending fleet assignment', area: 'Tarauni, Kano', total: 12800, created: '10:32 AM', history: [
       { state: 'REQUESTED', actor: 'Customer', at: '10:32 AM' }, { state: 'VENDOR_ACCEPTED', actor: 'Zee Small Chops', at: '10:35 AM' }, { state: 'PAYMENT_VERIFIED', actor: 'Payment service (demo)', at: '10:37 AM' }, { state: 'PREPARING', actor: 'Zee Small Chops', at: '10:39 AM' }
     ] },
-    { id: 'EX-20472', workflow: 'errand', state: 'PICKUP_VERIFIED', service: 'Market pickup', customer: 'Ibrahim Ali', provider: 'Individual rider', rider: 'Halima Ibrahim', area: 'Fagge, Kano', total: 5600, created: '10:01 AM', history: [
-      { state: 'REQUESTED', actor: 'Customer', at: '10:01 AM' }, { state: 'PROVIDER_ACCEPTED', actor: 'Halima Ibrahim', at: '10:04 AM' }, { state: 'PAYMENT_VERIFIED', actor: 'Payment service (demo)', at: '10:07 AM' }, { state: 'PICKUP_VERIFIED', actor: 'Rider (demo)', at: '10:12 AM' }
+    { id: 'EX-20472', workflow: 'errand', state: 'PICKUP_VERIFIED', service: 'Market pickup', customer: 'Ibrahim Ali', provider: 'Individual rider', rider: 'Amina Garba', area: 'Fagge, Kano', total: 5600, created: '10:01 AM', history: [
+      { state: 'REQUESTED', actor: 'Customer', at: '10:01 AM' }, { state: 'PROVIDER_ACCEPTED', actor: 'Amina Garba', at: '10:04 AM' }, { state: 'PAYMENT_VERIFIED', actor: 'Payment service (demo)', at: '10:07 AM' }, { state: 'PICKUP_VERIFIED', actor: 'Rider (demo)', at: '10:12 AM' }
     ] }
   ];
   const FORM_FIELD_TYPES = {
@@ -213,12 +213,12 @@
   };
   const DEFAULT_APPLICATIONS = [
     {
-      id: 'APP-RD-0149', kind: 'rider', category: 'Individual rider', name: 'Mariya Adamu', location: 'Kano Municipal', submitted: 'Today, 09:42', status: 'SUBMITTED', reviewer: '',
+      id: 'APP-RD-0149', kind: 'rider', category: 'Individual rider', name: 'Halima Ibrahim', location: 'Kano Municipal', submitted: 'Today, 09:42', status: 'SUBMITTED', reviewer: '',
       evidence: [{ label: 'Identity provider result', status: 'Received' }, { label: 'Address evidence', status: 'Received' }, { label: 'Guarantor consent record', status: 'Received' }, { label: 'Liveness session result', status: 'Received' }],
       checks: [false, false, false, false, false], lastNote: '', history: [{ title: 'Application submitted', actor: 'Applicant', at: '09:42 AM', note: '' }]
     },
     {
-      id: 'APP-CO-0038', kind: 'company', category: 'Company fleet', name: 'Northline Logistics', location: 'Nassarawa, Kano', submitted: 'Today, 08:15', status: 'IN_REVIEW', reviewer: 'KYC Reviewer',
+      id: 'APP-CO-0038', kind: 'company', category: 'Company fleet', name: 'Kano Rapid', location: 'Kano Municipal', submitted: 'Today, 08:15', status: 'IN_REVIEW', reviewer: 'KYC Reviewer',
       evidence: [{ label: 'Company registration check', status: 'Received' }, { label: 'Business address evidence', status: 'Received' }, { label: 'Principal officer session result', status: 'Received' }, { label: 'Fleet and service area details', status: 'Received' }],
       checks: [true, true, false, false], lastNote: '', history: [{ title: 'Application submitted', actor: 'Applicant', at: '08:15 AM', note: '' }, { title: 'Assigned for review', actor: 'Operations Manager', at: '08:32 AM', note: 'Assigned to KYC Reviewer' }]
     },
@@ -236,6 +236,46 @@
       id: 'APP-RD-0182', kind: 'rider', category: 'Individual rider', name: 'Sani Umar', location: 'Fagge, Kano', submitted: 'Oct 16, 2026', status: 'REJECTED', reviewer: 'KYC Reviewer',
       evidence: [{ label: 'Identity provider result', status: 'Received' }, { label: 'Address evidence', status: 'Needs update' }, { label: 'Guarantor consent record', status: 'Received' }, { label: 'Liveness session result', status: 'Received' }],
       checks: [true, true, false, true, true], lastNote: 'Address evidence could not be verified. The applicant may reapply with updated documentation.', history: [{ title: 'Application submitted', actor: 'Applicant', at: 'Oct 16, 2026', note: '' }, { title: 'Application rejected', actor: 'KYC Reviewer', at: 'Oct 17, 2026', note: 'Address evidence could not be verified. The applicant may reapply with updated documentation.' }]
+    },
+    {
+      id: 'APP-RD-0092', kind: 'rider', category: 'Company fleet rider', name: 'Sadiq Umar', location: 'Kano Municipal', submitted: 'Oct 14, 2026', status: 'APPROVED', reviewer: 'KYC Reviewer',
+      evidence: [{ label: 'Identity provider result', status: 'Received' }, { label: 'Address evidence', status: 'Received' }, { label: 'Guarantor consent record', status: 'Received' }, { label: 'Liveness session result', status: 'Received' }],
+      checks: [true, true, true, true, true], lastNote: 'Individual rider review complete.', history: [{ title: 'Application submitted', actor: 'Applicant', at: 'Oct 14, 2026', note: '' }, { title: 'Application approved', actor: 'KYC Reviewer', at: 'Oct 15, 2026', note: 'Individual rider review complete.' }]
+    },
+    {
+      id: 'APP-CO-0042', kind: 'company', category: 'Company fleet', name: 'Kano Express', location: 'Kano Municipal', submitted: 'Oct 13, 2026', status: 'APPROVED', reviewer: 'Operations Manager',
+      evidence: [{ label: 'Company registration check', status: 'Received' }, { label: 'Business address evidence', status: 'Received' }, { label: 'Principal officer session result', status: 'Received' }, { label: 'Fleet and service area details', status: 'Received' }],
+      checks: [true, true, true, true], lastNote: 'Company fleet review complete.', history: [{ title: 'Application submitted', actor: 'Applicant', at: 'Oct 13, 2026', note: '' }, { title: 'Application approved', actor: 'Operations Manager', at: 'Oct 14, 2026', note: 'Company fleet review complete.' }]
+    },
+    {
+      id: 'APP-RD-0227', kind: 'rider', category: 'Individual rider', name: 'Amina Garba', location: 'Fagge, Kano', submitted: 'Oct 12, 2026', status: 'APPROVED', reviewer: 'KYC Reviewer',
+      evidence: [{ label: 'Identity provider result', status: 'Received' }, { label: 'Address evidence', status: 'Received' }, { label: 'Guarantor consent record', status: 'Received' }, { label: 'Liveness session result', status: 'Received' }],
+      checks: [true, true, true, true, true], lastNote: 'Individual rider review complete.', history: [{ title: 'Application submitted', actor: 'Applicant', at: 'Oct 12, 2026', note: '' }, { title: 'Application approved', actor: 'KYC Reviewer', at: 'Oct 13, 2026', note: 'Individual rider review complete.' }]
+    },
+    {
+      id: 'APP-RD-0711', kind: 'rider', category: 'Company fleet rider', name: 'Bashir Lawal', location: 'Kano Municipal', submitted: 'Oct 12, 2026', status: 'APPROVED', reviewer: 'KYC Reviewer',
+      evidence: [{ label: 'Identity provider result', status: 'Received' }, { label: 'Address evidence', status: 'Received' }, { label: 'Guarantor consent record', status: 'Received' }, { label: 'Liveness session result', status: 'Received' }],
+      checks: [true, true, true, true, true], lastNote: 'Individual rider review complete. Company approval is separate.', history: [{ title: 'Application submitted', actor: 'Applicant', at: 'Oct 12, 2026', note: '' }, { title: 'Application approved', actor: 'KYC Reviewer', at: 'Oct 13, 2026', note: 'Individual rider review complete. Company approval is separate.' }]
+    },
+    {
+      id: 'APP-RD-0408', kind: 'rider', category: 'Individual rider', name: 'Fatima Bello', location: 'Kano Municipal', submitted: 'Oct 11, 2026', status: 'APPROVED', reviewer: 'KYC Reviewer',
+      evidence: [{ label: 'Identity provider result', status: 'Received' }, { label: 'Address evidence', status: 'Received' }, { label: 'Guarantor consent record', status: 'Received' }, { label: 'Liveness session result', status: 'Received' }],
+      checks: [true, true, true, true, true], lastNote: 'Individual rider review complete.', history: [{ title: 'Application submitted', actor: 'Applicant', at: 'Oct 11, 2026', note: '' }, { title: 'Application approved', actor: 'KYC Reviewer', at: 'Oct 12, 2026', note: 'Individual rider review complete.' }]
+    },
+    {
+      id: 'APP-VN-0042', kind: 'vendor', category: 'Restaurant', name: 'Arewa Kitchen', location: 'Nassarawa, Kano', submitted: 'Oct 10, 2026', status: 'APPROVED', reviewer: 'Operations Manager',
+      evidence: [{ label: 'Business contact review', status: 'Received' }, { label: 'Service area details', status: 'Received' }, { label: 'Menu and opening hours', status: 'Received' }, { label: 'Partner terms', status: 'Received' }],
+      checks: [true, true, true, true], lastNote: 'Restaurant partner review complete.', history: [{ title: 'Application submitted', actor: 'Applicant', at: 'Oct 10, 2026', note: '' }, { title: 'Application approved', actor: 'Operations Manager', at: 'Oct 11, 2026', note: 'Restaurant partner review complete.' }]
+    },
+    {
+      id: 'APP-VN-0102', kind: 'vendor', category: 'Restaurant', name: 'Kano Dine-In', location: 'Kano Municipal', submitted: 'Oct 09, 2026', status: 'APPROVED', reviewer: 'Operations Manager',
+      evidence: [{ label: 'Business contact review', status: 'Received' }, { label: 'Service area details', status: 'Received' }, { label: 'Menu and opening hours', status: 'Received' }, { label: 'Partner terms', status: 'Received' }],
+      checks: [true, true, true, true], lastNote: 'Restaurant partner review complete.', history: [{ title: 'Application submitted', actor: 'Applicant', at: 'Oct 09, 2026', note: '' }, { title: 'Application approved', actor: 'Operations Manager', at: 'Oct 10, 2026', note: 'Restaurant partner review complete.' }]
+    },
+    {
+      id: 'APP-SC-0071', kind: 'vendor', category: 'Small-chops vendor', name: 'Zee Small Chops', location: 'Tarauni, Kano', submitted: 'Oct 08, 2026', status: 'APPROVED', reviewer: 'Operations Manager',
+      evidence: [{ label: 'Business contact review', status: 'Received' }, { label: 'Service area details', status: 'Received' }, { label: 'Menu and opening hours', status: 'Received' }, { label: 'Partner terms', status: 'Received' }],
+      checks: [true, true, true, true], lastNote: 'Small-chops partner review complete.', history: [{ title: 'Application submitted', actor: 'Applicant', at: 'Oct 08, 2026', note: '' }, { title: 'Application approved', actor: 'Operations Manager', at: 'Oct 09, 2026', note: 'Small-chops partner review complete.' }]
     }
   ];
 
@@ -252,17 +292,17 @@
     ]
   }];
   const MATCHING_PROVIDERS = [
-    { id: 'RD-0149', name: 'Halima Ibrahim', type: 'individual_rider', label: 'Individual rider', company: '', approved: true, companyApproved: true, online: true, available: true, serviceGroups: ['errand', 'delivery'], coverage: [{ state: 'Kano State', lga: 'Kano Municipal', areas: ['Central Market', 'Fagge', 'Kofar Mata'] }, { state: 'Kano State', lga: 'Nassarawa', areas: [] }, { state: 'Kano State', lga: 'Tarauni', areas: [] }], rating: '4.9', capacity: 3, vehicle: 'Motorcycle' },
-    { id: 'RD-0092', name: 'Sadiq Umar', type: 'company_rider', label: 'Company fleet rider', company: 'Kano Express', approved: true, companyApproved: true, online: true, available: true, serviceGroups: ['errand', 'delivery'], coverage: [{ state: 'Kano State', lga: 'Kano Municipal', areas: [] }, { state: 'Kano State', lga: 'Nassarawa', areas: [] }, { state: 'Kano State', lga: 'Tarauni', areas: [] }], rating: '4.8', capacity: 4, vehicle: 'Company motorcycle' },
-    { id: 'RD-0227', name: 'Amina Garba', type: 'individual_rider', label: 'Individual rider', company: '', approved: true, companyApproved: true, online: true, available: true, serviceGroups: ['errand', 'delivery'], coverage: [{ state: 'Kano State', lga: 'Kano Municipal', areas: ['Fagge', 'Sabon Gari'] }, { state: 'Kano State', lga: 'Gwale', areas: [] }], rating: '4.7', capacity: 3, vehicle: 'Motorcycle' },
-    { id: 'RD-0711', name: 'Bashir Lawal', type: 'company_rider', label: 'Company fleet rider', company: 'Kano Rapid', approved: true, companyApproved: false, online: true, available: true, serviceGroups: ['errand', 'delivery'], coverage: [{ state: 'Kano State', lga: 'Kano Municipal', areas: [] }], rating: '4.6', capacity: 3, vehicle: 'Company motorcycle' },
-    { id: 'RD-0408', name: 'Fatima Bello', type: 'individual_rider', label: 'Individual rider', company: '', approved: true, companyApproved: true, online: false, available: true, serviceGroups: ['errand', 'delivery'], coverage: [{ state: 'Kano State', lga: 'Kano Municipal', areas: [] }], rating: '4.8', capacity: 3, vehicle: 'Motorcycle' },
-    { id: 'RD-0182', name: 'Sani Umar', type: 'individual_rider', label: 'Individual rider', company: '', approved: false, companyApproved: true, online: true, available: true, serviceGroups: ['errand', 'delivery'], coverage: [{ state: 'Kano State', lga: 'Kano Municipal', areas: [] }], rating: '—', capacity: 3, vehicle: 'Motorcycle' },
-    { id: 'VN-0042', name: 'Arewa Kitchen', type: 'restaurant', label: 'Restaurant', company: '', approved: true, companyApproved: true, online: true, available: true, serviceGroups: ['restaurant'], coverage: [{ state: 'Kano State', lga: 'Nassarawa', areas: [] }, { state: 'Kano State', lga: 'Kano Municipal', areas: ['Sabon Gari'] }], rating: '4.8', capacity: 8, vehicle: '' },
-    { id: 'VN-0102', name: 'Kano Dine-In', type: 'restaurant', label: 'Restaurant', company: '', approved: true, companyApproved: true, online: true, available: true, serviceGroups: ['restaurant'], coverage: [{ state: 'Kano State', lga: 'Kano Municipal', areas: [] }], rating: '4.6', capacity: 8, vehicle: '' },
-    { id: 'VN-0071', name: 'Zee Small Chops', type: 'small_chops', label: 'Small-chops vendor', company: '', approved: true, companyApproved: true, online: true, available: true, serviceGroups: ['small_chops'], coverage: [{ state: 'Kano State', lga: 'Tarauni', areas: [] }, { state: 'Kano State', lga: 'Kano Municipal', areas: ['Fagge'] }], rating: '4.9', capacity: 6, vehicle: '' },
-    { id: 'VN-0031', name: 'Binta Bites', type: 'small_chops', label: 'Small-chops vendor', company: '', approved: true, companyApproved: true, online: true, available: true, serviceGroups: ['small_chops'], coverage: [{ state: 'Kano State', lga: 'Gwale', areas: [] }], rating: '4.7', capacity: 6, vehicle: '' },
-    { id: 'VN-0084', name: 'Savour House', type: 'restaurant', label: 'Restaurant', company: '', approved: false, companyApproved: true, online: true, available: true, serviceGroups: ['restaurant'], coverage: [{ state: 'Kano State', lga: 'Tarauni', areas: [] }], rating: '—', capacity: 8, vehicle: '' }
+    { id: 'RD-0149', applicationId: 'APP-RD-0149', name: 'Halima Ibrahim', type: 'individual_rider', label: 'Individual rider', company: '', approved: true, companyApproved: true, online: true, available: true, serviceGroups: ['errand', 'delivery'], coverage: [{ state: 'Kano State', lga: 'Kano Municipal', areas: ['Central Market', 'Fagge', 'Kofar Mata'] }, { state: 'Kano State', lga: 'Nassarawa', areas: [] }, { state: 'Kano State', lga: 'Tarauni', areas: [] }], rating: '4.9', capacity: 3, vehicle: 'Motorcycle' },
+    { id: 'RD-0092', applicationId: 'APP-RD-0092', companyApplicationId: 'APP-CO-0042', name: 'Sadiq Umar', type: 'company_rider', label: 'Company fleet rider', company: 'Kano Express', approved: true, companyApproved: true, online: true, available: true, serviceGroups: ['errand', 'delivery'], coverage: [{ state: 'Kano State', lga: 'Kano Municipal', areas: [] }, { state: 'Kano State', lga: 'Nassarawa', areas: [] }, { state: 'Kano State', lga: 'Tarauni', areas: [] }], rating: '4.8', capacity: 4, vehicle: 'Company motorcycle' },
+    { id: 'RD-0227', applicationId: 'APP-RD-0227', name: 'Amina Garba', type: 'individual_rider', label: 'Individual rider', company: '', approved: true, companyApproved: true, online: true, available: true, serviceGroups: ['errand', 'delivery'], coverage: [{ state: 'Kano State', lga: 'Kano Municipal', areas: ['Fagge', 'Sabon Gari'] }, { state: 'Kano State', lga: 'Gwale', areas: [] }], rating: '4.7', capacity: 3, vehicle: 'Motorcycle' },
+    { id: 'RD-0711', applicationId: 'APP-RD-0711', companyApplicationId: 'APP-CO-0038', name: 'Bashir Lawal', type: 'company_rider', label: 'Company fleet rider', company: 'Kano Rapid', approved: true, companyApproved: false, online: true, available: true, serviceGroups: ['errand', 'delivery'], coverage: [{ state: 'Kano State', lga: 'Kano Municipal', areas: [] }], rating: '4.6', capacity: 3, vehicle: 'Company motorcycle' },
+    { id: 'RD-0408', applicationId: 'APP-RD-0408', name: 'Fatima Bello', type: 'individual_rider', label: 'Individual rider', company: '', approved: true, companyApproved: true, online: false, available: true, serviceGroups: ['errand', 'delivery'], coverage: [{ state: 'Kano State', lga: 'Kano Municipal', areas: [] }], rating: '4.8', capacity: 3, vehicle: 'Motorcycle' },
+    { id: 'RD-0182', applicationId: 'APP-RD-0182', name: 'Sani Umar', type: 'individual_rider', label: 'Individual rider', company: '', approved: false, companyApproved: true, online: true, available: true, serviceGroups: ['errand', 'delivery'], coverage: [{ state: 'Kano State', lga: 'Kano Municipal', areas: [] }], rating: '—', capacity: 3, vehicle: 'Motorcycle' },
+    { id: 'VN-0042', applicationId: 'APP-VN-0042', name: 'Arewa Kitchen', type: 'restaurant', label: 'Restaurant', company: '', approved: true, companyApproved: true, online: true, available: true, serviceGroups: ['restaurant'], coverage: [{ state: 'Kano State', lga: 'Nassarawa', areas: [] }, { state: 'Kano State', lga: 'Kano Municipal', areas: ['Sabon Gari'] }], rating: '4.8', capacity: 8, vehicle: '' },
+    { id: 'VN-0102', applicationId: 'APP-VN-0102', name: 'Kano Dine-In', type: 'restaurant', label: 'Restaurant', company: '', approved: true, companyApproved: true, online: true, available: true, serviceGroups: ['restaurant'], coverage: [{ state: 'Kano State', lga: 'Kano Municipal', areas: [] }], rating: '4.6', capacity: 8, vehicle: '' },
+    { id: 'VN-0071', applicationId: 'APP-SC-0071', name: 'Zee Small Chops', type: 'small_chops', label: 'Small-chops vendor', company: '', approved: true, companyApproved: true, online: true, available: true, serviceGroups: ['small_chops'], coverage: [{ state: 'Kano State', lga: 'Tarauni', areas: [] }, { state: 'Kano State', lga: 'Kano Municipal', areas: ['Fagge'] }], rating: '4.9', capacity: 6, vehicle: '' },
+    { id: 'VN-0031', applicationId: 'APP-SC-0031', name: 'Binta Bites', type: 'small_chops', label: 'Small-chops vendor', company: '', approved: true, companyApproved: true, online: true, available: true, serviceGroups: ['small_chops'], coverage: [{ state: 'Kano State', lga: 'Gwale', areas: [] }], rating: '4.7', capacity: 6, vehicle: '' },
+    { id: 'VN-0084', applicationId: 'APP-VN-0084', name: 'Savour House', type: 'restaurant', label: 'Restaurant', company: '', approved: false, companyApproved: true, online: true, available: true, serviceGroups: ['restaurant'], coverage: [{ state: 'Kano State', lga: 'Tarauni', areas: [] }], rating: '—', capacity: 8, vehicle: '' }
   ];
 
   const PAGE_META = {
@@ -379,8 +419,8 @@
       sectionTitle: 'Review queue', sectionCopy: 'Demo metadata only; production evidence access must be assignment- and permission-scoped.',
       heroTitle: 'Human review with clear accountability', heroCopy: 'Application decisions are separate from company and fleet setup. Every sensitive file preview, download and decision should produce an audit event.',
       rows: [
-        { name: 'Mariya Adamu', initials: 'MA', detail: 'Individual rider · Submitted 2h ago', area: 'Kano Municipal', amount: '4 documents', status: 'Ready to review', badge: 'amber' },
-        { name: 'Northline Logistics', initials: 'NL', detail: 'Company fleet · Submitted yesterday', area: 'Nassarawa, Kano', amount: '6 documents', status: 'More info needed', badge: 'orange' },
+        { name: 'Halima Ibrahim', initials: 'HI', detail: 'Individual rider · Submitted 2h ago', area: 'Kano Municipal', amount: '4 documents', status: 'Ready to review', badge: 'amber' },
+        { name: 'Kano Rapid', initials: 'KR', detail: 'Company fleet · In review', area: 'Kano Municipal', amount: '6 documents', status: 'More info needed', badge: 'orange' },
         { name: 'Savour House', initials: 'SH', detail: 'Restaurant · Submitted Oct 18', area: 'Tarauni, Kano', amount: '3 documents', status: 'Assigned', badge: 'blue' }
       ],
       sideTitle: 'KYC safety checklist', sideCopy: 'A demo screen is not an identity-verification provider.',
@@ -524,6 +564,7 @@
       location: 'Kano State',
       activities: []
     };
+    initial.providers = providersWithApplicationApprovals(initial.providers, initial.applications);
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
       if (!saved || typeof saved !== 'object') return initial;
@@ -552,7 +593,11 @@
         initial.orders.push(...structuredCloneSafe(DEFAULT_ORDERS.filter((order) => !savedOrderIds.has(order.id))));
       }
       if (Array.isArray(saved.forms)) initial.forms = saved.forms.filter((form) => form && typeof form === 'object' && typeof form.id === 'string').slice(0, 100).map(normalizeSavedForm);
-      if (Array.isArray(saved.applications)) initial.applications = saved.applications.filter((application) => application && typeof application === 'object' && typeof application.id === 'string').slice(0, 200).map(normalizeSavedApplication);
+      if (Array.isArray(saved.applications)) {
+        initial.applications = saved.applications.filter((application) => application && typeof application === 'object' && typeof application.id === 'string').slice(0, 200).map(normalizeSavedApplication);
+        const savedApplicationIds = new Set(initial.applications.map((application) => application.id));
+        initial.applications.push(...structuredCloneSafe(DEFAULT_APPLICATIONS.filter((application) => !savedApplicationIds.has(application.id))));
+      }
       if (Array.isArray(saved.coverage)) initial.coverage = normalizeCoverage(saved.coverage);
       if (typeof saved.selectedCoverageState === 'string') initial.selectedCoverageState = saved.selectedCoverageState;
       const selectedCoverageState = initial.coverage.find((item) => item.name === initial.selectedCoverageState) || initial.coverage[0];
@@ -566,6 +611,7 @@
       const selectedLga = selectedCoverageState.lgas.find((item) => item.name === initial.selectedLga) || selectedCoverageState.lgas[0];
       initial.selectedLga = selectedLga ? selectedLga.name : '';
       initial.providers = normalizeSavedProviders(Array.isArray(saved.providers) ? saved.providers : initial.providers, initial.coverage);
+      initial.providers = providersWithApplicationApprovals(initial.providers, initial.applications);
       if (saved.features && typeof saved.features === 'object') initial.features = { ...initial.features, ...saved.features };
       if (saved.permissions && typeof saved.permissions === 'object') initial.permissions = { ...initial.permissions, ...saved.permissions };
       if (typeof saved.location === 'string') {
@@ -666,11 +712,12 @@
   function normalizeSavedApplication(application) {
     const kind = Object.prototype.hasOwnProperty.call(APPLICATION_CHECKLISTS, application.kind) ? application.kind : 'rider';
     const validStatus = Object.prototype.hasOwnProperty.call(APPLICATION_STATUS_LABELS, application.status) ? application.status : 'SUBMITTED';
+    const legacyName = application.id === 'APP-RD-0149' && application.name === 'Mariya Adamu' ? 'Halima Ibrahim' : application.id === 'APP-CO-0038' && application.name === 'Northline Logistics' ? 'Kano Rapid' : application.name;
     return {
       id: String(application.id).slice(0, 60),
       kind,
       category: String(application.category || (kind === 'rider' ? 'Individual rider' : kind === 'company' ? 'Company fleet' : 'Vendor')).slice(0, 80),
-      name: String(application.name || 'Applicant').slice(0, 100),
+      name: String(legacyName || 'Applicant').slice(0, 100),
       location: String(application.location || 'Kano State').slice(0, 100),
       submitted: String(application.submitted || 'Recently').slice(0, 60),
       status: validStatus,
@@ -730,6 +777,23 @@
         coverage: normalizeProviderCoverage(Array.isArray(saved.coverage) ? saved.coverage : base.coverage, coverageCatalog)
       };
     });
+  }
+
+  function providersWithApplicationApprovals(providers, applications) {
+    const applicationsById = new Map((Array.isArray(applications) ? applications : []).map((application) => [application.id, application]));
+    return providers.map((provider) => {
+      const partnerApplication = provider.applicationId ? applicationsById.get(provider.applicationId) : null;
+      const companyApplication = provider.companyApplicationId ? applicationsById.get(provider.companyApplicationId) : null;
+      return {
+        ...provider,
+        approved: provider.applicationId ? partnerApplication?.status === 'APPROVED' : Boolean(provider.approved),
+        companyApproved: provider.companyApplicationId ? companyApplication?.status === 'APPROVED' : Boolean(provider.companyApproved)
+      };
+    });
+  }
+
+  function syncProviderApplicationApprovals() {
+    state.providers = providersWithApplicationApprovals(state.providers, state.applications);
   }
 
   function saveState() {
@@ -1114,21 +1178,21 @@
     return order.workflow === 'vendor' ? 'delivery' : 'errand';
   }
 
-  function providerLoad(provider) {
+  function providerLoad(provider, excludeOrderId = '') {
     return state.orders.filter((order) => {
-      if (['COMPLETED', 'CANCELLED'].includes(order.state)) return false;
+      if (order.id === excludeOrderId || ['COMPLETED', 'CANCELLED'].includes(order.state)) return false;
       if (['individual_rider', 'company_rider'].includes(provider.type)) return order.rider === provider.name;
       return order.workflow === 'vendor' && order.provider === provider.name && ['REQUESTED', 'VENDOR_ACCEPTED', 'PAYMENT_VERIFIED', 'PREPARING', 'READY_FOR_PICKUP'].includes(order.state);
     }).length;
   }
 
-  function providerEligibility(provider, order, stage) {
+  function providerEligibility(provider, order, stage, excludeOrderId = '') {
     const reasons = [];
     if (!provider.approved) reasons.push('Partner approval is not complete');
     if (provider.type === 'company_rider' && !provider.companyApproved) reasons.push('Company fleet approval is not complete');
     if (!provider.online) reasons.push('Currently offline');
     if (!provider.available) reasons.push('Marked unavailable');
-    const load = providerLoad(provider);
+    const load = providerLoad(provider, excludeOrderId);
     if (load >= provider.capacity) reasons.push('At configured assignment capacity');
     if (!provider.serviceGroups.includes(requiredServiceGroup(order, stage))) reasons.push('Service category does not match');
     if (!providerCoversLocation(provider, order.area)) reasons.push('Pickup is outside configured coverage');
@@ -1241,7 +1305,7 @@
     document.getElementById('modalRoot').innerHTML = `<div class="modal-backdrop" data-action="modal-backdrop-close"><section class="modal assignment-modal" role="dialog" aria-modal="true" aria-labelledby="assignmentModalTitle">
       <header class="modal-header"><div><div class="eyebrow">${escapeHTML(order.id)} <span class="eyebrow-separator">/</span> ${escapeHTML(order.workflow === 'vendor' ? 'VENDOR PATH' : 'ERRAND PATH')}</div><h2 id="assignmentModalTitle">${escapeHTML(assignmentStageLabel(order, stage))}</h2><p>${escapeHTML(order.customer)} · ${escapeHTML(order.service)} · ${escapeHTML(order.area)}</p></div><button class="modal-close" type="button" data-action="close-modal" aria-label="Close dialog">${icon('close')}</button></header>
       <div class="modal-body"><div class="assignment-order-summary"><div><span class="field-label">REQUEST TOTAL</span><strong>${formatNaira(order.total)}</strong></div><div><span class="field-label">CURRENT STATUS</span><strong>${escapeHTML(status === 'OFFERED' ? 'Offer awaiting response' : status === 'REMATCH' ? 'Previous offer closed' : 'Unassigned')}</strong></div></div>
-        ${offered && candidate ? `<div class="active-offer-card"><div><strong>Demo offer sent to ${escapeHTML(candidate.name)}</strong><p>${escapeHTML(candidate.label)}${candidate.company ? ` · ${escapeHTML(candidate.company)}` : ''} · ${escapeHTML(assignment.at || '')}</p></div><span class="badge badge-blue">Awaiting response</span></div><p class="assignment-disclaimer">Sending an offer is not acceptance. Use the simulation below to test the next step; no notification was sent.</p>` : `<section class="assignment-candidate-section"><div class="review-section-heading"><div><h3>Eligible provider candidates</h3><p>Checked against current demo approval, company status, service, availability, capacity and saved coverage.</p></div><span class="badge badge-green">${candidates.filter((result) => result.eligible).length} eligible</span></div><div class="candidate-list">${candidateRows || '<div class="coverage-empty">No candidate records match this provider type.</div>'}</div></section>${status === 'REMATCH' ? '<p class="assignment-disclaimer">The prior offer timed out. Choose an eligible provider to re-match this order.</p>' : ''}`}
+        ${offered && candidate ? `<div class="active-offer-card"><div><strong>Demo offer sent to ${escapeHTML(candidate.name)}</strong><p>${escapeHTML(candidate.label)}${candidate.company ? ` · ${escapeHTML(candidate.company)}` : ''} · ${escapeHTML(assignment.at || '')}</p></div><span class="badge badge-blue">Awaiting response</span></div><p class="assignment-disclaimer">Sending an offer is not acceptance. Current approval, availability, coverage and capacity are checked again on response; no notification was sent.</p>` : `<section class="assignment-candidate-section"><div class="review-section-heading"><div><h3>Eligible provider candidates</h3><p>Checked against current demo approval, company status, service, availability, capacity and saved coverage.</p></div><span class="badge badge-green">${candidates.filter((result) => result.eligible).length} eligible</span></div><div class="candidate-list">${candidateRows || '<div class="coverage-empty">No candidate records match this provider type.</div>'}</div></section>${status === 'REMATCH' ? '<p class="assignment-disclaimer">The previous offer closed. Choose an eligible provider to re-match this request.</p>' : ''}`}
         <section class="review-section assignment-history-section"><div class="review-section-heading"><div><h3>Offer history</h3><p>Local dispatch events for this assignment stage.</p></div></div><div class="assignment-event-list">${history || '<p class="field-help">No offers have been sent for this stage.</p>'}</div></section>
       </div><footer class="modal-footer"><span class="modal-footer-note">${icon('info')}Simulation only · No push/SMS sent</span><div class="modal-footer-actions"><button class="button button-secondary" type="button" data-action="close-modal">Close</button>${responseActions}</div></footer>
     </section></div>`;
@@ -1272,6 +1336,18 @@
     toast(`Demo offer sent to ${provider.name}. It is not accepted until a response is simulated.`);
   }
 
+  function returnAssignmentToQueue(order, stage) {
+    if (stage === 'vendor') {
+      order.provider = 'Awaiting eligible vendor';
+      order.rider = 'Pending vendor acceptance';
+    } else if (order.workflow === 'vendor') {
+      order.rider = 'Pending rider assignment';
+    } else {
+      order.provider = 'Awaiting eligible rider';
+      order.rider = 'Unassigned';
+    }
+  }
+
   function respondToAssignment(orderId, response) {
     const order = state.orders.find((item) => item.id === orderId);
     const assignment = order?.assignment;
@@ -1280,6 +1356,17 @@
     if (!provider) return;
     assignment.respondedAt = new Date().toLocaleTimeString('en-NG', { hour: '2-digit', minute: '2-digit' });
     if (response === 'accept') {
+      const eligibility = providerEligibility(provider, order, assignment.stage, order.id);
+      if (!eligibility.eligible) {
+        assignment.status = 'DECLINED';
+        assignmentEvent(order, assignment.stage, 'Offer invalidated (eligibility changed)', provider, eligibility.reasons.join(' · '));
+        returnAssignmentToQueue(order, assignment.stage);
+        saveState();
+        render();
+        renderAssignmentModal(orderId);
+        toast('Provider eligibility changed before acceptance; the request has returned to the matching queue.');
+        return;
+      }
       assignment.status = 'ACCEPTED';
       assignmentEvent(order, assignment.stage, 'Offer accepted (simulated)', provider, 'Acceptance is simulated locally.');
       if (order.state === 'REQUESTED') {
@@ -1295,15 +1382,7 @@
     }
     assignment.status = 'TIMED_OUT';
     assignmentEvent(order, assignment.stage, 'Offer timed out (simulated)', provider, 'Request returned to the matching queue.');
-    if (assignment.stage === 'vendor') {
-      order.provider = 'Awaiting eligible vendor';
-      order.rider = 'Pending vendor acceptance';
-    } else if (order.workflow === 'vendor') {
-      order.rider = 'Pending rider assignment';
-    } else {
-      order.provider = 'Awaiting eligible rider';
-      order.rider = 'Unassigned';
-    }
+    returnAssignmentToQueue(order, assignment.stage);
     saveState();
     render();
     renderAssignmentModal(orderId);
@@ -1784,12 +1863,12 @@
       ${renderPageHeading(meta.title, meta.eyebrow, 'Manage demo provider availability, workload limits and service-area coverage. These local settings immediately affect Assignment Queue eligibility.', buttons)}
       ${renderStatCards(stats)}
       <div class="module-hero"><div class="module-hero-copy"><h2>${pageKey === 'riders' ? 'Availability is not the same as approval.' : 'Partner readiness, by configured service area.'}</h2><p>${pageKey === 'riders' ? 'Company fleet approval and each rider’s approval are checked independently. Set demo online status, availability, capacity and coverage below.' : 'Restaurants and small-chops vendors have separate service types. Online status, capacity and configured coverage determine which requests can be offered.'}</p></div><span class="module-hero-badge">${icon('shield')}Demo controls · Browser only</span></div>
-      <section class="card"><div class="card-header"><div><h2 class="card-title">${escapeHTML(meta.sectionTitle)}</h2><p class="card-subtitle">Approval is a seeded, read-only status; the Applications queue is a separate mock module. Dispatch settings are editable locally.</p></div><span class="badge badge-blue">${providers.length} demo profiles</span></div>
+      <section class="card"><div class="card-header"><div><h2 class="card-title">${escapeHTML(meta.sectionTitle)}</h2><p class="card-subtitle">Partner and fleet approval derive from linked sample Applications; review decisions affect demo matching only.</p></div><span class="badge badge-blue">${providers.length} demo profiles</span></div>
         <div class="provider-toolbar"><div class="rule-filters provider-filters" role="group" aria-label="Filter provider profiles">${filters.map(([key, label, count]) => `<button class="filter-button ${providerDirectoryFilter === key ? 'active' : ''}" type="button" data-provider-filter="${escapeAttr(key)}">${escapeHTML(label)} <span>${count}</span></button>`).join('')}</div><label class="search-field"><span class="sr-only">Search provider profiles</span>${icon('search')}<input id="providerDirectorySearch" type="search" placeholder="Search provider, company or coverage…" value="${escapeAttr(providerDirectorySearch)}"></label></div>
         <div class="table-scroll"><table class="module-table provider-directory-table"><thead><tr><th>Provider</th><th>Approval</th><th>Configured service coverage</th><th>Workload</th><th>Dispatch status</th><th>Controls</th></tr></thead><tbody id="providerDirectoryBody">${rows || '<tr><td colspan="6"><div class="empty-state">No providers match this view. Try another filter.</div></td></tr>'}</tbody></table></div>
         <div class="table-foot"><span id="providerCountFoot">Showing <strong>${filteredProviders(pageKey).length}</strong> of ${providers.length} demo profiles</span><span>Sample providers · Not live availability</span></div>
       </section>
-      <div class="rule-note">${icon('info')}<span><strong>Approval safeguard.</strong> Partner and company approval are displayed from seeded demo records and cannot be changed here. KYC decisions remain mock-only; production dispatch must use server-verified approval and availability.</span></div>
+      <div class="rule-note">${icon('info')}<span><strong>Approval safeguard.</strong> Partner and company approval are linked to the corresponding mock application decisions. Production dispatch must use server-verified identity review, company approval and live availability.</span></div>
     </div>`;
   }
 
@@ -1837,7 +1916,7 @@
     const scopeRows = renderProviderCoverageRows(draft);
     document.getElementById('modalRoot').innerHTML = `<div class="modal-backdrop" data-action="modal-backdrop-close"><section class="modal provider-settings-modal" role="dialog" aria-modal="true" aria-labelledby="providerSettingsTitle">
       <header class="modal-header"><div><div class="eyebrow">${escapeHTML(provider.id)} <span class="eyebrow-separator">/</span> ${escapeHTML(provider.label)}</div><h2 id="providerSettingsTitle">Manage provider readiness</h2><p>${escapeHTML(provider.name)}${provider.company ? ` · ${escapeHTML(provider.company)}` : ''}</p></div><button class="modal-close" type="button" data-action="close-modal" aria-label="Close dialog">${icon('close')}</button></header>
-      <div class="modal-body"><div class="provider-modal-status"><span class="badge badge-${provider.approved ? 'green' : 'amber'}">${provider.approved ? 'Partner approved' : 'Approval needed'}</span>${provider.type === 'company_rider' ? `<span class="badge badge-${provider.companyApproved ? 'green' : 'amber'}">${provider.companyApproved ? 'Fleet approved' : 'Fleet approval needed'}</span>` : ''}</div><p class="provider-modal-approval">${escapeHTML(approval)} · This sample status is read-only; Applications is a separate mock queue.</p>${fleetApproval}
+      <div class="modal-body"><div class="provider-modal-status"><span class="badge badge-${provider.approved ? 'green' : 'amber'}">${provider.approved ? 'Partner approved' : 'Approval needed'}</span>${provider.type === 'company_rider' ? `<span class="badge badge-${provider.companyApproved ? 'green' : 'amber'}">${provider.companyApproved ? 'Fleet approved' : 'Fleet approval needed'}</span>` : ''}</div><p class="provider-modal-approval">${escapeHTML(approval)} · Approval derives from linked mock Applications; no real identity or business verification occurred.</p>${fleetApproval}
         <div class="provider-settings-grid"><label class="provider-setting-toggle"><input id="providerOnline" type="checkbox" ${draft.online ? 'checked' : ''}><span><strong>Online</strong><small>Visible as online in the demo.</small></span></label><label class="provider-setting-toggle"><input id="providerAvailable" type="checkbox" ${draft.available ? 'checked' : ''}><span><strong>Accepting assignments</strong><small>Can receive new demo offers.</small></span></label><div class="form-field provider-capacity-field"><label class="field-label" for="providerCapacity">Maximum active jobs</label><input id="providerCapacity" class="input-control" type="number" min="1" max="50" step="1" value="${escapeAttr(draft.capacity)}"><small class="field-help">Current workload: ${providerLoad(provider)} active job${providerLoad(provider) === 1 ? '' : 's'}.</small><div class="form-error">Set a whole-number capacity from 1 to 50.</div></div></div>
         <section class="provider-coverage-editor"><div class="review-section-heading"><div><h3>Provider service coverage</h3><p>Scopes must exist in configured platform coverage. Broad LGA and neighborhood scopes are distinct.</p></div></div><div class="provider-scope-list">${scopeRows}</div><div class="provider-coverage-add"><label class="form-field"><span class="field-label">Configured LGA</span><select id="providerCoverageLocation" class="select-control" ${locationOptions ? '' : 'disabled'}>${locationOptions || '<option value="">No configured LGAs</option>'}</select></label><label class="form-field"><span class="field-label">Scope</span><select id="providerCoverageArea" class="select-control" ${locationOptions ? '' : 'disabled'}>${providerCoverageOptions(providerCoverageLocationValue, providerCoverageAreaValue)}</select></label><button class="button button-secondary" type="button" data-action="add-provider-draft-scope" ${locationOptions ? '' : 'disabled'}>${icon('plus')}<span>Add scope</span></button></div><p class="provider-coverage-help">Changes to coverage are included when you save this provider profile. They immediately affect future demo matches only.</p></section>
       </div><footer class="modal-footer"><span class="modal-footer-note">${icon('info')}Local demo settings · No real status changed</span><div class="modal-footer-actions"><button class="button button-secondary" type="button" data-action="close-modal">Cancel</button><button class="button button-primary" type="button" data-action="save-provider-settings">${icon('check')}<span>Save profile</span></button></div></footer>
@@ -2009,7 +2088,7 @@
       ${renderPageHeading('Applications & KYC', 'PEOPLE / SECURE REVIEW', 'Review rider, fleet and vendor applications with clear assignment, decisions and access accountability. No sensitive identity files are shown in this demo.', buttons)}
       ${renderStatCards(stats)}
       <div class="module-hero"><div class="module-hero-copy"><h2>Keep identity evidence private. Keep decisions accountable.</h2><p>Review provider results and document metadata without exposing raw NIN, BVN, guarantor details or verification media in ordinary dashboards.</p></div><span class="module-hero-badge">${icon('lock')}Protected evidence · demo metadata only</span></div>
-      <section class="card"><div class="card-header"><div><h2 class="card-title">Application review queue</h2><p class="card-subtitle">Company approval and individual rider approval are separate decisions. Evidence is metadata-only in this demo.</p></div><span class="badge badge-blue">${apps.length} sample applications</span></div>
+      <section class="card"><div class="card-header"><div><h2 class="card-title">Application review queue</h2><p class="card-subtitle">Individual rider, company fleet and vendor decisions update linked sample provider approval. Evidence remains metadata-only.</p></div><span class="badge badge-blue">${apps.length} sample applications</span></div>
         <div class="application-toolbar"><div class="rule-filters application-filters" role="group" aria-label="Filter applications">${filters.map(([key, label, count]) => `<button class="filter-button ${applicationFilter === key ? 'active' : ''}" type="button" data-application-filter="${escapeAttr(key)}">${escapeHTML(label)} <span>${count}</span></button>`).join('')}</div><label class="search-field"><span class="sr-only">Search applications</span>${icon('search')}<input id="applicationSearch" type="search" placeholder="Search name, type or ID…" value="${escapeAttr(applicationSearch)}"></label></div>
         <div class="table-scroll"><table class="module-table applications-table"><thead><tr><th>Applicant / reference</th><th>Service area</th><th>Submitted</th><th>Reviewer</th><th>Status</th><th>Action</th></tr></thead><tbody id="applicationTableBody">${rows || '<tr><td colspan="6"><div class="empty-state">No applications match this filter.</div></td></tr>'}</tbody></table></div>
         <div class="table-foot"><span id="applicationCountFoot">Showing <strong>${filteredApplications().length}</strong> of ${apps.length} sample applications</span><span>Changes persist only in this browser</span></div>
@@ -2022,6 +2101,13 @@
     const application = state.applications.find((item) => item.id === applicationId);
     if (!application) return;
     const checklist = APPLICATION_CHECKLISTS[application.kind] || APPLICATION_CHECKLISTS.rider;
+    const linkedApprovalNotes = state.providers.flatMap((provider) => {
+      const notes = [];
+      if (provider.applicationId === application.id) notes.push(`${provider.name} partner approval is ${provider.approved ? 'approved' : 'not approved'}`);
+      if (provider.companyApplicationId === application.id) notes.push(`${provider.company} fleet approval for ${provider.name} is ${provider.companyApproved ? 'approved' : 'not approved'}`);
+      return notes;
+    });
+    const linkedApprovalMessage = linkedApprovalNotes.length ? `<div class="application-provider-link">${icon('shield')}<span>${linkedApprovalNotes.map((note) => escapeHTML(note)).join(' · ')}. This local decision changes demo Assignment Queue eligibility only.</span></div>` : '';
     const checks = checklist.map((item, index) => `<label class="review-check-row"><input type="checkbox" data-action="application-check" data-id="${escapeAttr(application.id)}" data-index="${index}" ${application.checks[index] ? 'checked' : ''} ${application.status !== 'IN_REVIEW' ? 'disabled' : ''}><span>${escapeHTML(item)}</span></label>`).join('');
     const evidence = application.evidence.map((item, index) => `<div class="evidence-row"><span class="evidence-icon">${icon(item.status === 'Received' ? 'file' : 'clock')}</span><span class="evidence-copy"><strong>${escapeHTML(item.label)}</strong><small>${escapeHTML(item.status)} · sensitive content hidden</small></span><button class="text-button" type="button" data-action="evidence-metadata" data-id="${escapeAttr(application.id)}" data-evidence-index="${index}">View metadata</button></div>`).join('');
     const history = (application.history || []).slice().reverse().map((event) => `<div class="application-event"><span class="application-event-dot"></span><div><strong>${escapeHTML(event.title)}</strong><small>${escapeHTML(event.actor)} · ${escapeHTML(event.at)}</small>${event.note ? `<p>${escapeHTML(event.note)}</p>` : ''}</div></div>`).join('');
@@ -2036,7 +2122,7 @@
     const noteField = application.status === 'IN_REVIEW' ? `<div class="form-field application-note-field"><label class="field-label" for="applicationDecisionNote">Reviewer note <small>required for decisions or requests</small></label><textarea id="applicationDecisionNote" class="textarea-control" rows="3" maxlength="500" placeholder="Record a concise, respectful decision note. Do not enter full ID numbers or unnecessary sensitive details."></textarea><div class="form-error">Add a short reviewer note before continuing.</div></div>` : application.lastNote ? `<div class="application-last-note"><strong>Last reviewer note</strong><p>${escapeHTML(application.lastNote)}</p></div>` : '';
     document.getElementById('modalRoot').innerHTML = `<div class="modal-backdrop" data-action="modal-backdrop-close"><section class="modal application-modal" role="dialog" aria-modal="true" aria-labelledby="applicationModalTitle">
       <header class="modal-header"><div><div class="eyebrow">${escapeHTML(application.id)} <span class="eyebrow-separator">/</span> ${escapeHTML(application.category)}</div><h2 id="applicationModalTitle">Application review</h2><p>${escapeHTML(application.name)} · ${escapeHTML(application.location)} · Submitted ${escapeHTML(application.submitted)}</p></div><button class="modal-close" type="button" data-action="close-modal" aria-label="Close dialog">${icon('close')}</button></header>
-      <div class="modal-body"><div class="application-summary"><div class="application-summary-main"><span class="application-avatar">${escapeHTML(initials(application.name))}</span><div><strong>${escapeHTML(application.name)}</strong><small>${escapeHTML(application.category)} · ${escapeHTML(application.location)}</small></div></div><span class="badge badge-${applicationStatusColor(application.status)}">${escapeHTML(APPLICATION_STATUS_LABELS[application.status])}</span></div>
+      <div class="modal-body"><div class="application-summary"><div class="application-summary-main"><span class="application-avatar">${escapeHTML(initials(application.name))}</span><div><strong>${escapeHTML(application.name)}</strong><small>${escapeHTML(application.category)} · ${escapeHTML(application.location)}</small></div></div><span class="badge badge-${applicationStatusColor(application.status)}">${escapeHTML(APPLICATION_STATUS_LABELS[application.status])}</span></div>${linkedApprovalMessage}
         <div class="reviewer-assignment"><div><span class="field-label">Assigned reviewer</span><small>${application.reviewer ? escapeHTML(application.reviewer) : 'No reviewer assigned'}</small></div><div class="reviewer-assignment-controls"><select id="applicationReviewer" class="select-control" aria-label="Select an application reviewer" ${terminal ? 'disabled' : ''}>${reviewers.map((reviewer) => `<option ${reviewer === application.reviewer ? 'selected' : ''}>${escapeHTML(reviewer)}</option>`).join('')}</select><button class="button button-secondary order-open-button" type="button" data-action="assign-application-reviewer" data-id="${escapeAttr(application.id)}" ${terminal ? 'disabled' : ''}>Assign</button></div></div>
         <section class="review-section"><div class="review-section-heading"><div><h3>Evidence register</h3><p>Metadata only. No identity documents or verification media are exposed.</p></div><span class="badge badge-gray">${application.evidence.length} items</span></div><div class="evidence-list">${evidence}</div></section>
         <section class="review-section"><div class="review-section-heading"><div><h3>Review checklist</h3><p>${application.status === 'IN_REVIEW' ? 'Complete each applicable check before approval.' : 'Checklist is editable only while the case is in review.'}</p></div><span class="badge badge-${allChecksComplete ? 'green' : 'amber'}">${application.checks.filter(Boolean).length}/${checklist.length} complete</span></div><div class="review-checklist">${checks}</div></section>
@@ -2091,6 +2177,7 @@
     application.status = 'IN_REVIEW';
     if (!application.reviewer) application.reviewer = 'KYC Reviewer';
     applicationEvent(application, 'Review started', `Assigned to ${application.reviewer}`);
+    syncProviderApplicationApprovals();
     saveState();
     render();
     renderApplicationModal(applicationId);
@@ -2134,6 +2221,7 @@
     application.status = action;
     application.lastNote = note;
     applicationEvent(application, labels[action] || 'Application updated', note);
+    syncProviderApplicationApprovals();
     saveState();
     render();
     renderApplicationModal(applicationId);
@@ -2147,6 +2235,7 @@
     application.lastNote = '';
     application.checks = APPLICATION_CHECKLISTS[application.kind].map(() => false);
     applicationEvent(application, 'Applicant update received (simulated)', 'No actual documents were uploaded.');
+    syncProviderApplicationApprovals();
     saveState();
     render();
     renderApplicationModal(applicationId);
@@ -2830,7 +2919,7 @@
     const index = lga.areas.indexOf(areaName);
     if (index === -1) return;
     lga.areas.splice(index, 1);
-    state.providers = normalizeSavedProviders(state.providers, state.coverage);
+    state.providers = providersWithApplicationApprovals(normalizeSavedProviders(state.providers, state.coverage), state.applications);
     addActivity('Service area removed', `${areaName} · ${lga.name}, ${coverageState.name}`, 'Coverage');
     saveState();
     render();
