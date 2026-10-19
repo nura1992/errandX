@@ -482,6 +482,11 @@
   let applicationSearch = '';
   let assignmentFilter = 'all';
   let assignmentSearch = '';
+  let providerDirectoryFilter = 'all';
+  let providerDirectorySearch = '';
+  let providerDraft = null;
+  let providerCoverageLocationValue = '';
+  let providerCoverageAreaValue = '';
   let toastTimer = null;
 
   function icon(name, className = 'icon') {
@@ -510,6 +515,7 @@
       orders: structuredCloneSafe(DEFAULT_ORDERS),
       forms: structuredCloneSafe(DEFAULT_FORMS),
       applications: structuredCloneSafe(DEFAULT_APPLICATIONS),
+      providers: structuredCloneSafe(MATCHING_PROVIDERS),
       features: { ...DEFAULT_FEATURES },
       permissions: structuredCloneSafe(DEFAULT_PERMISSIONS),
       coverage: structuredCloneSafe(DEFAULT_COVERAGE),
@@ -559,6 +565,7 @@
       }
       const selectedLga = selectedCoverageState.lgas.find((item) => item.name === initial.selectedLga) || selectedCoverageState.lgas[0];
       initial.selectedLga = selectedLga ? selectedLga.name : '';
+      initial.providers = normalizeSavedProviders(Array.isArray(saved.providers) ? saved.providers : initial.providers, initial.coverage);
       if (saved.features && typeof saved.features === 'object') initial.features = { ...initial.features, ...saved.features };
       if (saved.permissions && typeof saved.permissions === 'object') initial.permissions = { ...initial.permissions, ...saved.permissions };
       if (typeof saved.location === 'string') {
@@ -695,6 +702,36 @@
     }));
   }
 
+  function normalizeProviderCoverage(scopes, coverageCatalog = state.coverage) {
+    if (!Array.isArray(scopes)) return [];
+    return scopes.filter((scope) => scope && typeof scope === 'object').slice(0, 100).map((scope) => {
+      const coverageState = coverageCatalog.find((item) => item.name === scope.state);
+      const lga = coverageState?.lgas.find((item) => item.name === scope.lga);
+      if (!coverageState || !lga) return null;
+      const configuredAreas = new Set(lga.areas.map((area) => area.toLowerCase()));
+      if (!Array.isArray(scope.areas)) return null;
+      const sourceAreas = scope.areas.slice(0, 100);
+      const areas = [...new Set(sourceAreas.map((area) => String(area || '').trim()).filter((area) => configuredAreas.has(area.toLowerCase())))];
+      if (sourceAreas.length && !areas.length) return null;
+      return { state: coverageState.name, lga: lga.name, areas };
+    }).filter(Boolean);
+  }
+
+  function normalizeSavedProviders(records, coverageCatalog = state.coverage) {
+    const savedById = new Map((Array.isArray(records) ? records : []).filter((provider) => provider && typeof provider === 'object').map((provider) => [String(provider.id), provider]));
+    return MATCHING_PROVIDERS.map((base) => {
+      const saved = savedById.get(base.id) || {};
+      const numericCapacity = Number(saved.capacity);
+      return {
+        ...base,
+        online: typeof saved.online === 'boolean' ? saved.online : base.online,
+        available: typeof saved.available === 'boolean' ? saved.available : base.available,
+        capacity: Number.isFinite(numericCapacity) ? Math.min(50, Math.max(1, Math.floor(numericCapacity))) : base.capacity,
+        coverage: normalizeProviderCoverage(Array.isArray(saved.coverage) ? saved.coverage : base.coverage, coverageCatalog)
+      };
+    });
+  }
+
   function saveState() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -783,6 +820,7 @@
     else if (activePage === 'roles') main.innerHTML = renderRolesPage();
     else if (activePage === 'locations') main.innerHTML = renderLocationsPage();
     else if (activePage === 'overview') main.innerHTML = renderOverviewPage();
+    else if (activePage === 'riders' || activePage === 'vendors') main.innerHTML = renderProviderDirectoryPage(activePage);
     else main.innerHTML = renderStandardPage(activePage);
     bindPageInteractions();
   }
@@ -1099,7 +1137,7 @@
 
   function assignmentCandidates(order, stage) {
     const types = requiredProviderType(order, stage);
-    return MATCHING_PROVIDERS.filter((provider) => types.includes(provider.type)).map((provider) => ({
+    return state.providers.filter((provider) => types.includes(provider.type)).map((provider) => ({
       provider,
       ...providerEligibility(provider, order, stage)
     })).sort((a, b) => Number(b.eligible) - Number(a.eligible) || a.load - b.load || a.provider.name.localeCompare(b.provider.name));
@@ -1190,7 +1228,7 @@
     if (!item) return;
     const { order, stage, assignment, status } = item;
     const offered = status === 'OFFERED';
-    const candidate = offered ? MATCHING_PROVIDERS.find((provider) => provider.id === assignment.providerId) : null;
+    const candidate = offered ? state.providers.find((provider) => provider.id === assignment.providerId) : null;
     const candidates = offered ? [] : assignmentCandidates(order, stage);
     const candidateRows = candidates.map((result) => {
       const provider = result.provider;
@@ -1238,7 +1276,7 @@
     const order = state.orders.find((item) => item.id === orderId);
     const assignment = order?.assignment;
     if (!order || !assignment || assignment.status !== 'OFFERED' || !['accept', 'timeout'].includes(response)) return;
-    const provider = MATCHING_PROVIDERS.find((item) => item.id === assignment.providerId);
+    const provider = state.providers.find((item) => item.id === assignment.providerId);
     if (!provider) return;
     assignment.respondedAt = new Date().toLocaleTimeString('en-NG', { hour: '2-digit', minute: '2-digit' });
     if (response === 'accept') {
@@ -1682,6 +1720,207 @@
     saveState();
     render();
     toast('Field removed from the draft. Published versions are unchanged.');
+  }
+
+  function providerDirectoryRows(pageKey) {
+    return filteredProviders(pageKey).map((provider) => {
+      const load = providerLoad(provider);
+      const scopes = provider.coverage.map((scope) => `${scope.areas.length ? scope.areas.join(', ') : 'Entire LGA'} · ${scope.lga}, ${scope.state}`).join(' / ');
+      const approval = provider.approved
+        ? `<span class="badge badge-green">Partner approved</span>`
+        : `<span class="badge badge-amber">Partner review needed</span>`;
+      const fleetApproval = provider.type === 'company_rider'
+        ? `<span class="badge badge-${provider.companyApproved ? 'green' : 'amber'}">${provider.companyApproved ? 'Fleet approved' : 'Fleet review needed'}</span>`
+        : '';
+      const dispatchStatus = !provider.approved ? ['Approval needed', 'amber'] : provider.type === 'company_rider' && !provider.companyApproved ? ['Fleet approval needed', 'amber'] : !provider.coverage.length ? ['Coverage needed', 'amber'] : !provider.online ? ['Offline', 'gray'] : !provider.available ? ['Not accepting', 'orange'] : load >= provider.capacity ? ['At capacity', 'amber'] : ['Online · available', 'green'];
+      return `<tr>
+        <td><div class="table-person"><span class="table-avatar">${escapeHTML(initials(provider.name))}</span><span><strong>${escapeHTML(provider.name)}</strong><small>${escapeHTML(provider.id)} · ${escapeHTML(provider.label)}${provider.company ? ` · ${escapeHTML(provider.company)}` : ''}</small></span></div></td>
+        <td><div class="provider-approval-stack">${approval}${fleetApproval}</div></td>
+        <td><span class="provider-coverage-summary">${escapeHTML(scopes || 'No configured coverage')}</span></td>
+        <td><span class="provider-load-value">${load}<small> / ${provider.capacity}</small></span><small class="provider-load-label">active jobs</small></td>
+        <td><span class="badge badge-${dispatchStatus[1]}">${escapeHTML(dispatchStatus[0])}</span></td>
+        <td><button class="button button-secondary order-open-button" type="button" data-action="edit-provider-settings" data-id="${escapeAttr(provider.id)}">Manage ${icon('arrow-right')}</button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function filteredProviders(pageKey) {
+    const types = pageKey === 'riders' ? ['individual_rider', 'company_rider'] : ['restaurant', 'small_chops'];
+    const query = providerDirectorySearch.trim().toLowerCase();
+    return state.providers.filter((provider) => {
+      if (!types.includes(provider.type)) return false;
+      const load = providerLoad(provider);
+      const dispatchReady = provider.approved && (provider.type !== 'company_rider' || provider.companyApproved) && provider.online && provider.available && provider.coverage.length > 0 && load < provider.capacity;
+      const needsApproval = !provider.approved || (provider.type === 'company_rider' && !provider.companyApproved);
+      if (providerDirectoryFilter === 'ready' && !dispatchReady) return false;
+      if (providerDirectoryFilter === 'unavailable' && dispatchReady) return false;
+      if (providerDirectoryFilter === 'review' && !needsApproval) return false;
+      if (!query) return true;
+      return [provider.id, provider.name, provider.label, provider.company, ...provider.coverage.map((scope) => `${scope.state} ${scope.lga} ${scope.areas.join(' ')}`)].join(' ').toLowerCase().includes(query);
+    });
+  }
+
+  function renderProviderDirectoryPage(pageKey) {
+    const meta = PAGE_META[pageKey];
+    const providers = state.providers.filter((provider) => pageKey === 'riders' ? ['individual_rider', 'company_rider'].includes(provider.type) : ['restaurant', 'small_chops'].includes(provider.type));
+    const ready = providers.filter((provider) => provider.approved && (provider.type !== 'company_rider' || provider.companyApproved) && provider.online && provider.available && provider.coverage.length > 0 && providerLoad(provider) < provider.capacity).length;
+    const active = providers.filter((provider) => provider.online).length;
+    const needsReview = providers.filter((provider) => !provider.approved || (provider.type === 'company_rider' && !provider.companyApproved)).length;
+    const filters = [
+      ['all', 'All partners', providers.length],
+      ['ready', 'Dispatch ready', ready],
+      ['unavailable', 'Not dispatch ready', providers.length - ready],
+      ['review', 'Approval needed', needsReview]
+    ];
+    const buttons = `<button class="button button-secondary" type="button" data-page="locations">${icon('map')}<span>Service areas</span></button><button class="button button-primary" type="button" data-page="assignment-queue">${icon('clipboard')}<span>Assignment queue</span></button>`;
+    const stats = [
+      [pageKey === 'riders' ? 'Rider profiles' : 'Vendor profiles', String(providers.length), pageKey === 'riders' ? 'Individual and fleet riders' : 'Restaurants and small-chops', pageKey === 'riders' ? 'bike' : 'store', 'green'],
+      ['Dispatch ready', String(ready), 'Approval, coverage, availability and capacity', 'check', 'blue'],
+      ['Online', String(active), 'May still be unavailable or full', 'activity', 'orange'],
+      ['Approval needed', String(needsReview), 'Review before matching', 'shield', 'amber']
+    ];
+    const rows = providerDirectoryRows(pageKey);
+    return `<div class="page provider-directory-page">
+      ${renderPageHeading(meta.title, meta.eyebrow, 'Manage demo provider availability, workload limits and service-area coverage. These local settings immediately affect Assignment Queue eligibility.', buttons)}
+      ${renderStatCards(stats)}
+      <div class="module-hero"><div class="module-hero-copy"><h2>${pageKey === 'riders' ? 'Availability is not the same as approval.' : 'Partner readiness, by configured service area.'}</h2><p>${pageKey === 'riders' ? 'Company fleet approval and each rider’s approval are checked independently. Set demo online status, availability, capacity and coverage below.' : 'Restaurants and small-chops vendors have separate service types. Online status, capacity and configured coverage determine which requests can be offered.'}</p></div><span class="module-hero-badge">${icon('shield')}Demo controls · Browser only</span></div>
+      <section class="card"><div class="card-header"><div><h2 class="card-title">${escapeHTML(meta.sectionTitle)}</h2><p class="card-subtitle">Approval is a seeded, read-only status; the Applications queue is a separate mock module. Dispatch settings are editable locally.</p></div><span class="badge badge-blue">${providers.length} demo profiles</span></div>
+        <div class="provider-toolbar"><div class="rule-filters provider-filters" role="group" aria-label="Filter provider profiles">${filters.map(([key, label, count]) => `<button class="filter-button ${providerDirectoryFilter === key ? 'active' : ''}" type="button" data-provider-filter="${escapeAttr(key)}">${escapeHTML(label)} <span>${count}</span></button>`).join('')}</div><label class="search-field"><span class="sr-only">Search provider profiles</span>${icon('search')}<input id="providerDirectorySearch" type="search" placeholder="Search provider, company or coverage…" value="${escapeAttr(providerDirectorySearch)}"></label></div>
+        <div class="table-scroll"><table class="module-table provider-directory-table"><thead><tr><th>Provider</th><th>Approval</th><th>Configured service coverage</th><th>Workload</th><th>Dispatch status</th><th>Controls</th></tr></thead><tbody id="providerDirectoryBody">${rows || '<tr><td colspan="6"><div class="empty-state">No providers match this view. Try another filter.</div></td></tr>'}</tbody></table></div>
+        <div class="table-foot"><span id="providerCountFoot">Showing <strong>${filteredProviders(pageKey).length}</strong> of ${providers.length} demo profiles</span><span>Sample providers · Not live availability</span></div>
+      </section>
+      <div class="rule-note">${icon('info')}<span><strong>Approval safeguard.</strong> Partner and company approval are displayed from seeded demo records and cannot be changed here. KYC decisions remain mock-only; production dispatch must use server-verified approval and availability.</span></div>
+    </div>`;
+  }
+
+  function providerLocationFromKey(key) {
+    const match = /^(\d+):(\d+)$/.exec(String(key || ''));
+    if (!match) return null;
+    const coverageState = state.coverage[Number(match[1])];
+    const lga = coverageState?.lgas[Number(match[2])];
+    return coverageState && lga ? { coverageState, lga } : null;
+  }
+
+  function providerLocationKey(stateName, lgaName) {
+    const stateIndex = state.coverage.findIndex((item) => item.name === stateName);
+    const lgaIndex = state.coverage[stateIndex]?.lgas.findIndex((item) => item.name === lgaName) ?? -1;
+    return stateIndex >= 0 && lgaIndex >= 0 ? `${stateIndex}:${lgaIndex}` : '';
+  }
+
+  function providerCoverageOptions(key, selected = '') {
+    const location = providerLocationFromKey(key);
+    const options = location ? `<option value="*" ${selected === '*' ? 'selected' : ''}>Entire LGA · all configured neighborhoods</option>${location.lga.areas.map((area) => `<option value="${escapeAttr(area)}" ${selected === area ? 'selected' : ''}>${escapeHTML(area)}</option>`).join('')}` : '<option value="*">Entire LGA · all configured neighborhoods</option>';
+    return `<option value="" disabled ${selected === '' ? 'selected' : ''}>Choose an LGA or neighborhood scope</option>${options}`;
+  }
+
+  function renderProviderCoverageRows(provider) {
+    if (!provider.coverage.length) return '<p class="coverage-empty">No service areas configured for this provider.</p>';
+    return provider.coverage.map((scope) => {
+      const entries = scope.areas.length ? scope.areas.map((area) => ({ area, label: `${area} · ${scope.lga}, ${scope.state}` })) : [{ area: '*', label: `Entire LGA · ${scope.lga}, ${scope.state}` }];
+      return entries.map((entry) => `<div class="provider-scope-row"><span>${icon('pin')}${escapeHTML(entry.label)}</span><button class="text-button" type="button" data-action="remove-provider-draft-scope" data-state="${escapeAttr(scope.state)}" data-lga="${escapeAttr(scope.lga)}" data-area="${escapeAttr(entry.area)}">Remove</button></div>`).join('');
+    }).join('');
+  }
+
+  function renderProviderSettingsModal(providerId) {
+    const provider = state.providers.find((item) => item.id === providerId);
+    if (!provider) return;
+    if (!providerDraft || providerDraft.id !== providerId) {
+      providerDraft = { id: providerId, online: provider.online, available: provider.available, capacity: String(provider.capacity), coverage: structuredCloneSafe(provider.coverage) };
+      providerCoverageLocationValue = state.coverage.find((item) => item.name === selectedLocation)?.lgas.length ? providerLocationKey(selectedLocation, state.coverage.find((item) => item.name === selectedLocation).lgas[0].name) : '';
+      if (!providerCoverageLocationValue && state.coverage[0]?.lgas[0]) providerCoverageLocationValue = providerLocationKey(state.coverage[0].name, state.coverage[0].lgas[0].name);
+      providerCoverageAreaValue = '';
+    }
+    const draft = providerDraft;
+    const locationOptions = state.coverage.flatMap((coverageState, stateIndex) => coverageState.lgas.map((lga, lgaIndex) => `<option value="${stateIndex}:${lgaIndex}" ${providerLocationKey(coverageState.name, lga.name) === providerCoverageLocationValue ? 'selected' : ''}>${escapeHTML(lga.name)}, ${escapeHTML(coverageState.name)}</option>`)).join('');
+    const approval = provider.approved ? 'Partner approval: approved (demo)' : 'Partner approval: not approved (demo)';
+    const fleetApproval = provider.type === 'company_rider' ? `<p class="provider-modal-approval">Fleet approval: ${provider.companyApproved ? 'approved' : 'not approved'} (demo)</p>` : '';
+    const scopeRows = renderProviderCoverageRows(draft);
+    document.getElementById('modalRoot').innerHTML = `<div class="modal-backdrop" data-action="modal-backdrop-close"><section class="modal provider-settings-modal" role="dialog" aria-modal="true" aria-labelledby="providerSettingsTitle">
+      <header class="modal-header"><div><div class="eyebrow">${escapeHTML(provider.id)} <span class="eyebrow-separator">/</span> ${escapeHTML(provider.label)}</div><h2 id="providerSettingsTitle">Manage provider readiness</h2><p>${escapeHTML(provider.name)}${provider.company ? ` · ${escapeHTML(provider.company)}` : ''}</p></div><button class="modal-close" type="button" data-action="close-modal" aria-label="Close dialog">${icon('close')}</button></header>
+      <div class="modal-body"><div class="provider-modal-status"><span class="badge badge-${provider.approved ? 'green' : 'amber'}">${provider.approved ? 'Partner approved' : 'Approval needed'}</span>${provider.type === 'company_rider' ? `<span class="badge badge-${provider.companyApproved ? 'green' : 'amber'}">${provider.companyApproved ? 'Fleet approved' : 'Fleet approval needed'}</span>` : ''}</div><p class="provider-modal-approval">${escapeHTML(approval)} · This sample status is read-only; Applications is a separate mock queue.</p>${fleetApproval}
+        <div class="provider-settings-grid"><label class="provider-setting-toggle"><input id="providerOnline" type="checkbox" ${draft.online ? 'checked' : ''}><span><strong>Online</strong><small>Visible as online in the demo.</small></span></label><label class="provider-setting-toggle"><input id="providerAvailable" type="checkbox" ${draft.available ? 'checked' : ''}><span><strong>Accepting assignments</strong><small>Can receive new demo offers.</small></span></label><div class="form-field provider-capacity-field"><label class="field-label" for="providerCapacity">Maximum active jobs</label><input id="providerCapacity" class="input-control" type="number" min="1" max="50" step="1" value="${escapeAttr(draft.capacity)}"><small class="field-help">Current workload: ${providerLoad(provider)} active job${providerLoad(provider) === 1 ? '' : 's'}.</small><div class="form-error">Set a whole-number capacity from 1 to 50.</div></div></div>
+        <section class="provider-coverage-editor"><div class="review-section-heading"><div><h3>Provider service coverage</h3><p>Scopes must exist in configured platform coverage. Broad LGA and neighborhood scopes are distinct.</p></div></div><div class="provider-scope-list">${scopeRows}</div><div class="provider-coverage-add"><label class="form-field"><span class="field-label">Configured LGA</span><select id="providerCoverageLocation" class="select-control" ${locationOptions ? '' : 'disabled'}>${locationOptions || '<option value="">No configured LGAs</option>'}</select></label><label class="form-field"><span class="field-label">Scope</span><select id="providerCoverageArea" class="select-control" ${locationOptions ? '' : 'disabled'}>${providerCoverageOptions(providerCoverageLocationValue, providerCoverageAreaValue)}</select></label><button class="button button-secondary" type="button" data-action="add-provider-draft-scope" ${locationOptions ? '' : 'disabled'}>${icon('plus')}<span>Add scope</span></button></div><p class="provider-coverage-help">Changes to coverage are included when you save this provider profile. They immediately affect future demo matches only.</p></section>
+      </div><footer class="modal-footer"><span class="modal-footer-note">${icon('info')}Local demo settings · No real status changed</span><div class="modal-footer-actions"><button class="button button-secondary" type="button" data-action="close-modal">Cancel</button><button class="button button-primary" type="button" data-action="save-provider-settings">${icon('check')}<span>Save profile</span></button></div></footer>
+    </section></div>`;
+    document.getElementById('providerCoverageLocation')?.addEventListener('change', (event) => {
+      providerCoverageLocationValue = event.target.value;
+      providerCoverageAreaValue = '';
+      const areaSelect = document.getElementById('providerCoverageArea');
+      if (areaSelect) {
+        areaSelect.innerHTML = providerCoverageOptions(providerCoverageLocationValue, '');
+        areaSelect.value = '';
+      }
+    });
+    document.getElementById('providerCoverageArea')?.addEventListener('change', (event) => { providerCoverageAreaValue = event.target.value; });
+  }
+
+  function captureProviderDraftFields() {
+    if (!providerDraft) return;
+    const online = document.getElementById('providerOnline');
+    const available = document.getElementById('providerAvailable');
+    const capacity = document.getElementById('providerCapacity');
+    if (online) providerDraft.online = online.checked;
+    if (available) providerDraft.available = available.checked;
+    if (capacity) providerDraft.capacity = capacity.value;
+  }
+
+  function addProviderDraftScope() {
+    captureProviderDraftFields();
+    if (!providerDraft) return;
+    const location = providerLocationFromKey(document.getElementById('providerCoverageLocation')?.value || providerCoverageLocationValue);
+    const area = document.getElementById('providerCoverageArea')?.value || providerCoverageAreaValue;
+    if (!location) { toast('Choose a configured LGA before adding provider coverage.'); return; }
+    if (!area) { toast('Choose an LGA-wide or neighborhood scope before adding it.'); return; }
+    const { coverageState, lga } = location;
+    const existing = providerDraft.coverage.find((scope) => scope.state === coverageState.name && scope.lga === lga.name);
+    if (area === '*') {
+      providerDraft.coverage = providerDraft.coverage.filter((scope) => scope.state !== coverageState.name || scope.lga !== lga.name);
+      providerDraft.coverage.push({ state: coverageState.name, lga: lga.name, areas: [] });
+    } else if (existing?.areas.length === 0) {
+      toast('This provider already has broad coverage across that LGA. Remove it first to narrow the scope.');
+      return;
+    } else if (existing) {
+      if (!existing.areas.includes(area)) existing.areas.push(area);
+    } else {
+      providerDraft.coverage.push({ state: coverageState.name, lga: lga.name, areas: [area] });
+    }
+    providerCoverageLocationValue = document.getElementById('providerCoverageLocation')?.value || providerCoverageLocationValue;
+    providerCoverageAreaValue = '';
+    renderProviderSettingsModal(providerDraft.id);
+  }
+
+  function removeProviderDraftScope(stateName, lgaName, area) {
+    captureProviderDraftFields();
+    if (!providerDraft) return;
+    if (area === '*') {
+      providerDraft.coverage = providerDraft.coverage.filter((scope) => scope.state !== stateName || scope.lga !== lgaName);
+    } else {
+      providerDraft.coverage = providerDraft.coverage.map((scope) => scope.state === stateName && scope.lga === lgaName ? { ...scope, areas: scope.areas.filter((item) => item !== area) } : scope).filter((scope) => scope.areas.length || !scope.state || !scope.lga);
+    }
+    renderProviderSettingsModal(providerDraft.id);
+  }
+
+  function saveProviderSettings() {
+    captureProviderDraftFields();
+    if (!providerDraft) return;
+    const capacity = Number(providerDraft.capacity);
+    const field = document.getElementById('providerCapacity')?.closest('.form-field');
+    if (!Number.isInteger(capacity) || capacity < 1 || capacity > 50) {
+      field?.classList.add('has-error');
+      document.getElementById('providerCapacity')?.focus();
+      return;
+    }
+    const provider = state.providers.find((item) => item.id === providerDraft.id);
+    if (!provider) return;
+    provider.online = Boolean(providerDraft.online);
+    provider.available = Boolean(providerDraft.available);
+    provider.capacity = capacity;
+    provider.coverage = normalizeProviderCoverage(providerDraft.coverage, state.coverage);
+    saveState();
+    const name = provider.name;
+    closeModal();
+    render();
+    toast(`${name} provider settings saved in this browser.`);
   }
 
   function renderStandardPage(pageKey) {
@@ -2253,11 +2492,24 @@
         if (foot) foot.innerHTML = `Showing <strong>${filteredAssignmentQueue().length}</strong> of ${assignmentQueueItems().length} requests needing an assignment`;
       });
     }
+    if (activePage === 'riders' || activePage === 'vendors') {
+      const search = document.getElementById('providerDirectorySearch');
+      if (search) search.addEventListener('input', () => {
+        providerDirectorySearch = search.value;
+        const body = document.getElementById('providerDirectoryBody');
+        if (body) body.innerHTML = providerDirectoryRows(activePage) || '<tr><td colspan="6"><div class="empty-state">No providers match this view. Try another filter.</div></td></tr>';
+        const foot = document.getElementById('providerCountFoot');
+        if (foot) foot.innerHTML = `Showing <strong>${filteredProviders(activePage).length}</strong> of ${state.providers.filter((provider) => activePage === 'riders' ? ['individual_rider', 'company_rider'].includes(provider.type) : ['restaurant', 'small_chops'].includes(provider.type)).length} demo profiles`;
+      });
+    }
   }
 
   function closeModal() {
     const root = document.getElementById('modalRoot');
     if (root) root.innerHTML = '';
+    providerDraft = null;
+    providerCoverageLocationValue = '';
+    providerCoverageAreaValue = '';
   }
 
   function toast(message) {
@@ -2328,6 +2580,15 @@
       return;
     }
 
+    const providerFilterButton = event.target.closest('[data-provider-filter]');
+    if (providerFilterButton) {
+      providerDirectoryFilter = providerFilterButton.dataset.providerFilter;
+      const main = document.getElementById('mainContent');
+      if (main) main.innerHTML = renderProviderDirectoryPage(activePage);
+      bindPageInteractions();
+      return;
+    }
+
     const assignmentFilterButton = event.target.closest('[data-assignment-filter]');
     if (assignmentFilterButton) {
       assignmentFilter = assignmentFilterButton.dataset.assignmentFilter;
@@ -2358,6 +2619,10 @@
     const actionButton = event.target.closest('[data-action]');
     if (actionButton) {
       const action = actionButton.dataset.action;
+      if (action === 'edit-provider-settings') { renderProviderSettingsModal(actionButton.dataset.id); return; }
+      if (action === 'add-provider-draft-scope') { addProviderDraftScope(); return; }
+      if (action === 'remove-provider-draft-scope') { removeProviderDraftScope(actionButton.dataset.state, actionButton.dataset.lga, actionButton.dataset.area); return; }
+      if (action === 'save-provider-settings') { saveProviderSettings(); return; }
       if (action === 'open-assignment') { renderAssignmentModal(actionButton.dataset.id); return; }
       if (action === 'send-assignment-offer') { sendAssignmentOffer(actionButton.dataset.id, actionButton.dataset.providerId); return; }
       if (action === 'assignment-response') { respondToAssignment(actionButton.dataset.id, actionButton.dataset.response); return; }
@@ -2565,6 +2830,7 @@
     const index = lga.areas.indexOf(areaName);
     if (index === -1) return;
     lga.areas.splice(index, 1);
+    state.providers = normalizeSavedProviders(state.providers, state.coverage);
     addActivity('Service area removed', `${areaName} · ${lga.name}, ${coverageState.name}`, 'Coverage');
     saveState();
     render();

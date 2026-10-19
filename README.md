@@ -47,6 +47,8 @@ The Service areas screen now supports a coverage scope across Nigeria's 36 state
 
 The Assignment queue matches pending errand requests to individual/company riders, vendor orders to the corresponding restaurant or small-chops partner type, and ready vendor orders to pickup riders. Candidate checks combine demo approval (including company approval for fleet riders), online/available status, capacity, service category and configured state/LGA/neighborhood scope. Send a simulated offer, then simulate acceptance or timeout; accepted first-stage offers advance through the existing order state machine, while timeouts return to the queue. Offer history is browser-local. No push/SMS is sent, and sample candidate records are not live availability or authorization.
 
+The Riders & fleets and Restaurants & vendors directories include local provider-readiness controls. Toggle demo online and assignment-availability status, adjust maximum active jobs, and manage broad-LGA or neighborhood-specific coverage using locations configured in Service areas. These settings immediately affect future Assignment Queue matches in this browser. Partner and fleet approval remain read-only sample states in these directories; the Applications screen is a separate mock review queue and is not synchronized to provider profiles or a real verification service.
+
 ## Not production-ready
 
 This is a **front-end prototype**, not a live ErrandX marketplace. It has no authentication, PHP API, MySQL persistence, server-side authorization, real order state machine, KYC storage, notifications, payment integration, bank payouts or enforceable audit trail. `localStorage` is user-editable and must never be trusted for financial or access-control decisions.

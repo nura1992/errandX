@@ -680,3 +680,53 @@ tr:last-child td { border-bottom: 0; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* Provider readiness controls */
+.provider-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 17px 12px; }
+.provider-filters { flex: 1 1 auto; max-width: 100%; overflow-x: auto; }
+.provider-toolbar .search-field { width: min(300px, 34%); flex: 0 0 auto; }
+.provider-directory-table { min-width: 980px; }
+.provider-directory-table td { vertical-align: middle; }
+.provider-approval-stack { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.provider-approval-stack .badge { white-space: nowrap; }
+.provider-coverage-summary { display: block; max-width: 260px; color: #66746b; font-size: 8px; line-height: 1.5; }
+.provider-load-value { display: block; color: #34493b; font: 700 13px Manrope, sans-serif; }
+.provider-load-value small { color: #8e9a91; font: 500 9px Inter, sans-serif; }
+.provider-load-label { display: block; margin-top: 2px; color: #9aa39d; font-size: 7.5px; }
+.provider-settings-modal { width: min(660px, 100%); }
+.provider-modal-status { display: flex; flex-wrap: wrap; gap: 6px; }
+.provider-modal-approval { margin-top: 7px; color: #8b968e; font-size: 8px; line-height: 1.45; }
+.provider-settings-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin-top: 14px; }
+.provider-setting-toggle { min-height: 54px; display: flex; align-items: center; gap: 9px; padding: 10px; border: 1px solid #e6ece6; border-radius: 8px; background: #fbfcfb; cursor: pointer; }
+.provider-setting-toggle input { width: 15px; height: 15px; flex: 0 0 auto; accent-color: #348052; }
+.provider-setting-toggle strong, .provider-setting-toggle small { display: block; }
+.provider-setting-toggle strong { color: #536259; font-size: 8.5px; }
+.provider-setting-toggle small { margin-top: 3px; color: #98a29b; font-size: 7.5px; line-height: 1.4; }
+.provider-capacity-field { grid-column: span 2; }
+.provider-capacity-field .input-control { max-width: 180px; }
+.provider-coverage-editor { margin-top: 15px; padding-top: 13px; border-top: 1px solid #edf0ed; }
+.provider-coverage-editor h3 { color: #3d4f43; font-size: 9px; font-weight: 700; }
+.provider-coverage-editor .review-section-heading p { margin-top: 3px; color: #8e9991; font-size: 7.5px; line-height: 1.45; }
+.provider-scope-list { display: flex; flex-direction: column; gap: 4px; max-height: 170px; margin-top: 9px; overflow-y: auto; }
+.provider-scope-row { min-height: 29px; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 7px; border: 1px solid #e8ede8; border-radius: 6px; background: #fbfcfb; }
+.provider-scope-row > span { display: flex; align-items: center; gap: 6px; min-width: 0; color: #647168; font-size: 7.7px; line-height: 1.4; }
+.provider-scope-row .icon { width: 12px; height: 12px; flex: 0 0 auto; color: #588265; }
+.provider-scope-row .text-button { flex: 0 0 auto; font-size: 7.5px; }
+.provider-coverage-add { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: 7px; align-items: end; margin-top: 10px; }
+.provider-coverage-add .form-field { margin-bottom: 0; }
+.provider-coverage-add .field-label { display: block; margin-bottom: 5px; color: #78847b; font-size: 7.5px; }
+.provider-coverage-add .select-control { min-height: 33px; font-size: 8px; }
+.provider-coverage-add .button { min-height: 33px; padding: 0 9px; white-space: nowrap; font-size: 8px; }
+.provider-coverage-help { margin-top: 7px; color: #929d95; font-size: 7.5px; line-height: 1.45; }
+@media (max-width: 1250px) {
+  .provider-toolbar { align-items: flex-start; flex-direction: column; }
+  .provider-toolbar .search-field { width: 100%; }
+}
+@media (max-width: 760px) {
+  .provider-toolbar { padding: 0 13px 11px; }
+  .provider-filters { max-width: 100%; }
+  .provider-settings-grid { grid-template-columns: 1fr; }
+  .provider-capacity-field { grid-column: auto; }
+  .provider-coverage-add { grid-template-columns: 1fr 1fr; }
+  .provider-coverage-add .button { grid-column: span 2; }
+}
